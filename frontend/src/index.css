@@ -39,8 +39,10 @@ html {
   scrollbar-color: var(--color-accent-light) var(--color-background);
 }
 
-/* Focus visible outline */
-*:focus-visible {
+/* Focus visible outline - disabled for form inputs, they have custom focus styles */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }

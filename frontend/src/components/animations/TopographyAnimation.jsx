@@ -24,10 +24,22 @@ export default function TopographyAnimation({
   topographyType = 'flat', 
   soilType = 'clay',
   totalArea = 0,
-  borewellCount = 1 
+  fieldGeometry = 'rectangular',
+  sideLength = 0,
+  sideWidth = 0,
+  exclusionZones = 0,
+  slopePercentage = 0
 }) {
   const terrainRotation = topographyType === 'flat' ? 50 : topographyType === 'sloped' ? 55 : 60;
   const soilColor = soilColors[soilType] || soilColors.clay;
+  
+  // Calculate field shape based on geometry
+  const isCircular = fieldGeometry === 'circular';
+  const isIrregular = fieldGeometry === 'irregular';
+  const aspectRatio = sideLength && sideWidth ? sideWidth / sideLength : 1;
+  
+  // Calculate usable area after exclusions
+  const usableArea = totalArea * (1 - exclusionZones / 100);
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
@@ -40,12 +52,17 @@ export default function TopographyAnimation({
       >
         {/* Ground Plane */}
         <motion.div
-          className="w-72 h-72 rounded-2xl shadow-2xl relative overflow-hidden"
-          animate={{ backgroundColor: soilColor }}
+          className="shadow-2xl relative overflow-hidden"
+          animate={{ 
+            backgroundColor: soilColor,
+            borderRadius: isCircular ? '50%' : isIrregular ? '20% 80% 60% 40%' : '1rem',
+            width: `${Math.max(240, Math.min(320, 240 + sideLength * 0.5))}px`,
+            height: `${Math.max(240, Math.min(320, 240 * aspectRatio))}px`,
+          }}
           transition={{ duration: 0.5 }}
           style={{
             background: `linear-gradient(135deg, ${soilColor}, ${soilColor}cc)`,
-            transform: topographyType === 'sloped' ? 'rotateX(-8deg)' : topographyType === 'hilly' ? 'rotateX(-15deg)' : 'none',
+            transform: topographyType === 'sloped' ? `rotateX(-${8 + slopePercentage * 0.3}deg)` : topographyType === 'hilly' ? `rotateX(-${15 + slopePercentage * 0.5}deg)` : 'none',
           }}
         >
           {/* Grid Pattern */}
@@ -61,37 +78,35 @@ export default function TopographyAnimation({
           </div>
 
           {/* Field Boundary */}
-          <div className="absolute inset-3 border-2 border-dashed rounded-lg" style={{ borderColor: 'rgba(255,255,255,0.4)' }} />
+          <motion.div 
+            className="absolute inset-3 border-2 border-dashed" 
+            animate={{
+              borderRadius: isCircular ? '50%' : isIrregular ? '15% 85% 65% 35%' : '0.5rem',
+            }}
+            style={{ borderColor: 'rgba(255,255,255,0.4)' }} 
+          />
 
           {/* Crop Plots - Dynamic based on area */}
           <div className="absolute inset-6 grid grid-cols-4 gap-1.5">
-            {Array.from({ length: Math.min(16, Math.max(4, Math.floor(totalArea / 2) || 8)) }).map((_, i) => (
-              <motion.div
-                key={i}
-                className="w-full h-full rounded-sm"
-                style={{ backgroundColor: THEME.accentLight }}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 0.8 }}
-                transition={{ delay: i * 0.04, duration: 0.3 }}
-              />
-            ))}
+            {Array.from({ length: Math.min(16, Math.max(4, Math.floor(totalArea / 2) || 8)) }).map((_, i) => {
+              const isExcluded = (i / 16) * 100 < exclusionZones;
+              return (
+                <motion.div
+                  key={i}
+                  className="w-full h-full rounded-sm"
+                  style={{ 
+                    backgroundColor: isExcluded ? 'rgba(239, 68, 68, 0.3)' : THEME.accentLight,
+                    border: isExcluded ? '1px dashed rgba(239, 68, 68, 0.5)' : 'none'
+                  }}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: isExcluded ? 0.4 : 0.8 }}
+                  transition={{ delay: i * 0.04, duration: 0.3 }}
+                />
+              );
+            })}
           </div>
 
-          {/* Borewell Markers */}
-          {Array.from({ length: Math.min(borewellCount, 4) }).map((_, i) => (
-            <motion.div
-              key={`bw-${i}`}
-              className="absolute w-4 h-4 rounded-full"
-              style={{
-                backgroundColor: '#3B82F6',
-                left: `${25 + (i % 2) * 50}%`,
-                top: `${25 + Math.floor(i / 2) * 50}%`,
-                boxShadow: '0 0 10px rgba(59, 130, 246, 0.5)'
-              }}
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
-            />
-          ))}
+          {/* Borewell Markers - Removed as it's not part of canvas form */}
 
           {/* Hills for hilly terrain */}
           {topographyType === 'hilly' && (
@@ -172,20 +187,37 @@ export default function TopographyAnimation({
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>TOTAL AREA</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{totalArea} acres</p>
+              {sideLength > 0 && sideWidth > 0 && (
+                <p className="text-xs mt-0.5" style={{ color: THEME.textLight }}>{sideLength} × {sideWidth} ft</p>
+              )}
+              {exclusionZones > 0 && (
+                <p className="text-xs mt-0.5 text-red-600">{exclusionZones}% excluded</p>
+              )}
             </div>
           </div>
         </motion.div>
       )}
 
-      {/* Soil Type Badge */}
+      {/* Soil Type & Geometry Badges */}
       <motion.div
-        className="absolute top-8 left-8 px-4 py-2 rounded-full flex items-center gap-2"
-        style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+        className="absolute top-8 left-8 flex flex-col gap-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: soilColor }} />
-        <span className="text-sm font-medium capitalize" style={{ color: THEME.text }}>{soilType} Soil</span>
+        <div className="px-4 py-2 rounded-full flex items-center gap-2" style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}>
+          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: soilColor }} />
+          <span className="text-sm font-medium capitalize" style={{ color: THEME.text }}>{soilType} Soil</span>
+        </div>
+        <div className="px-4 py-2 rounded-full flex items-center gap-2" style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}>
+          <div 
+            className="w-4 h-4" 
+            style={{ 
+              backgroundColor: THEME.accent,
+              borderRadius: isCircular ? '50%' : isIrregular ? '30% 70% 60% 40%' : '2px'
+            }} 
+          />
+          <span className="text-sm font-medium capitalize" style={{ color: THEME.text }}>{fieldGeometry}</span>
+        </div>
       </motion.div>
     </div>
   );

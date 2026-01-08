@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Globe, MapPin, WifiHigh } from '@phosphor-icons/react';
+import { Globe, MapPin, WifiHigh, User, Users } from '@phosphor-icons/react';
 
 const THEME = {
   accent: '#689F38',
@@ -8,133 +8,172 @@ const THEME = {
   text: '#33691E',
   textLight: '#558B2F',
   background: '#EDEDE7',
-  cardBg: 'rgba(104, 159, 56, 0.1)',
+  cardBg: 'rgba(250, 240, 191, 0.7)',
   cardBorder: 'rgba(104, 159, 56, 0.3)',
 };
 
-export default function GlobeAnimation({ farmerName = '', district = '', state = '' }) {
+export default function GlobeAnimation({ farmerName = '', whatsappNumber = '', laborCount = 0 }) {
+  const hasData = farmerName || whatsappNumber;
+  
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
-      {/* Background Grid */}
-      <div className="absolute inset-0 opacity-20">
-        <svg className="w-full h-full" viewBox="0 0 400 400">
-          <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke={THEME.accent} strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
-      </div>
 
-      {/* Rotating Globe */}
+      {/* Rotating Earth Globe */}
       <motion.div
         className="relative"
-        animate={{ rotateY: 360 }}
-        transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 50, repeat: Infinity, ease: 'linear' }}
       >
-        <div className="w-72 h-72 relative">
-          {/* Globe Base */}
-          <motion.div
+        <div className="w-80 h-80 relative">
+          {/* Earth Base */}
+          <div
             className="absolute inset-0 rounded-full"
             style={{
-              background: `radial-gradient(circle at 30% 30%, ${THEME.accentLight}, ${THEME.accent}40)`,
-              boxShadow: `0 0 60px ${THEME.accentLight}, inset 0 0 40px ${THEME.accentVeryLight}`,
-              border: `2px solid ${THEME.accentLight}`,
+              background: `linear-gradient(135deg, #FAF0BF 0%, #EDEDE7 100%)`,
+              boxShadow: `
+                inset -20px -20px 40px rgba(104, 159, 56, 0.15),
+                inset 10px 10px 30px rgba(255, 255, 255, 0.8),
+                0 20px 60px rgba(104, 159, 56, 0.2)
+              `,
+              border: `3px solid ${THEME.cardBorder}`
             }}
           />
-          
+
           {/* Latitude Lines */}
-          {[25, 50, 75].map((deg, i) => (
+          {[20, 35, 50, 65, 80].map((deg, i) => (
             <motion.div
               key={`lat-${i}`}
-              className="absolute left-1/2 top-1/2 rounded-full"
+              className="absolute left-1/2 top-1/2 rounded-full border"
               style={{
-                width: `${100 - deg * 0.7}%`,
-                height: `${100 - deg * 0.7}%`,
+                width: `${100 - deg * 0.9}%`,
+                height: `${100 - deg * 0.9}%`,
                 transform: 'translate(-50%, -50%)',
-                border: `1px solid ${THEME.accentLight}`,
+                borderColor: THEME.accent,
+                borderWidth: '2px',
+                opacity: 0.3,
               }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0.2, 0.4, 0.2] }}
+              transition={{ duration: 3, repeat: Infinity, delay: i * 0.2 }}
             />
           ))}
           
           {/* Longitude Lines */}
-          {[0, 45, 90, 135].map((deg, i) => (
+          {[0, 30, 60, 90, 120, 150].map((deg, i) => (
             <motion.div
               key={`lng-${i}`}
-              className="absolute left-1/2 top-1/2 w-px h-full origin-center"
+              className="absolute left-1/2 top-1/2 origin-center"
               style={{ 
+                width: '2px',
+                height: '100%',
                 transform: `translate(-50%, -50%) rotate(${deg}deg)`,
-                backgroundColor: THEME.accentLight 
+                background: `linear-gradient(to bottom, transparent 0%, ${THEME.accent} 50%, transparent 100%)`,
+                opacity: 0.25,
               }}
             />
           ))}
 
-          {/* Location Marker */}
-          <motion.div
-            className="absolute"
-            style={{ top: '35%', left: '55%' }}
-            animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <MapPin size={28} weight="fill" color={THEME.accent} />
-            <div className="absolute inset-0 rounded-full animate-ping" style={{ backgroundColor: THEME.accent, opacity: 0.3 }} />
-          </motion.div>
+          {/* Location Marker - India */}
+          {hasData && (
+            <motion.div
+              className="absolute"
+              style={{ top: '35%', left: '60%' }}
+              initial={{ scale: 0 }}
+              animate={{ 
+                scale: [1, 1.2, 1],
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <div className="relative">
+                <div className="w-5 h-5 rounded-full shadow-lg" style={{ backgroundColor: THEME.accent, boxShadow: `0 0 15px ${THEME.accent}` }} />
+                <div className="absolute inset-0 w-5 h-5 rounded-full animate-ping" style={{ backgroundColor: THEME.accent, opacity: 0.5 }} />
+                <MapPin 
+                  size={14} 
+                  weight="fill" 
+                  color="#FAF0BF" 
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                />
+              </div>
+            </motion.div>
+          )}
 
-          {/* Center Globe Icon */}
+          {/* Globe Icon Center */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <Globe size={48} weight="duotone" color={THEME.accentLight} style={{ opacity: 0.3 }} />
+            <Globe size={64} weight="duotone" color={THEME.accent} style={{ opacity: 0.15 }} />
           </div>
         </div>
       </motion.div>
 
-      {/* Identity Card */}
-      <motion.div
-        className="absolute top-16 left-8 px-5 py-4 backdrop-blur-sm rounded-xl"
-        style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-        animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 3, repeat: Infinity }}
-      >
-        <div className="flex items-center gap-3">
-          <MapPin size={20} weight="duotone" color={THEME.accent} />
-          <div>
-            <p className="text-xs font-semibold" style={{ color: THEME.accent }}>IDENTITY</p>
-            <p className="text-sm font-bold" style={{ color: THEME.text }}>
-              {farmerName || 'New Farmer'}
-            </p>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Location Card */}
-      {(district || state) && (
+      {/* Farmer Name Card */}
+      {farmerName && (
         <motion.div
-          className="absolute bottom-16 right-8 px-5 py-4 backdrop-blur-sm rounded-xl"
+          className="absolute top-16 left-8 px-5 py-4 backdrop-blur-sm rounded-xl"
           style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0, y: [0, -8, 0] }}
+          transition={{ y: { duration: 3, repeat: Infinity } }}
+        >
+          <div className="flex items-center gap-3">
+            <User size={20} weight="duotone" color={THEME.accent} />
+            <div>
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>FARMER</p>
+              <p className="text-sm font-bold" style={{ color: THEME.text }}>{farmerName}</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* WhatsApp Card */}
+      {whatsappNumber && (
+        <motion.div
+          className="absolute top-16 right-8 px-5 py-4 backdrop-blur-sm rounded-xl"
+          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
           initial={{ opacity: 0, x: 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          animate={{ opacity: 1, x: 0, y: [0, -8, 0] }}
+          transition={{ y: { duration: 3, repeat: Infinity, delay: 0.5 } }}
         >
           <div className="flex items-center gap-3">
             <WifiHigh size={20} weight="duotone" color={THEME.accent} />
             <div>
-              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>LOCATION</p>
-              <p className="text-sm font-bold" style={{ color: THEME.text }}>
-                {district && state ? `${district}, ${state}` : district || state || 'India'}
-              </p>
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>CONTACT</p>
+              <p className="text-sm font-bold" style={{ color: THEME.text }}>+91 {whatsappNumber}</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Labor Count Card */}
+      {laborCount > 0 && (
+        <motion.div
+          className="absolute bottom-16 left-1/2 -translate-x-1/2 px-5 py-4 backdrop-blur-sm rounded-xl"
+          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: [20, 12, 20] }}
+          transition={{ duration: 4, repeat: Infinity }}
+        >
+          <div className="flex items-center gap-3">
+            <Users size={24} weight="duotone" color={THEME.accent} />
+            <div>
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>WORKFORCE</p>
+              <p className="text-lg font-bold" style={{ color: THEME.text }}>{laborCount} Workers</p>
             </div>
           </div>
         </motion.div>
       )}
 
       {/* Network Status */}
-      <motion.div
-        className="absolute bottom-16 left-8 px-4 py-2 backdrop-blur-sm rounded-lg"
-        style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}` }}
-      >
-        <p className="text-xs font-medium" style={{ color: THEME.textLight }}>TerraTwin Network</p>
-      </motion.div>
+      {!hasData && (
+        <motion.div
+          className="absolute bottom-16 left-1/2 -translate-x-1/2 px-6 py-4 backdrop-blur-sm rounded-xl text-center"
+          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          animate={{ opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <WifiHigh size={32} weight="duotone" color={THEME.accent} className="mx-auto mb-2" />
+          <p className="text-sm font-medium" style={{ color: THEME.text }}>Awaiting Farmer Details...</p>
+          <p className="text-xs mt-1" style={{ color: THEME.textLight }}>Fill the form to connect</p>
+        </motion.div>
+      )}
     </div>
   );
 }

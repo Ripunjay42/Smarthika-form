@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Drop, Lightning, ArrowDown, Gauge } from '@phosphor-icons/react';
+import { Drop, Lightning, ArrowDown, Gauge, Warning, Shield, Database } from '@phosphor-icons/react';
 
 const THEME = {
   accent: '#689F38',
@@ -19,16 +19,41 @@ const waterColors = {
 };
 
 export default function BorewellAnimation({ 
-  staticLevel = 50, 
-  dynamicLevel = 80, 
+  staticWaterLevel = 50, 
+  dynamicWaterLevel = 80, 
   waterQuality = 'clear',
-  pumpDepth = 100,
-  borewellDiameter = 6
+  totalDepth = 150,
+  casingDiameter = 6,
+  sourceType = 'borewell',
+  seasonalVariance = 'low',
+  dryRunRisk = 'low',
+  scalingRisk = 'low',
+  ironContentRisk = 'low',
+  abrasionRisk = 'low',
+  numberOfBorewells = 1,
+  suctionHead = 0,
+  footValveCondition = 'good'
 }) {
-  const drawdown = dynamicLevel - staticLevel;
+  const drawdown = dynamicWaterLevel - staticWaterLevel;
   const waterColor = waterColors[waterQuality] || waterColors.clear;
-  const staticPercent = Math.min(staticLevel / 150 * 100, 90);
-  const dynamicPercent = Math.min(dynamicLevel / 150 * 100, 95);
+  const staticPercent = Math.min(staticWaterLevel / totalDepth * 100, 90);
+  const dynamicPercent = Math.min(dynamicWaterLevel / totalDepth * 100, 95);
+  
+  // Risk indicators
+  const hasHighRisk = dryRunRisk === 'high' || seasonalVariance === 'high';
+  const hasQualityIssues = scalingRisk === 'high' || ironContentRisk === 'high' || abrasionRisk === 'high';
+  
+  // Drawdown assessment
+  const getDrawdownStatus = () => {
+    if (drawdown < 20) return { label: 'Excellent', color: '#22C55E', desc: 'Strong aquifer' };
+    if (drawdown < 40) return { label: 'Good', color: '#F59E0B', desc: 'Moderate recharge' };
+    return { label: 'Poor', color: '#EF4444', desc: 'Low recharge' };
+  };
+  const drawdownStatus = getDrawdownStatus();
+  
+  // Open well specific
+  const isOpenWell = sourceType === 'open-well';
+  const hasFootValveIssue = footValveCondition === 'leaking';
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
@@ -54,7 +79,7 @@ export default function BorewellAnimation({
           {/* Inner Pipe */}
           <motion.div 
             className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0"
-            animate={{ width: borewellDiameter * 2 + 'px' }}
+            animate={{ width: casingDiameter * 2 + 'px' }}
             style={{ backgroundColor: '#1F2937', borderLeft: '3px solid #4B5563', borderRight: '3px solid #4B5563' }}
           >
             {/* Static Water Level Marker */}
@@ -70,7 +95,7 @@ export default function BorewellAnimation({
               >
                 <ArrowDown size={12} color="#3B82F6" />
                 <span className="text-xs font-medium whitespace-nowrap" style={{ color: '#3B82F6' }}>
-                  SWL: {staticLevel}ft
+                  SWL: {staticWaterLevel}ft
                 </span>
               </motion.div>
             </motion.div>
@@ -88,7 +113,7 @@ export default function BorewellAnimation({
                 animate={{ opacity: 1, x: 0 }}
               >
                 <span className="text-xs font-medium whitespace-nowrap" style={{ color: THEME.accent }}>
-                  DWL: {dynamicLevel}ft
+                  DWL: {dynamicWaterLevel}ft
                 </span>
               </motion.div>
             </motion.div>
@@ -133,20 +158,48 @@ export default function BorewellAnimation({
         </div>
       </div>
 
-      {/* Drawdown Card */}
+      {/* Drawdown Card with Status */}
       {drawdown > 0 && (
         <motion.div
           className="absolute top-8 left-8 p-4 backdrop-blur-sm rounded-xl"
-          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          style={{ 
+            backgroundColor: `${drawdownStatus.color}15`,
+            border: `2px solid ${drawdownStatus.color}40` 
+          }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
         >
           <div className="flex items-center gap-3">
-            <Gauge size={24} weight="duotone" color={THEME.accent} />
+            <Gauge size={24} weight="duotone" color={drawdownStatus.color} />
             <div>
-              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>DRAWDOWN</p>
-              <p className="text-lg font-bold" style={{ color: THEME.text }}>{drawdown} ft</p>
+              <p className="text-xs font-semibold" style={{ color: drawdownStatus.color }}>DRAWDOWN</p>
+              <p className="text-xl font-bold" style={{ color: drawdownStatus.color }}>{drawdown} ft</p>
+              <p className="text-xs" style={{ color: drawdownStatus.color }}>{drawdownStatus.desc}</p>
             </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Open Well Indicator */}
+      {isOpenWell && (
+        <motion.div
+          className="absolute top-56 left-8 p-3 backdrop-blur-sm rounded-xl"
+          style={{ 
+            backgroundColor: hasFootValveIssue ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+            border: `2px solid ${hasFootValveIssue ? 'rgba(239, 68, 68, 0.3)' : 'rgba(59, 130, 246, 0.3)'}` 
+          }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <div>
+            <p className="text-xs font-semibold" style={{ color: hasFootValveIssue ? '#EF4444' : '#3B82F6' }}>
+              SUCTION: {suctionHead}ft
+            </p>
+            <p className="text-xs mt-1" style={{ color: hasFootValveIssue ? '#EF4444' : '#3B82F6' }}>
+              Valve: {footValveCondition === 'good' ? '✓ Good' : '⚠ Leaking'}
+            </p>
           </div>
         </motion.div>
       )}
@@ -180,9 +233,115 @@ export default function BorewellAnimation({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <p className="text-xs font-semibold" style={{ color: THEME.accent }}>CASING</p>
-        <p className="text-sm font-bold" style={{ color: THEME.text }}>{borewellDiameter}" diameter</p>
+        <p className="text-xs font-semibold" style={{ color: THEME.accent }}>CASING DIA</p>
+        <p className="text-lg font-bold" style={{ color: THEME.text }}>{casingDiameter}"</p>
       </motion.div>
+
+      {/* Total Depth Card */}
+      {totalDepth > 0 && (
+        <motion.div
+          className="absolute top-8 right-8 p-4 backdrop-blur-sm rounded-xl"
+          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <p className="text-xs font-semibold" style={{ color: THEME.accent }}>TOTAL DEPTH</p>
+          <p className="text-lg font-bold" style={{ color: THEME.text }}>{totalDepth} ft</p>
+        </motion.div>
+      )}
+
+      {/* Source Type Badge */}
+      <motion.div
+        className="absolute top-8 left-1/2 -translate-x-1/2 px-4 py-2 backdrop-blur-sm rounded-full"
+        style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <div className="flex items-center gap-2">
+          <Database size={16} weight="duotone" color={THEME.accent} />
+          <span className="text-xs font-bold uppercase" style={{ color: THEME.text }}>
+            {sourceType.replace('-', ' ')}
+          </span>
+        </div>
+      </motion.div>
+
+      {/* Risk Indicators */}
+      {hasHighRisk && (
+        <motion.div
+          className="absolute top-32 left-8 p-3 backdrop-blur-sm rounded-xl"
+          style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '2px solid rgba(239, 68, 68, 0.3)' }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <div className="flex items-center gap-2">
+            <Warning size={20} weight="fill" color="#EF4444" />
+            <div>
+              <p className="text-xs font-semibold text-red-600">HIGH RISK</p>
+              <p className="text-xs text-red-500">
+                {dryRunRisk === 'high' ? 'Dry Run' : 'Seasonal Variance'}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Quality Issues Indicator */}
+      {hasQualityIssues && (
+        <motion.div
+          className="absolute bottom-32 left-8 p-3 backdrop-blur-sm rounded-xl"
+          style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', border: '2px solid rgba(245, 158, 11, 0.3)' }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="flex items-center gap-2">
+            <Shield size={20} weight="duotone" color="#F59E0B" />
+            <div>
+              <p className="text-xs font-semibold text-amber-600">QUALITY ALERT</p>
+              <div className="flex gap-1 mt-1">
+                {scalingRisk === 'high' && <span className="text-xs px-1 bg-amber-100 rounded">Scale</span>}
+                {ironContentRisk === 'high' && <span className="text-xs px-1 bg-amber-100 rounded">Iron</span>}
+                {abrasionRisk === 'high' && <span className="text-xs px-1 bg-amber-100 rounded">Abrasion</span>}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Number of Borewells Badge */}
+      {numberOfBorewells > 1 && (
+        <motion.div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 backdrop-blur-sm rounded-full"
+          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <span className="text-sm font-bold" style={{ color: THEME.text }}>
+            {numberOfBorewells} Sources
+          </span>
+        </motion.div>
+      )}
+
+      {/* Seasonal Variance Indicator */}
+      {seasonalVariance && seasonalVariance !== 'low' && (
+        <motion.div
+          className="absolute top-32 right-8 px-3 py-2 backdrop-blur-sm rounded-lg"
+          style={{ 
+            backgroundColor: seasonalVariance === 'high' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+            border: `2px solid ${seasonalVariance === 'high' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`
+          }}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <p className="text-xs font-semibold" style={{ color: seasonalVariance === 'high' ? '#EF4444' : '#F59E0B' }}>
+            {seasonalVariance === 'high' ? 'HIGH' : 'MEDIUM'} VARIANCE
+          </p>
+        </motion.div>
+      )}
     </div>
   );
 }

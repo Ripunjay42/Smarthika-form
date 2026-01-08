@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Pipe, Drop, ArrowRight, Cylinder } from '@phosphor-icons/react';
+import { Pipe, Drop, ArrowRight, Cylinder, Gauge, Warning, Wrench, Funnel, GitBranch } from '@phosphor-icons/react';
 
 const THEME = {
   accent: '#689F38',
@@ -13,12 +13,35 @@ const THEME = {
 
 export default function PipeAnimation({ 
   deliveryTarget = 'direct', 
-  tankHeight = 20,
-  mainPipeDiameter = 3,
-  pipeLength = 100
+  overheadTankHeight = 20,
+  tankCapacity = 0,
+  groundSumpDepth = 0,
+  sumpDistance = 0,
+  mainlineDiameter = 3,
+  totalPipeLength = 100,
+  mainlinePipeMaterial = 'PVC',
+  pipeCondition = 'new',
+  frictionHeadPenalty = 0,
+  numberOfElbows = 0,
+  flowmeterRequirement = false,
+  auxiliaryOutletNeed = false
 }) {
   const isTankDelivery = deliveryTarget === 'tank';
-  const tankHeightPixels = Math.min(tankHeight * 5, 180);
+  const isSumpDelivery = deliveryTarget === 'sump';
+  const tankHeightPixels = Math.min(overheadTankHeight * 5, 180);
+  
+  // Determine pipe color based on material
+  const pipeColors = {
+    'PVC': '#374151',
+    'HDPE': '#1F2937',
+    'GI': '#6B7280',
+    'MS': '#9CA3AF'
+  };
+  const pipeColor = pipeColors[mainlinePipeMaterial] || pipeColors['PVC'];
+  
+  // Determine if pipe has issues
+  const hasHighFriction = frictionHeadPenalty > 15;
+  const hasManyElbows = numberOfElbows > 10;
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
@@ -76,7 +99,7 @@ export default function PipeAnimation({
           
           {/* Pipe diameter indicator */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-xs font-bold text-white/70">{mainPipeDiameter}"</span>
+            <span className="text-xs font-bold text-white/70">{mainlineDiameter}"</span>
           </div>
         </motion.div>
 
@@ -225,7 +248,7 @@ export default function PipeAnimation({
             <Cylinder size={24} weight="duotone" color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>TANK HEIGHT</p>
-              <p className="text-sm font-bold" style={{ color: THEME.text }}>{tankHeight} ft</p>
+              <p className="text-sm font-bold" style={{ color: THEME.text }}>{overheadTankHeight} ft</p>
             </div>
           </div>
         </motion.div>
@@ -240,8 +263,146 @@ export default function PipeAnimation({
         transition={{ delay: 0.2 }}
       >
         <p className="text-xs font-semibold" style={{ color: THEME.accent }}>PIPE LENGTH</p>
-        <p className="text-sm font-bold" style={{ color: THEME.text }}>{pipeLength} ft</p>
+        <p className="text-sm font-bold" style={{ color: THEME.text }}>{totalPipeLength} ft</p>
       </motion.div>
+
+      {/* Pipe Material Card */}
+      <motion.div
+        className="absolute top-8 left-8 p-4 backdrop-blur-sm rounded-xl"
+        style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <p className="text-xs font-semibold" style={{ color: THEME.accent }}>MATERIAL</p>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded" style={{ backgroundColor: pipeColor }} />
+          <p className="text-sm font-bold" style={{ color: THEME.text }}>{mainlinePipeMaterial}</p>
+        </div>
+      </motion.div>
+
+      {/* Pipe Condition Warning */}
+      {pipeCondition === 'reusing' && (
+        <motion.div
+          className="absolute top-32 left-8 p-3 backdrop-blur-sm rounded-xl"
+          style={{ 
+            backgroundColor: hasHighFriction ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+            border: `2px solid ${hasHighFriction ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)'}` 
+          }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="flex items-center gap-2">
+            <Warning size={20} weight="fill" color={hasHighFriction ? '#EF4444' : '#F59E0B'} />
+            <div>
+              <p className="text-xs font-semibold" style={{ color: hasHighFriction ? '#EF4444' : '#F59E0B' }}>OLD PIPES</p>
+              <p className="text-xs" style={{ color: hasHighFriction ? '#EF4444' : '#F59E0B' }}>+{frictionHeadPenalty}% friction</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Elbows Indicator */}
+      {numberOfElbows > 0 && (
+        <motion.div
+          className="absolute top-56 left-8 p-3 backdrop-blur-sm rounded-xl"
+          style={{ 
+            backgroundColor: hasManyElbows ? 'rgba(245, 158, 11, 0.1)' : THEME.cardBg,
+            border: `2px solid ${hasManyElbows ? 'rgba(245, 158, 11, 0.3)' : THEME.cardBorder}` 
+          }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="flex items-center gap-2">
+            <GitBranch size={18} weight="duotone" color={hasManyElbows ? '#F59E0B' : THEME.accent} />
+            <div>
+              <p className="text-xs font-semibold" style={{ color: hasManyElbows ? '#F59E0B' : THEME.accent }}>ELBOWS</p>
+              <p className="text-sm font-bold" style={{ color: hasManyElbows ? '#F59E0B' : THEME.text }}>{numberOfElbows} bends</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Flowmeter Indicator */}
+      {flowmeterRequirement && (
+        <motion.div
+          className="absolute bottom-32 left-8 px-3 py-2 backdrop-blur-sm rounded-lg"
+          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <div className="flex items-center gap-2">
+            <Gauge size={16} weight="duotone" color={THEME.accent} />
+            <span className="text-xs font-bold" style={{ color: THEME.text }}>FLOWMETER</span>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Auxiliary Outlet Indicator */}
+      {auxiliaryOutletNeed && (
+        <motion.div
+          className="absolute top-56 right-8 px-3 py-2 backdrop-blur-sm rounded-lg"
+          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <div className="flex items-center gap-2">
+            <Wrench size={16} weight="duotone" color={THEME.accent} />
+            <span className="text-xs font-bold" style={{ color: THEME.text }}>AUX OUTLET</span>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Tank Capacity (when tank delivery) */}
+      {isTankDelivery && tankCapacity > 0 && (
+        <motion.div
+          className="absolute top-32 right-8 p-3 backdrop-blur-sm rounded-xl"
+          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.8 }}
+        >
+          <div className="flex items-center gap-2">
+            <Funnel size={18} weight="duotone" color={THEME.accent} />
+            <div>
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>CAPACITY</p>
+              <p className="text-sm font-bold" style={{ color: THEME.text }}>{tankCapacity}L</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Sump Details (when sump delivery) */}
+      {isSumpDelivery && (
+        <>
+          <motion.div
+            className="absolute bottom-32 right-8 p-3 backdrop-blur-sm rounded-xl"
+            style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+          >
+            <p className="text-xs font-semibold" style={{ color: THEME.accent }}>SUMP DEPTH</p>
+            <p className="text-sm font-bold" style={{ color: THEME.text }}>{groundSumpDepth} ft</p>
+          </motion.div>
+          {sumpDistance > 0 && (
+            <motion.div
+              className="absolute top-32 right-8 p-3 backdrop-blur-sm rounded-xl"
+              style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.9 }}
+            >
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>SUMP DISTANCE</p>
+              <p className="text-sm font-bold" style={{ color: THEME.text }}>{sumpDistance} ft</p>
+            </motion.div>
+          )}
+        </>
+      )}
     </div>
   );
 }

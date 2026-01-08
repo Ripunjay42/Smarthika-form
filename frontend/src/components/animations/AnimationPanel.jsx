@@ -1,5 +1,6 @@
 import { useFormContext } from '../../context/FormContext';
 import { MODULES } from '../../constants/formConstants';
+import { motion } from 'framer-motion';
 
 // Import all animation components from separate files
 import GlobeAnimation from './GlobeAnimation';
@@ -59,75 +60,137 @@ export default function AnimationPanel() {
     switch (moduleId) {
       case 'profile':
         return {
-          projectName: moduleData.projectName,
-          contactPerson: moduleData.contactPerson,
+          farmerName: moduleData.customerName,
+          whatsappNumber: moduleData.whatsappNumber,
+          laborCount: moduleData.laborCount || 0,
         };
       
       case 'canvas':
         return {
           topographyType: moduleData.topographyType,
-          soilType: moduleData.soilType,
-          landArea: moduleData.landArea,
+          soilType: moduleData.soilTextureTop,
+          totalArea: parseFloat(moduleData.totalArea) || 0,
+          fieldGeometry: moduleData.fieldGeometry,
+          sideLength: parseFloat(moduleData.sideDimensions?.length) || 0,
+          sideWidth: parseFloat(moduleData.sideDimensions?.width) || 0,
+          exclusionZones: moduleData.exclusionZones || 0,
+          slopePercentage: moduleData.slopePercentage || 0,
         };
       
       case 'heart':
         return {
-          staticLevel: moduleData.staticLevel || 0,
-          dynamicLevel: moduleData.dynamicLevel || 0,
-          waterQuality: moduleData.waterQuality,
-          borewellDepth: moduleData.borewellDepth || 0,
+          staticWaterLevel: parseFloat(moduleData.staticWaterLevel) || 0,
+          dynamicWaterLevel: parseFloat(moduleData.dynamicWaterLevel) || 0,
+          waterQuality: moduleData.waterQuality || 'clear',
+          totalDepth: parseFloat(moduleData.totalDepth) || 0,
+          casingDiameter: parseFloat(moduleData.casingDiameter) || 4,
+          sourceType: moduleData.sourceType || 'borewell',
+          seasonalVariance: moduleData.seasonalVariance || 'low',
+          dryRunRisk: moduleData.dryRunRisk || 'low',
+          scalingRisk: moduleData.scalingRisk || 'low',
+          ironContentRisk: moduleData.ironContentRisk || 'low',
+          abrasionRisk: moduleData.abrasionRisk || 'low',
+          numberOfBorewells: parseFloat(moduleData.numberOfBorewells) || 1,
+          suctionHead: parseFloat(moduleData.suctionHead) || 0,
+          footValveCondition: moduleData.footValveCondition || 'good',
         };
       
       case 'arteries':
         return {
           deliveryTarget: moduleData.deliveryTarget,
-          tankHeight: moduleData.tankHeight || 0,
-          pipeLength: moduleData.pipeLength || 0,
+          overheadTankHeight: parseFloat(moduleData.overheadTankHeight) || 20,
+          tankCapacity: parseFloat(moduleData.tankCapacity) || 0,
+          groundSumpDepth: parseFloat(moduleData.groundSumpDepth) || 0,
+          sumpDistance: parseFloat(moduleData.sumpDistance) || 0,
+          mainlinePipeMaterial: moduleData.mainlinePipeMaterial,
+          mainlineDiameter: parseFloat(moduleData.mainlineDiameter) || 3,
+          pipeCondition: moduleData.pipeCondition,
+          frictionHeadPenalty: parseFloat(moduleData.frictionHeadPenalty) || 0,
+          totalPipeLength: parseFloat(moduleData.totalPipeLength) || 100,
+          numberOfElbows: parseFloat(moduleData.numberOfElbows) || 0,
+          flowmeterRequirement: moduleData.flowmeterRequirement || false,
+          auxiliaryOutletNeed: moduleData.auxiliaryOutletNeed || false,
         };
       
       case 'pulse':
         return {
-          voltage: moduleData.voltage || 0,
-          stability: moduleData.stability,
-          phaseType: moduleData.phaseType,
+          averageGridVoltage: parseFloat(moduleData.averageGridVoltage) || 400,
+          voltageStability: moduleData.voltageStability,
+          primaryEnergySource: moduleData.primaryEnergySource,
+          gridPhase: moduleData.gridPhase,
+          solarSystemVoltage: parseFloat(moduleData.solarSystemVoltage) || 0,
+          lowVoltageCutoff: moduleData.lowVoltageCutoff || false,
+          highVoltageSurge: moduleData.highVoltageSurge || false,
+          dailyAvailability: parseFloat(moduleData.dailyAvailability) || 24,
+          powerSchedule: moduleData.powerSchedule,
+          wiringHealth: moduleData.wiringHealth,
+          cableUpgradeRequired: moduleData.cableUpgradeRequired || false,
+          distanceMeterToBorewell: parseFloat(moduleData.distanceMeterToBorewell) || 0,
+          generatorOwnership: moduleData.generatorOwnership || false,
+          evChargingNeed: moduleData.evChargingNeed || false,
         };
       
       case 'shelter':
         return {
-          shelterType: moduleData.shelterType,
-          signalStrength: moduleData.signalStrength,
-          shelterSize: moduleData.shelterSize,
+          shelterType: moduleData.shelterStructure,
+          cellularSignalStrength: moduleData.mobileSignalStrength,
+          ipRatingRequirement: moduleData.ipRatingRequirement,
+          heatBuildupRisk: moduleData.heatBuildupRisk,
+          wallSpaceAvailable: moduleData.wallSpaceAvailable,
+          theftRiskLevel: moduleData.theftRiskLevel,
+          antiTheftHardwareNeed: moduleData.antiTheftHardwareNeed || false,
+          lightningArrestor: moduleData.lightningArrestor,
+          earthingPit: moduleData.earthingPit,
+          installationPreference: moduleData.installationPreference,
+          liftingGearAvailability: moduleData.liftingGearAvailability,
+          siteAccessibility: moduleData.siteAccessibility,
         };
       
       case 'biology':
         return {
-          cropType: moduleData.cropType,
-          plantSpacing: moduleData.plantSpacing || 0,
-          cropAge: moduleData.cropAge || 0,
-          irrigationType: moduleData.irrigationType,
+          primaryCropType: moduleData.primaryCropType,
+          secondaryCropType: moduleData.secondaryCropType,
+          croppingPattern: moduleData.croppingPattern,
+          rowCount: parseFloat(moduleData.rowCount) || 0,
+          plantSpacing: parseFloat(moduleData.plantSpacing) || 10,
+          tractorAccessRequirement: moduleData.tractorAccessRequirement || false,
+          totalPlantCount: parseFloat(moduleData.totalPlantCount) || 0,
+          cropAge: moduleData.cropAge,
+          peakWaterDemand: parseFloat(moduleData.peakWaterDemand) || 0,
+          irrigationMethod: moduleData.irrigationMethod,
+          requiredDischarge: parseFloat(moduleData.requiredDischarge) || 0,
+          numberOfZones: parseFloat(moduleData.numberOfZones) || 1,
+          filtrationRequirement: moduleData.filtrationRequirement,
+          slurryFertigationUsage: moduleData.slurryFertigationUsage || false,
         };
       
       case 'baseline':
         return {
           projectType: moduleData.projectType,
-          pumpAge: moduleData.pumpAge || 0,
-          burnoutFrequency: moduleData.burnoutFrequency || 0,
-          efficiencyGap: moduleData.efficiencyGap || 0,
+          oldPumpType: moduleData.oldPumpType,
+          oldPumpAge: parseFloat(moduleData.oldPumpAge) || 0,
+          burnoutFrequency: parseFloat(moduleData.burnoutFrequency) || 0,
+          efficiencyGap: parseFloat(moduleData.efficiencyGap) || 0,
+          pipeReuseStatus: moduleData.pipeReuseStatus || false,
+          footValveCondition: moduleData.footValveCondition,
         };
       
       case 'shed':
         return {
-          selectedEquipment: moduleData.selectedEquipment || [],
-          equipmentCondition: moduleData.equipmentCondition || {},
-          equipmentNotes: moduleData.equipmentNotes || {},
+          tractorOwnership: moduleData.tractorOwnership || false,
+          droneOwnership: moduleData.droneOwnership || false,
+          sprayerOwnership: moduleData.sprayerOwnership || false,
+          evStatus: moduleData.evStatus || false,
+          harvestMonths: moduleData.harvestMonths || [],
         };
       
       case 'vision':
         return {
-          plantingMonth: moduleData.plantingMonth || 0,
-          harvestMonth: moduleData.harvestMonth || 6,
-          expectedYield: moduleData.expectedYield || 0,
-          yieldUnit: moduleData.yieldUnit || 'tonnes/acre',
+          laborPainScore: parseFloat(moduleData.laborPainScore) || 0,
+          targetLER: parseFloat(moduleData.targetLER) || 1.0,
+          organicFarmingInterest: moduleData.organicFarmingInterest || false,
+          polyhouseStatus: moduleData.polyhouseStatus || 'none',
+          aquacultureStatus: moduleData.aquacultureStatus || 'none',
         };
       
       default:
@@ -137,7 +200,16 @@ export default function AnimationPanel() {
 
   return (
     <div className="w-full h-full overflow-hidden rounded-2xl" style={{ backgroundColor: '#EDEDE7' }}>
-      <AnimationComponent {...getAnimationProps()} />
+      <motion.div
+        key={moduleId}
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 50, opacity: 0 }}
+        transition={{ duration: 0.4, ease: 'easeInOut' }}
+        className="w-full h-full"
+      >
+        <AnimationComponent {...getAnimationProps()} />
+      </motion.div>
     </div>
   );
 }

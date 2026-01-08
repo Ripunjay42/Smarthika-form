@@ -247,12 +247,15 @@ export default function ShedForm() {
         >
           <h4 className="text-sm font-semibold text-purple-800 mb-3">🎯 Opportunity Signals</h4>
           <div className="space-y-2">
-            {equipment.filter(e => data[e.key]).map((item) => (
-              <div key={item.key} className="flex items-center gap-2 text-sm text-purple-700">
-                <span className="text-lg">{item.icon}</span>
-                <span>{item.opportunity}</span>
-              </div>
-            ))}
+            {equipment.filter(e => data[e.key]).map((item) => {
+              const ItemIcon = item.icon;
+              return (
+                <div key={item.key} className="flex items-center gap-2 text-sm text-purple-700">
+                  <ItemIcon size={18} weight="duotone" color="#7C3AED" />
+                  <span>{item.opportunity}</span>
+                </div>
+              );
+            })}
           </div>
         </motion.div>
       )}

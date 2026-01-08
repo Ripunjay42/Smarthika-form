@@ -35,7 +35,7 @@ export function FormInput({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full px-4 py-3 rounded-xl backdrop-blur-sm transition-all duration-200 focus:outline-none ${Icon ? 'pl-11' : ''}`}
+          className={`w-full px-4 py-3 rounded-xl backdrop-blur-sm transition-all duration-200 outline-none focus:outline-none ${Icon ? 'pl-11' : ''}`}
           style={{
             backgroundColor: '#EDEDE7',
             border: error ? '2px solid #ef4444' : '2px solid rgba(104, 159, 56, 0.25)',
@@ -99,7 +99,7 @@ export function FormSelect({
           name={name}
           value={value}
           onChange={onChange}
-          className={`w-full px-4 py-3 rounded-xl transition-all duration-200 focus:outline-none appearance-none cursor-pointer ${Icon ? 'pl-11' : ''}`}
+          className={`w-full px-4 py-3 rounded-xl transition-all duration-200 outline-none focus:outline-none appearance-none cursor-pointer ${Icon ? 'pl-11' : ''}`}
           style={{
             backgroundColor: '#EDEDE7',
             border: error ? '2px solid #ef4444' : '2px solid rgba(104, 159, 56, 0.25)',

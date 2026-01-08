@@ -104,7 +104,7 @@ export default function BaselineForm() {
           {/* Old Pump Info */}
           <div className="p-4 bg-orange-50 rounded-xl border border-orange-200 space-y-4">
             <div className="flex items-center gap-2 text-orange-700">
-              <RefreshCw size={20} />
+              <ArrowsCounterClockwise size={20} />
               <span className="font-medium">Current System Details</span>
             </div>
 

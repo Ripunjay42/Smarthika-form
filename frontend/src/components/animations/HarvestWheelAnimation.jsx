@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Calendar, ChartLine, Sun, CloudRain, Leaf, Flower, Grains, CalendarCheck, Plant } from '@phosphor-icons/react';
+import { Target, TrendUp, Heart, Plant, Leaf, Sun, CheckCircle, Warning, FishSimple, Sparkle, ChartLine } from '@phosphor-icons/react';
 
 const THEME = {
   accent: '#689F38',
@@ -11,261 +11,292 @@ const THEME = {
   cardBorder: 'rgba(104, 159, 56, 0.3)',
 };
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-const SEASON_ICONS = {
-  spring: Flower,
-  summer: Sun,
-  monsoon: CloudRain,
-  autumn: Leaf,
-  winter: Grains,
-};
-
-const getSeasonForMonth = (monthIndex) => {
-  if (monthIndex >= 2 && monthIndex <= 4) return 'spring';
-  if (monthIndex >= 5 && monthIndex <= 6) return 'summer';
-  if (monthIndex >= 7 && monthIndex <= 9) return 'monsoon';
-  if (monthIndex >= 10 && monthIndex <= 11) return 'autumn';
-  return 'winter';
-};
-
-const getSeasonColor = (season) => {
-  switch(season) {
-    case 'spring': return '#F472B6';
-    case 'summer': return '#FBBF24';
-    case 'monsoon': return '#3B82F6';
-    case 'autumn': return '#F97316';
-    case 'winter': return '#A78BFA';
-    default: return THEME.accent;
-  }
-};
-
 export default function HarvestWheelAnimation({ 
-  plantingMonth = 0,
-  harvestMonth = 6,
-  expectedYield = 0,
-  yieldUnit = 'tonnes/acre'
+  laborPainScore = 5,
+  targetLER = 1.2,
+  organicFarmingInterest = false,
+  polyhouseStatus = 'none',
+  aquacultureStatus = 'none'
 }) {
-  const radius = 120;
-  const innerRadius = 60;
-  const centerX = 150;
-  const centerY = 150;
+  // Map labor pain score (0-10) to angle for gauge
+  const painAngle = (laborPainScore / 10) * 180 - 90;
+  const isPainHigh = laborPainScore >= 7;
+  const isPainMedium = laborPainScore >= 4 && laborPainScore < 7;
+  const isPainLow = laborPainScore < 4;
 
-  const getPointOnCircle = (index, r) => {
-    const angle = (index * 30 - 90) * (Math.PI / 180);
-    return {
-      x: centerX + r * Math.cos(angle),
-      y: centerY + r * Math.sin(angle)
-    };
-  };
+  // Calculate expansion activity
+  const hasPolyhouse = polyhouseStatus === 'own' || polyhouseStatus === 'planned';
+  const hasAquaculture = aquacultureStatus === 'own' || aquacultureStatus === 'planned';
+  const expansionCount = (hasPolyhouse ? 1 : 0) + (hasAquaculture ? 1 : 0);
+  const isExpanding = expansionCount > 0;
 
-  // Create arc path between months
-  const createArcPath = (startMonth, endMonth) => {
-    const startAngle = (startMonth * 30 - 90) * (Math.PI / 180);
-    const endAngle = (endMonth * 30 - 90) * (Math.PI / 180);
-    const largeArc = endMonth - startMonth > 6 ? 1 : 0;
-    
-    const startX = centerX + radius * Math.cos(startAngle);
-    const startY = centerY + radius * Math.sin(startAngle);
-    const endX = centerX + radius * Math.cos(endAngle);
-    const endY = centerY + radius * Math.sin(endAngle);
-    
-    return `M ${startX} ${startY} A ${radius} ${radius} 0 ${largeArc} 1 ${endX} ${endY}`;
+  // Calculate automation ROI signal
+  const automationPriority = laborPainScore >= 7 ? 'high' : laborPainScore >= 4 ? 'medium' : 'low';
+  const yieldAmbition = targetLER >= 1.8 ? 'intensive' : targetLER >= 1.3 ? 'high' : 'standard';
+  
+  // Get status labels
+  const getStatusLabel = (status) => {
+    if (status === 'own') return 'Owned';
+    if (status === 'planned') return 'Planned';
+    return 'None';
   };
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
-      {/* Calendar Wheel SVG */}
-      <svg viewBox="0 0 300 300" className="w-72 h-72">
-        {/* Outer Ring */}
-        <motion.circle
-          cx={centerX}
-          cy={centerY}
-          r={radius}
-          fill="none"
-          stroke={THEME.cardBorder}
-          strokeWidth="30"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1 }}
-        />
+      {/* Vision Metrics Dashboard */}
+      <div className="relative w-full h-full flex flex-col items-center justify-center gap-8 p-8">
         
-        {/* Growing Season Arc */}
-        <motion.path
-          d={createArcPath(plantingMonth, harvestMonth)}
-          fill="none"
-          stroke={THEME.accent}
-          strokeWidth="30"
-          strokeLinecap="round"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
-        />
-
-        {/* Month Markers */}
-        {MONTHS.map((month, index) => {
-          const point = getPointOnCircle(index, radius);
-          const labelPoint = getPointOnCircle(index, radius + 24);
-          const isPlanting = index === plantingMonth;
-          const isHarvest = index === harvestMonth;
-          const isInSeason = index >= plantingMonth && index <= harvestMonth;
-          const season = getSeasonForMonth(index);
-          const SeasonIcon = SEASON_ICONS[season];
-          
-          return (
-            <g key={month}>
-              {/* Month Dot */}
-              <motion.circle
-                cx={point.x}
-                cy={point.y}
-                r={isPlanting || isHarvest ? 10 : 5}
-                fill={isPlanting ? '#22C55E' : isHarvest ? '#F59E0B' : isInSeason ? THEME.accent : '#9CA3AF'}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: index * 0.05 + 0.3 }}
+        {/* Labor Pain Gauge */}
+        <div className="relative w-64 h-64">
+          <div 
+            className="absolute inset-0 rounded-full shadow-2xl"
+            style={{ 
+              background: 'linear-gradient(to bottom, #FAF0BF, #EDEDE7)', 
+              border: `4px solid ${THEME.cardBorder}` 
+            }}
+          >
+            {/* Gauge Arc */}
+            <svg className="absolute inset-4" viewBox="0 0 200 200">
+              {/* Low Pain - Green */}
+              <path
+                d="M 35 145 A 75 75 0 0 1 75 55"
+                fill="none"
+                stroke="#22C55E"
+                strokeWidth="12"
+                strokeLinecap="round"
+              />
+              {/* Medium Pain - Yellow */}
+              <path
+                d="M 75 55 A 75 75 0 0 1 125 55"
+                fill="none"
+                stroke="#F59E0B"
+                strokeWidth="12"
+                strokeLinecap="round"
+              />
+              {/* High Pain - Red */}
+              <path
+                d="M 125 55 A 75 75 0 0 1 165 145"
+                fill="none"
+                stroke="#EF4444"
+                strokeWidth="12"
+                strokeLinecap="round"
               />
               
-              {/* Month Label */}
-              <motion.text
-                x={labelPoint.x}
-                y={labelPoint.y}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="9"
-                fontWeight={isPlanting || isHarvest ? 'bold' : 'normal'}
-                fill={isPlanting ? '#22C55E' : isHarvest ? '#F59E0B' : THEME.textLight}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: index * 0.05 + 0.5 }}
+              {/* Needle */}
+              <motion.line
+                x1="100"
+                y1="100"
+                x2="100"
+                y2="35"
+                stroke={isPainHigh ? '#EF4444' : isPainMedium ? '#F59E0B' : '#22C55E'}
+                strokeWidth="4"
+                strokeLinecap="round"
+                style={{ transformOrigin: 'center' }}
+                animate={{ rotate: painAngle }}
+                transition={{ duration: 1, type: 'spring' }}
+              />
+              <circle cx="100" cy="100" r="8" fill={THEME.accent} />
+            </svg>
+
+            {/* Pain Score Display */}
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 text-center">
+              <motion.span
+                className="text-4xl font-bold"
+                style={{ color: isPainHigh ? '#EF4444' : isPainMedium ? '#F59E0B' : '#22C55E' }}
+                key={laborPainScore}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
               >
-                {month}
-              </motion.text>
+                {laborPainScore}
+              </motion.span>
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>PAIN SCORE</p>
+            </div>
 
-              {/* Planting/Harvest Icon */}
-              {isPlanting && (
-                <motion.g
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 1, type: 'spring' }}
-                >
-                  <circle cx={point.x} cy={point.y - 20} r="12" fill="#22C55E" />
-                  {/* Seedling icon path */}
-                  <g transform={`translate(${point.x - 6}, ${point.y - 26})`}>
-                    <path d="M6 12V8M6 8C6 8 4 6 2 6C2 8 4 8 6 8ZM6 8C6 8 8 6 10 6C10 8 8 8 6 8Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                  </g>
-                </motion.g>
-              )}
-              {isHarvest && (
-                <motion.g
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 1.2, type: 'spring' }}
-                >
-                  <circle cx={point.x} cy={point.y - 20} r="12" fill="#F59E0B" />
-                  {/* Wheat/grain icon path */}
-                  <g transform={`translate(${point.x - 6}, ${point.y - 26})`}>
-                    <path d="M6 12V6M3 3L6 6L9 3M2 5L6 8L10 5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                  </g>
-                </motion.g>
-              )}
-            </g>
-          );
-        })}
+            {/* Scale Labels */}
+            <span className="absolute bottom-2 left-4 text-xs font-medium text-green-600">Easy</span>
+            <span className="absolute bottom-2 right-4 text-xs font-medium text-red-600">Hard</span>
+          </div>
 
-        {/* Center Circle */}
-        <motion.circle
-          cx={centerX}
-          cy={centerY}
-          r={innerRadius}
-          fill={THEME.background}
-          stroke={THEME.cardBorder}
-          strokeWidth="2"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2 }}
-        />
-      </svg>
-
-      {/* Center Content */}
-      <motion.div
-        className="absolute flex flex-col items-center justify-center"
-        style={{ width: innerRadius * 2 - 20 }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-      >
-        <Calendar size={28} weight="duotone" color={THEME.accent} />
-        <p className="text-lg font-bold mt-1" style={{ color: THEME.text }}>
-          {harvestMonth - plantingMonth} mo
-        </p>
-        <p className="text-xs" style={{ color: THEME.textLight }}>Growth Cycle</p>
-      </motion.div>
-
-      {/* Legend */}
-      <motion.div
-        className="absolute top-8 left-1/2 -translate-x-1/2 px-5 py-3 backdrop-blur-sm rounded-full flex gap-5"
-        style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-green-500" />
-          <span className="text-xs font-medium" style={{ color: THEME.textLight }}>Planting</span>
+          {/* Labor Status Icon */}
+          <motion.div
+            className="absolute -top-6 left-1/2 -translate-x-1/2"
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <Heart size={40} weight="duotone" color={isPainHigh ? '#EF4444' : THEME.accent} />
+          </motion.div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-amber-500" />
-          <span className="text-xs font-medium" style={{ color: THEME.textLight }}>Harvest</span>
-        </div>
-      </motion.div>
 
-      {/* Yield Card */}
-      {expectedYield > 0 && (
+        {/* Bottom Metrics Grid */}
+        <div className="grid grid-cols-4 gap-4">
+          {/* Target LER Card */}
+          <motion.div
+            className="px-5 py-4 backdrop-blur-sm rounded-xl"
+            style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className="flex flex-col items-center gap-2">
+              <TrendUp size={24} weight="duotone" color={THEME.accent} />
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>TARGET LER</p>
+              <p className="text-2xl font-bold" style={{ color: THEME.text }}>{targetLER.toFixed(1)}</p>
+              <span className="text-xs font-medium" style={{ color: THEME.textLight }}>
+                {yieldAmbition === 'intensive' ? '🌟 Intensive' : yieldAmbition === 'high' ? '📈 High' : '📊 Standard'}
+              </span>
+            </div>
+          </motion.div>
+
+          {/* Organic Farming Card */}
+          <motion.div
+            className="px-5 py-4 backdrop-blur-sm rounded-xl"
+            style={{ 
+              backgroundColor: organicFarmingInterest ? 'rgba(34, 197, 94, 0.1)' : THEME.cardBg,
+              border: `2px solid ${organicFarmingInterest ? 'rgba(34, 197, 94, 0.3)' : THEME.cardBorder}` 
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="flex flex-col items-center gap-2">
+              <Leaf size={24} weight="duotone" color={organicFarmingInterest ? '#22C55E' : THEME.accent} />
+              <p className="text-xs font-semibold" style={{ color: organicFarmingInterest ? '#22C55E' : THEME.accent }}>
+                ORGANIC
+              </p>
+              <p className="text-lg font-bold" style={{ color: organicFarmingInterest ? '#22C55E' : THEME.text }}>
+                {organicFarmingInterest ? '✓ Yes' : 'No'}
+              </p>
+              {organicFarmingInterest && (
+                <span className="text-xs text-green-600">Premium 💰</span>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Polyhouse Card */}
+          <motion.div
+            className="px-5 py-4 backdrop-blur-sm rounded-xl"
+            style={{ 
+              backgroundColor: hasPolyhouse ? 'rgba(59, 130, 246, 0.1)' : THEME.cardBg,
+              border: `2px solid ${hasPolyhouse ? 'rgba(59, 130, 246, 0.3)' : THEME.cardBorder}` 
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <div className="flex flex-col items-center gap-2">
+              <Sun size={24} weight="duotone" color={hasPolyhouse ? '#3B82F6' : THEME.accent} />
+              <p className="text-xs font-semibold" style={{ color: hasPolyhouse ? '#3B82F6' : THEME.accent }}>
+                POLYHOUSE
+              </p>
+              <p className="text-lg font-bold" style={{ color: hasPolyhouse ? '#3B82F6' : THEME.text }}>
+                {getStatusLabel(polyhouseStatus)}
+              </p>
+              {polyhouseStatus === 'planned' && (
+                <span className="text-xs text-blue-600">🚀 Coming</span>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Aquaculture Card */}
+          <motion.div
+            className="px-5 py-4 backdrop-blur-sm rounded-xl"
+            style={{ 
+              backgroundColor: hasAquaculture ? 'rgba(6, 182, 212, 0.1)' : THEME.cardBg,
+              border: `2px solid ${hasAquaculture ? 'rgba(6, 182, 212, 0.3)' : THEME.cardBorder}` 
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <div className="flex flex-col items-center gap-2">
+              <FishSimple size={24} weight="duotone" color={hasAquaculture ? '#06B6D4' : THEME.accent} />
+              <p className="text-xs font-semibold" style={{ color: hasAquaculture ? '#06B6D4' : THEME.accent }}>
+                AQUACULTURE
+              </p>
+              <p className="text-lg font-bold" style={{ color: hasAquaculture ? '#06B6D4' : THEME.text }}>
+                {getStatusLabel(aquacultureStatus)}
+              </p>
+              {aquacultureStatus === 'planned' && (
+                <span className="text-xs text-cyan-600">🚀 Coming</span>
+              )}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Automation ROI Signal */}
         <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 px-5 py-3 backdrop-blur-sm rounded-xl flex items-center gap-3"
+          className="absolute top-8 right-8 px-4 py-3 backdrop-blur-sm rounded-xl"
+          style={{ 
+            backgroundColor: automationPriority === 'high' ? 'rgba(239, 68, 68, 0.1)' : 
+                           automationPriority === 'medium' ? 'rgba(245, 158, 11, 0.1)' : 
+                           'rgba(34, 197, 94, 0.1)',
+            border: `2px solid ${automationPriority === 'high' ? 'rgba(239, 68, 68, 0.3)' : 
+                                 automationPriority === 'medium' ? 'rgba(245, 158, 11, 0.3)' : 
+                                 'rgba(34, 197, 94, 0.3)'}` 
+          }}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+        >
+          <div className="flex items-center gap-2">
+            <ChartLine 
+              size={20} 
+              weight="duotone" 
+              color={automationPriority === 'high' ? '#EF4444' : 
+                     automationPriority === 'medium' ? '#F59E0B' : '#22C55E'} 
+            />
+            <div>
+              <p className="text-xs font-semibold" 
+                 style={{ color: automationPriority === 'high' ? '#EF4444' : 
+                                automationPriority === 'medium' ? '#F59E0B' : '#22C55E' }}>
+                {automationPriority.toUpperCase()} ROI
+              </p>
+              <p className="text-xs" style={{ color: THEME.textLight }}>
+                {automationPriority === 'high' ? 'Strong automation case' : 
+                 automationPriority === 'medium' ? 'Moderate automation value' : 
+                 'Manual farming viable'}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Expansion Summary */}
+        {isExpanding && (
+          <motion.div
+            className="absolute top-8 left-8 px-4 py-3 backdrop-blur-sm rounded-xl"
+            style={{ backgroundColor: 'rgba(139, 92, 246, 0.1)', border: '2px solid rgba(139, 92, 246, 0.3)' }}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <div className="flex items-center gap-2">
+              <Sparkle size={20} weight="duotone" color="#8B5CF6" />
+              <div>
+                <p className="text-xs font-semibold text-purple-700">EXPANSION PLANS</p>
+                <p className="text-xs text-purple-600">
+                  {expansionCount} project{expansionCount > 1 ? 's' : ''} planned
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Vision Status Message */}
+        <motion.div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 backdrop-blur-sm rounded-xl"
           style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <ChartLine size={24} weight="duotone" color={THEME.accent} />
-          <div>
-            <p className="text-xs font-semibold" style={{ color: THEME.accent }}>EXPECTED YIELD</p>
-            <p className="text-lg font-bold" style={{ color: THEME.text }}>
-              {expectedYield} {yieldUnit}
+          <div className="flex items-center gap-2">
+            <Target size={20} weight="duotone" color={THEME.accent} />
+            <p className="text-sm font-semibold" style={{ color: THEME.text }}>
+              {organicFarmingInterest && isExpanding ? '🌟 Premium Growth Strategy' :
+               organicFarmingInterest ? '🌿 Sustainable Focus' :
+               isExpanding ? '🚀 Expansion Mode' :
+               '📊 Standard Operations'}
             </p>
           </div>
         </motion.div>
-      )}
-
-      {/* Season Icons Around */}
-      {Object.entries(SEASON_ICONS).map(([season, Icon], index) => {
-        const positions = [
-          { top: '20%', left: '10%' },
-          { top: '20%', right: '10%' },
-          { bottom: '20%', right: '10%' },
-          { bottom: '20%', left: '10%' },
-          { top: '50%', left: '5%' },
-        ];
-        const pos = positions[index] || positions[0];
-        
-        return (
-          <motion.div
-            key={season}
-            className="absolute opacity-20"
-            style={pos}
-            animate={{ 
-              y: [0, -8, 0],
-              opacity: [0.15, 0.25, 0.15]
-            }}
-            transition={{ 
-              duration: 3 + index, 
-              repeat: Infinity,
-              delay: index * 0.3
-            }}
-          >
-            <Icon size={28} weight="duotone" color={getSeasonColor(season)} />
-          </motion.div>
-        );
-      })}
+      </div>
     </div>
   );
 }

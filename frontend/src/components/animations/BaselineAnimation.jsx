@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Lightning, Wrench, Sparkle } from '@phosphor-icons/react';
+import { ArrowRight, Lightning, Wrench, Sparkle, Warning, Drop, CheckCircle, Pipe } from '@phosphor-icons/react';
 
 const THEME = {
   accent: '#689F38',
@@ -13,13 +13,18 @@ const THEME = {
 
 export default function BaselineAnimation({ 
   projectType = 'greenfield', 
-  pumpAge = 0,
+  oldPumpType = 'monoblock',
+  oldPumpAge = 0,
   burnoutFrequency = 0,
-  efficiencyGap = 0
+  efficiencyGap = 0,
+  pipeReuseStatus = false,
+  footValveCondition = 'good'
 }) {
   const isRetrofit = projectType === 'retrofit';
-  const agePercentage = Math.min((pumpAge / 15) * 100, 100);
-  const rustIntensity = Math.min(pumpAge * 0.05, 0.5);
+  const agePercentage = Math.min((oldPumpAge / 15) * 100, 100);
+  const rustIntensity = Math.min(oldPumpAge * 0.05, 0.5);
+  const hasPipeIssues = pipeReuseStatus || footValveCondition !== 'good';
+  const hasHighBurnout = burnoutFrequency >= 3;
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
@@ -54,7 +59,8 @@ export default function BaselineAnimation({
                 transition={{ duration: 2.5, repeat: Infinity }}
               >
                 {/* OLD Label */}
-                <span className="text-xs font-bold text-red-400 mb-2">OLD PUMP</span>
+                <span className="text-xs font-bold text-red-400 mb-1">OLD PUMP</span>
+                <span className="text-xs text-gray-400 mb-2 capitalize">{oldPumpType}</span>
                 
                 {/* Wrench Icon */}
                 <Wrench size={32} weight="duotone" color="#9CA3AF" />
@@ -63,7 +69,7 @@ export default function BaselineAnimation({
                 <div className="absolute bottom-3 left-3 right-3">
                   <div className="flex justify-between text-xs mb-1">
                     <span style={{ color: THEME.textLight }}>Age</span>
-                    <span className="text-red-400">{pumpAge} yrs</span>
+                    <span className="text-red-400">{oldPumpAge} yrs</span>
                   </div>
                   <div className="h-1.5 bg-gray-600 rounded-full overflow-hidden">
                     <motion.div 
@@ -205,19 +211,108 @@ export default function BaselineAnimation({
             <motion.div
               className="absolute bottom-8 right-8 p-4 backdrop-blur-sm rounded-xl"
               style={{ 
-                backgroundColor: burnoutFrequency >= 3 ? 'rgba(239, 68, 68, 0.1)' : THEME.cardBg, 
-                border: `2px solid ${burnoutFrequency >= 3 ? 'rgba(239, 68, 68, 0.3)' : THEME.cardBorder}` 
+                backgroundColor: hasHighBurnout ? 'rgba(239, 68, 68, 0.1)' : THEME.cardBg, 
+                border: `2px solid ${hasHighBurnout ? 'rgba(239, 68, 68, 0.3)' : THEME.cardBorder}` 
               }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <p className="text-xs font-semibold" style={{ color: burnoutFrequency >= 3 ? '#EF4444' : THEME.accent }}>
+              <p className="text-xs font-semibold" style={{ color: hasHighBurnout ? '#EF4444' : THEME.accent }}>
                 BURNOUT ISSUES
               </p>
-              <p className="text-lg font-bold" style={{ color: burnoutFrequency >= 3 ? '#EF4444' : THEME.text }}>
-                {burnoutFrequency}x / year
+              <p className="text-lg font-bold" style={{ color: hasHighBurnout ? '#EF4444' : THEME.text }}>
+                {burnoutFrequency}x / 5yrs
               </p>
+            </motion.div>
+          )}
+
+          {/* Pipe Reuse Status */}
+          {pipeReuseStatus && (
+            <motion.div
+              className="absolute top-32 left-8 p-3 backdrop-blur-sm rounded-xl"
+              style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', border: '2px solid rgba(245, 158, 11, 0.3)' }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="flex items-center gap-2">
+                <Pipe size={18} weight="duotone" color="#F59E0B" />
+                <div>
+                  <p className="text-xs font-semibold text-yellow-700">REUSING PIPES</p>
+                  <p className="text-xs text-yellow-600">Friction penalty</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Foot Valve Condition */}
+          {footValveCondition && footValveCondition !== 'good' && (
+            <motion.div
+              className="absolute top-56 left-8 p-3 backdrop-blur-sm rounded-xl"
+              style={{ 
+                backgroundColor: footValveCondition === 'replace' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+                border: `2px solid ${footValveCondition === 'replace' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)'}` 
+              }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="flex items-center gap-2">
+                <Drop size={18} weight="duotone" color={footValveCondition === 'replace' ? '#EF4444' : '#F59E0B'} />
+                <div>
+                  <p className="text-xs font-semibold" style={{ color: footValveCondition === 'replace' ? '#EF4444' : '#F59E0B' }}>
+                    FOOT VALVE
+                  </p>
+                  <p className="text-xs capitalize" style={{ color: footValveCondition === 'replace' ? '#EF4444' : '#F59E0B' }}>
+                    {footValveCondition}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* System Health Summary */}
+          <motion.div
+            className="absolute top-32 right-8 p-3 backdrop-blur-sm rounded-xl"
+            style={{ 
+              backgroundColor: (hasHighBurnout || hasPipeIssues) ? 'rgba(239, 68, 68, 0.1)' : THEME.cardBg,
+              border: `2px solid ${(hasHighBurnout || hasPipeIssues) ? 'rgba(239, 68, 68, 0.3)' : THEME.cardBorder}` 
+            }}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <div className="flex items-center gap-2">
+              {(hasHighBurnout || hasPipeIssues) ? (
+                <Warning size={20} weight="fill" color="#EF4444" />
+              ) : (
+                <CheckCircle size={20} weight="fill" color={THEME.accent} />
+              )}
+              <div>
+                <p className="text-xs font-semibold" style={{ color: (hasHighBurnout || hasPipeIssues) ? '#EF4444' : THEME.accent }}>
+                  SYSTEM HEALTH
+                </p>
+                <p className="text-xs" style={{ color: (hasHighBurnout || hasPipeIssues) ? '#EF4444' : THEME.text }}>
+                  {(hasHighBurnout || hasPipeIssues) ? 'Needs Attention' : 'Good'}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* ROI Projection */}
+          {efficiencyGap >= 20 && (
+            <motion.div
+              className="absolute bottom-32 left-1/2 -translate-x-1/2 p-3 backdrop-blur-sm rounded-xl"
+              style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <div className="text-center">
+                <p className="text-xs font-semibold" style={{ color: THEME.accent }}>HIGH ROI POTENTIAL</p>
+                <p className="text-lg font-bold" style={{ color: THEME.text }}>💰 {Math.round(efficiencyGap * 1.5)}% savings</p>
+              </div>
             </motion.div>
           )}
         </>
