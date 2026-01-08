@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ArrowLeft, CheckCircle } from '@phosphor-icons/react';
+import { ArrowRight, ArrowLeft, CheckCircle, PaperPlaneTilt, Warning } from '@phosphor-icons/react';
 import { useFormContext } from '../../context/FormContext';
 import { MODULES } from '../../constants/formConstants';
+import { submitToGoogleSheets, validateFormData } from '../../services/googleSheets';
 import {
   ProfileForm,
   CanvasForm,
@@ -34,8 +36,13 @@ export default function FormPanel() {
     nextModule, 
     prevModule, 
     completeModule,
-    completedModules 
+    completedModules,
+    formData
   } = useFormContext();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   const CurrentForm = formComponents[currentModule];
   const isLastModule = currentModule === MODULES.length - 1;
@@ -48,11 +55,45 @@ export default function FormPanel() {
     }
   };
 
-  const handleSubmit = () => {
-    completeModule(currentModule);
-    // Handle final submission
-    alert('Form submitted successfully! Check console for data.');
-    console.log('Form data ready for submission');
+  const handleSubmit = async () => {
+    // Validate form data
+    const validation = validateFormData(formData);
+    
+    if (!validation.isValid) {
+      setSubmitError(validation.errors.join(', '));
+      alert('⚠️ Please fill in required fields:\n' + validation.errors.join('\n'));
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const result = await submitToGoogleSheets(formData);
+      
+      if (result.success) {
+        setSubmitSuccess(true);
+        completeModule(currentModule);
+        
+        // Show success message
+        setTimeout(() => {
+          alert('✅ Form submitted successfully!\n\nYour data has been saved to:\nGoogle Drive > Farm Form Data > Farm Form Submissions');
+        }, 300);
+        
+        // Optional: Reset form or redirect after successful submission
+        setTimeout(() => {
+          console.log('Form submitted successfully!', formData);
+        }, 1000);
+      } else {
+        throw new Error(result.error || 'Submission failed');
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      setSubmitError(error.message);
+      alert('❌ Submission failed. Please check your internet connection and try again.\n\nError: ' + error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -122,21 +163,46 @@ export default function FormPanel() {
 
           {/* Continue/Submit Button */}
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: isSubmitting || submitSuccess ? 1 : 1.02 }}
+            whileTap={{ scale: isSubmitting || submitSuccess ? 1 : 0.98 }}
             onClick={isLastModule ? handleSubmit : handleContinue}
+            disabled={isSubmitting || submitSuccess}
             className="flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg"
             style={{
-              backgroundColor: '#689F38',
+              backgroundColor: submitSuccess ? '#22C55E' : isSubmitting ? '#9CA3AF' : '#689F38',
               color: '#FAF0BF',
-              boxShadow: '0 4px 14px rgba(104, 159, 56, 0.3)'
+              boxShadow: '0 4px 14px rgba(104, 159, 56, 0.3)',
+              opacity: isSubmitting ? 0.8 : 1,
+              cursor: isSubmitting || submitSuccess ? 'not-allowed' : 'pointer'
             }}
           >
             {isLastModule ? (
-              <>
-                Complete
-                <CheckCircle size={20} weight="bold" />
-              </>
+              submitSuccess ? (
+                <>
+                  <CheckCircle size={20} weight="fill" />
+                  Submitted!
+                </>
+              ) : isSubmitting ? (
+                <>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  >
+                    <PaperPlaneTilt size={20} weight="bold" />
+                  </motion.div>
+                  Submitting...
+                </>
+              ) : submitError ? (
+                <>
+                  <Warning size={20} weight="bold" />
+                  Retry Submit
+                </>
+              ) : (
+                <>
+                  Submit
+                  <PaperPlaneTilt size={20} weight="bold" />
+                </>
+              )
             ) : (
               <>
                 Continue
