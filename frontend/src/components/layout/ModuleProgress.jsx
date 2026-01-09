@@ -1,18 +1,32 @@
 import { motion } from 'framer-motion';
-import { CaretLeft, CaretRight, Plant, MapTrifold, Drop, Pipe, Lightning, Warehouse, Leaf, ChartLine, Barn, Eye } from '@phosphor-icons/react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Sprout,
+  Map,
+  Droplet,
+  Route,
+  Zap,
+  Warehouse,
+  Leaf,
+  LineChart,
+  Building2,
+  Eye,
+} from 'lucide-react';
 import { MODULES } from '../../constants/formConstants';
 import { useFormContext } from '../../context/FormContext';
+import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 const MODULE_ICONS = {
-  profile: Plant,
-  canvas: MapTrifold,
-  heart: Drop,
-  arteries: Pipe,
-  pulse: Lightning,
+  profile: Sprout,
+  canvas: Map,
+  heart: Droplet,
+  arteries: Route,
+  pulse: Zap,
   shelter: Warehouse,
   biology: Leaf,
-  baseline: ChartLine,
-  shed: Barn,
+  baseline: LineChart,
+  shed: Building2,
   vision: Eye
 };
 
@@ -32,7 +46,7 @@ export default function ModuleProgress({ isExpanded, onToggle }) {
             className="w-10 h-10 rounded-xl flex items-center justify-center  shrink-0 ml-2"
             style={{ backgroundColor: 'rgba(104, 159, 56, 0.15)' }}
           >
-            <Plant size={24} weight="duotone" style={{ color: '#689F38' }} />
+            <Sprout size={24} color={ICON_COLOR} strokeWidth={ICON_STROKE_WIDTH} />
           </div>
           {isExpanded && (
             <motion.div 
@@ -73,7 +87,7 @@ export default function ModuleProgress({ isExpanded, onToggle }) {
             const isCompleted = completedModules.includes(index);
             const isCurrent = currentModule === index;
             const isAccessible = index <= currentModule || isCompleted;
-            const IconComponent = MODULE_ICONS[module.id] || Plant;
+            const IconComponent = MODULE_ICONS[module.id] || Sprout;
 
             return (
               <motion.button
@@ -101,8 +115,8 @@ export default function ModuleProgress({ isExpanded, onToggle }) {
                 >
                   <IconComponent 
                     size={20} 
-                    weight={isCurrent ? 'fill' : 'duotone'} 
-                    style={{ color: isCurrent ? '#33691E' : '#689F38' }} 
+                    color={ICON_COLOR}
+                    strokeWidth={ICON_STROKE_WIDTH}
                   />
                 </div>
 
@@ -153,11 +167,11 @@ export default function ModuleProgress({ isExpanded, onToggle }) {
         >
           {isExpanded ? (
             <>
-              <CaretLeft size={18} weight="bold" style={{ color: '#689F38' }} />
-              <span className="text-sm font-medium" style={{ color: '#558B2F' }}>Collapse</span>
+              <ChevronLeft size={18} color={ICON_COLOR} strokeWidth={ICON_STROKE_WIDTH} />
+              <span className="text-sm font-medium" style={{ color: '#558B2F' }}></span>
             </>
           ) : (
-            <CaretRight size={18} weight="bold" style={{ color: '#689F38' }} />
+            <ChevronRight size={18} color={ICON_COLOR} strokeWidth={ICON_STROKE_WIDTH} />
           )}
         </motion.button>
       </div>

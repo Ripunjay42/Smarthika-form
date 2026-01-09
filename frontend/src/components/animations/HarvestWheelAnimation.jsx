@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Target, TrendUp, Heart, Plant, Leaf, Sun, CheckCircle, Warning, FishSimple, Sparkle, ChartLine } from '@phosphor-icons/react';
+import { ChartLine, Coins, Fish, Heart, Leaf, Rocket, Sparkles, Sun, Target, TrendingUp } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -123,7 +123,7 @@ export default function HarvestWheelAnimation({
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Heart size={40} weight="duotone" color={isPainHigh ? '#EF4444' : THEME.accent} />
+            <Heart size={40} color={isPainHigh ? '#EF4444' : THEME.accent} />
           </motion.div>
         </div>
 
@@ -138,11 +138,11 @@ export default function HarvestWheelAnimation({
             transition={{ delay: 0.2 }}
           >
             <div className="flex flex-col items-center gap-2">
-              <TrendUp size={24} weight="duotone" color={THEME.accent} />
+              <TrendingUp size={24} color={THEME.accent} />
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>TARGET LER</p>
               <p className="text-2xl font-bold" style={{ color: THEME.text }}>{targetLER.toFixed(1)}</p>
               <span className="text-xs font-medium" style={{ color: THEME.textLight }}>
-                {yieldAmbition === 'intensive' ? '🌟 Intensive' : yieldAmbition === 'high' ? '📈 High' : '📊 Standard'}
+                {yieldAmbition === 'intensive' ? 'Intensive' : yieldAmbition === 'high' ? 'High' : 'Standard'}
               </span>
             </div>
           </motion.div>
@@ -159,15 +159,18 @@ export default function HarvestWheelAnimation({
             transition={{ delay: 0.3 }}
           >
             <div className="flex flex-col items-center gap-2">
-              <Leaf size={24} weight="duotone" color={organicFarmingInterest ? '#22C55E' : THEME.accent} />
+              <Leaf size={24} color={organicFarmingInterest ? '#22C55E' : THEME.accent} />
               <p className="text-xs font-semibold" style={{ color: organicFarmingInterest ? '#22C55E' : THEME.accent }}>
                 ORGANIC
               </p>
               <p className="text-lg font-bold" style={{ color: organicFarmingInterest ? '#22C55E' : THEME.text }}>
-                {organicFarmingInterest ? '✓ Yes' : 'No'}
+                {organicFarmingInterest ? 'Yes' : 'No'}
               </p>
               {organicFarmingInterest && (
-                <span className="text-xs text-green-600">Premium 💰</span>
+                <span className="text-xs text-green-600 flex items-center gap-1">
+                  <Coins size={12} className="shrink-0" />
+                  Premium
+                </span>
               )}
             </div>
           </motion.div>
@@ -184,7 +187,7 @@ export default function HarvestWheelAnimation({
             transition={{ delay: 0.4 }}
           >
             <div className="flex flex-col items-center gap-2">
-              <Sun size={24} weight="duotone" color={hasPolyhouse ? '#3B82F6' : THEME.accent} />
+              <Sun size={24} color={hasPolyhouse ? '#3B82F6' : THEME.accent} />
               <p className="text-xs font-semibold" style={{ color: hasPolyhouse ? '#3B82F6' : THEME.accent }}>
                 POLYHOUSE
               </p>
@@ -192,7 +195,10 @@ export default function HarvestWheelAnimation({
                 {getStatusLabel(polyhouseStatus)}
               </p>
               {polyhouseStatus === 'planned' && (
-                <span className="text-xs text-blue-600">🚀 Coming</span>
+                <span className="text-xs text-blue-600 flex items-center gap-1">
+                  <Rocket size={12} className="shrink-0" />
+                  Coming
+                </span>
               )}
             </div>
           </motion.div>
@@ -209,7 +215,7 @@ export default function HarvestWheelAnimation({
             transition={{ delay: 0.5 }}
           >
             <div className="flex flex-col items-center gap-2">
-              <FishSimple size={24} weight="duotone" color={hasAquaculture ? '#06B6D4' : THEME.accent} />
+              <Fish size={24} color={hasAquaculture ? '#06B6D4' : THEME.accent} />
               <p className="text-xs font-semibold" style={{ color: hasAquaculture ? '#06B6D4' : THEME.accent }}>
                 AQUACULTURE
               </p>
@@ -217,7 +223,10 @@ export default function HarvestWheelAnimation({
                 {getStatusLabel(aquacultureStatus)}
               </p>
               {aquacultureStatus === 'planned' && (
-                <span className="text-xs text-cyan-600">🚀 Coming</span>
+                <span className="text-xs text-cyan-600 flex items-center gap-1">
+                  <Rocket size={12} className="shrink-0" />
+                  Coming
+                </span>
               )}
             </div>
           </motion.div>
@@ -238,11 +247,10 @@ export default function HarvestWheelAnimation({
           animate={{ opacity: 1, x: 0 }}
         >
           <div className="flex items-center gap-2">
-            <ChartLine 
-              size={20} 
-              weight="duotone" 
-              color={automationPriority === 'high' ? '#EF4444' : 
-                     automationPriority === 'medium' ? '#F59E0B' : '#22C55E'} 
+            <ChartLine
+              size={20}
+              color={automationPriority === 'high' ? '#EF4444' :
+                     automationPriority === 'medium' ? '#F59E0B' : '#22C55E'}
             />
             <div>
               <p className="text-xs font-semibold" 
@@ -268,7 +276,7 @@ export default function HarvestWheelAnimation({
             animate={{ opacity: 1, x: 0 }}
           >
             <div className="flex items-center gap-2">
-              <Sparkle size={20} weight="duotone" color="#8B5CF6" />
+              <Sparkles size={20} color="#8B5CF6" />
               <div>
                 <p className="text-xs font-semibold text-purple-700">EXPANSION PLANS</p>
                 <p className="text-xs text-purple-600">
@@ -287,12 +295,12 @@ export default function HarvestWheelAnimation({
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center gap-2">
-            <Target size={20} weight="duotone" color={THEME.accent} />
+            <Target size={20} color={THEME.accent} />
             <p className="text-sm font-semibold" style={{ color: THEME.text }}>
-              {organicFarmingInterest && isExpanding ? '🌟 Premium Growth Strategy' :
-               organicFarmingInterest ? '🌿 Sustainable Focus' :
-               isExpanding ? '🚀 Expansion Mode' :
-               '📊 Standard Operations'}
+              {organicFarmingInterest && isExpanding ? 'Premium Growth Strategy' :
+               organicFarmingInterest ? 'Sustainable Focus' :
+               isExpanding ? 'Expansion Mode' :
+               'Standard Operations'}
             </p>
           </div>
         </motion.div>

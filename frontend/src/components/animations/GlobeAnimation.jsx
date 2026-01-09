@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Globe, MapPin, WifiHigh, User, Users } from '@phosphor-icons/react';
+import { Globe, MapPin, WifiHigh, User, Users } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -89,7 +89,6 @@ export default function GlobeAnimation({ farmerName = '', whatsappNumber = '', l
                 <div className="absolute inset-0 w-5 h-5 rounded-full animate-ping" style={{ backgroundColor: THEME.accent, opacity: 0.5 }} />
                 <MapPin 
                   size={14} 
-                  weight="fill" 
                   color="#FAF0BF" 
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                 />
@@ -99,7 +98,7 @@ export default function GlobeAnimation({ farmerName = '', whatsappNumber = '', l
 
           {/* Globe Icon Center */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <Globe size={64} weight="duotone" color={THEME.accent} style={{ opacity: 0.15 }} />
+            <Globe size={64} color={THEME.accent} style={{ opacity: 0.15 }} />
           </div>
         </div>
       </motion.div>
@@ -114,7 +113,7 @@ export default function GlobeAnimation({ farmerName = '', whatsappNumber = '', l
           transition={{ y: { duration: 3, repeat: Infinity } }}
         >
           <div className="flex items-center gap-3">
-            <User size={20} weight="duotone" color={THEME.accent} />
+            <User size={20} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>FARMER</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{farmerName}</p>
@@ -133,7 +132,7 @@ export default function GlobeAnimation({ farmerName = '', whatsappNumber = '', l
           transition={{ y: { duration: 3, repeat: Infinity, delay: 0.5 } }}
         >
           <div className="flex items-center gap-3">
-            <WifiHigh size={20} weight="duotone" color={THEME.accent} />
+            <WifiHigh size={20} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>CONTACT</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>+91 {whatsappNumber}</p>
@@ -152,7 +151,7 @@ export default function GlobeAnimation({ farmerName = '', whatsappNumber = '', l
           transition={{ duration: 4, repeat: Infinity }}
         >
           <div className="flex items-center gap-3">
-            <Users size={24} weight="duotone" color={THEME.accent} />
+            <Users size={24} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>WORKFORCE</p>
               <p className="text-lg font-bold" style={{ color: THEME.text }}>{laborCount} Workers</p>
@@ -169,7 +168,7 @@ export default function GlobeAnimation({ farmerName = '', whatsappNumber = '', l
           animate={{ opacity: [0.6, 1, 0.6] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <WifiHigh size={32} weight="duotone" color={THEME.accent} className="mx-auto mb-2" />
+          <WifiHigh size={32} color={THEME.accent} className="mx-auto mb-2" />
           <p className="text-sm font-medium" style={{ color: THEME.text }}>Awaiting Farmer Details...</p>
           <p className="text-xs mt-1" style={{ color: THEME.textLight }}>Fill the form to connect</p>
         </motion.div>

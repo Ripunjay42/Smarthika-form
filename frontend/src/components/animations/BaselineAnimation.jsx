@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Lightning, Wrench, Sparkle, Warning, Drop, CheckCircle, Pipe } from '@phosphor-icons/react';
+import { ArrowRight, CircleCheck, Coins, Droplet, Route, Sparkles, TriangleAlert, Wrench, Zap } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -63,7 +63,7 @@ export default function BaselineAnimation({
                 <span className="text-xs text-gray-400 mb-2 capitalize">{oldPumpType}</span>
                 
                 {/* Wrench Icon */}
-                <Wrench size={32} weight="duotone" color="#9CA3AF" />
+                <Wrench size={32} color="#9CA3AF" />
                 
                 {/* Age Indicator */}
                 <div className="absolute bottom-3 left-3 right-3">
@@ -105,7 +105,7 @@ export default function BaselineAnimation({
             animate={{ x: [0, 8, 0] }}
             transition={{ duration: 1.2, repeat: Infinity }}
           >
-            <ArrowRight size={36} weight="bold" color={THEME.accent} />
+            <ArrowRight size={36} color={THEME.accent} />
             <span className="text-xs font-medium" style={{ color: THEME.accent }}>UPGRADE</span>
           </motion.div>
         )}
@@ -144,7 +144,7 @@ export default function BaselineAnimation({
                 animate={{ scale: [1, 1.15, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
-                <Lightning size={40} weight="fill" color="#FAF0BF" />
+                <Zap size={40} color="#FAF0BF" />
               </motion.div>
 
               {/* Sparkles */}
@@ -153,7 +153,7 @@ export default function BaselineAnimation({
                 animate={{ rotate: 360, opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <Sparkle size={16} weight="fill" color="#FAF0BF" />
+                <Sparkles size={16} color="#FAF0BF" />
               </motion.div>
             </div>
             
@@ -237,7 +237,7 @@ export default function BaselineAnimation({
               transition={{ delay: 0.2 }}
             >
               <div className="flex items-center gap-2">
-                <Pipe size={18} weight="duotone" color="#F59E0B" />
+                <Route size={18} color="#F59E0B" />
                 <div>
                   <p className="text-xs font-semibold text-yellow-700">REUSING PIPES</p>
                   <p className="text-xs text-yellow-600">Friction penalty</p>
@@ -259,7 +259,7 @@ export default function BaselineAnimation({
               transition={{ delay: 0.3 }}
             >
               <div className="flex items-center gap-2">
-                <Drop size={18} weight="duotone" color={footValveCondition === 'replace' ? '#EF4444' : '#F59E0B'} />
+                <Droplet size={18} color={footValveCondition === 'replace' ? '#EF4444' : '#F59E0B'} />
                 <div>
                   <p className="text-xs font-semibold" style={{ color: footValveCondition === 'replace' ? '#EF4444' : '#F59E0B' }}>
                     FOOT VALVE
@@ -285,9 +285,9 @@ export default function BaselineAnimation({
           >
             <div className="flex items-center gap-2">
               {(hasHighBurnout || hasPipeIssues) ? (
-                <Warning size={20} weight="fill" color="#EF4444" />
+                <TriangleAlert size={20} color="#EF4444" />
               ) : (
-                <CheckCircle size={20} weight="fill" color={THEME.accent} />
+                <CircleCheck size={20} color={THEME.accent} />
               )}
               <div>
                 <p className="text-xs font-semibold" style={{ color: (hasHighBurnout || hasPipeIssues) ? '#EF4444' : THEME.accent }}>
@@ -311,7 +311,10 @@ export default function BaselineAnimation({
             >
               <div className="text-center">
                 <p className="text-xs font-semibold" style={{ color: THEME.accent }}>HIGH ROI POTENTIAL</p>
-                <p className="text-lg font-bold" style={{ color: THEME.text }}>💰 {Math.round(efficiencyGap * 1.5)}% savings</p>
+                <div className="mt-1 flex items-center justify-center gap-2" style={{ color: THEME.text }}>
+                  <Coins size={18} className="shrink-0" />
+                  <p className="text-lg font-bold">{Math.round(efficiencyGap * 1.5)}% savings</p>
+                </div>
               </div>
             </motion.div>
           )}
@@ -326,7 +329,7 @@ export default function BaselineAnimation({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Sparkle size={20} weight="fill" color={THEME.accent} className="mx-auto mb-2" />
+          <Sparkles size={20} color={THEME.accent} className="mx-auto mb-2" />
           <p className="text-sm font-medium" style={{ color: THEME.text }}>Fresh Start - Optimal Design</p>
         </motion.div>
       )}

@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
-import { House, WifiHigh, Shield, Info } from '@phosphor-icons/react';
+import { House, WifiHigh, Shield, Info, Warehouse, Sun, TriangleAlert } from 'lucide-react';
 import { FormButtonGroup, FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { SHELTER_TYPES } from '../../constants/formConstants';
+import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 export default function ShelterForm() {
   const { formData, updateModuleData } = useFormContext();
@@ -53,8 +54,14 @@ export default function ShelterForm() {
                 : { borderColor: 'rgba(104, 159, 56, 0.2)' }
               }
             >
-              <span className="text-2xl block mb-2">
-                {type.value === 'concrete' ? '🏠' : type.value === 'tin' ? '🏚️' : '☀️'}
+              <span className="block mb-2 flex justify-center">
+                {type.value === 'concrete' ? (
+                  <House size={24} strokeWidth={ICON_STROKE_WIDTH} color={data.shelterStructure === type.value ? 'white' : ICON_COLOR} />
+                ) : type.value === 'tin' ? (
+                  <Warehouse size={24} strokeWidth={ICON_STROKE_WIDTH} color={data.shelterStructure === type.value ? 'white' : ICON_COLOR} />
+                ) : (
+                  <Sun size={24} strokeWidth={ICON_STROKE_WIDTH} color={data.shelterStructure === type.value ? 'white' : ICON_COLOR} />
+                )}
               </span>
               <span className="text-sm font-medium">{type.label}</span>
             </motion.button>
@@ -158,9 +165,10 @@ export default function ShelterForm() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-xs text-red-500 mt-2"
+            className="text-xs text-red-500 mt-2 flex items-center gap-2"
           >
-            ⚠️ GSM/IoT features will not be available
+            <TriangleAlert size={14} strokeWidth={ICON_STROKE_WIDTH} className="text-red-500" />
+            GSM/IoT features will not be available
           </motion.p>
         )}
       </div>
@@ -168,7 +176,7 @@ export default function ShelterForm() {
       {/* Security Section */}
       <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-4">
         <div className="flex items-center gap-2 text-gray-700">
-          <Shield size={20} />
+          <Shield size={20} strokeWidth={ICON_STROKE_WIDTH} />
           <span className="font-medium">Security & Safety</span>
         </div>
 
@@ -256,7 +264,10 @@ export default function ShelterForm() {
           animate={{ opacity: 1, y: 0 }}
           className="p-4 bg-red-50 rounded-xl border border-red-200"
         >
-          <p className="text-sm font-medium text-red-700 mb-2">⚠️ Safety Recommendations</p>
+          <p className="text-sm font-medium text-red-700 mb-2 flex items-center gap-2">
+            <TriangleAlert size={16} strokeWidth={ICON_STROKE_WIDTH} className="text-red-700" />
+            Safety Recommendations
+          </p>
           <ul className="text-xs text-red-600 space-y-1">
             {data.lightningArrestor === 'absent' && (
               <li>• Lightning arrestor installation recommended for equipment protection</li>
@@ -278,7 +289,7 @@ export default function ShelterForm() {
       >
         <div className="flex items-start gap-3">
           <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info className="w-5 h-5" style={{ color: '#689F38' }} />
+            <Info className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
           </div>
           <div>
             <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Installation Planning</h4>

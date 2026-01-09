@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Pipe, Drop, ArrowRight, Cylinder, Gauge, Warning, Wrench, Funnel, GitBranch } from '@phosphor-icons/react';
+import { ArrowRight, Cylinder, Droplet, Funnel, Gauge, GitBranch, Route, TriangleAlert, Wrench } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -70,7 +70,7 @@ export default function PipeAnimation({
           
           {/* Pump icon */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <Drop size={32} weight="duotone" color="#60A5FA" />
+            <Droplet size={32} color="#60A5FA" />
           </div>
         </motion.div>
 
@@ -157,7 +157,7 @@ export default function PipeAnimation({
             
             {/* Tank icon */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <Cylinder size={28} weight="duotone" color="#FAF0BF" style={{ opacity: 0.6 }} />
+              <Cylinder size={28} color="#FAF0BF" style={{ opacity: 0.6 }} />
             </div>
           </motion.div>
         )}
@@ -177,7 +177,7 @@ export default function PipeAnimation({
               animate={{ rotate: 360 }}
               transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
             >
-              <Drop size={28} weight="fill" color="#FAF0BF" />
+              <Droplet size={28} color="#FAF0BF" />
             </motion.div>
             
             {/* Water spray effect */}
@@ -217,7 +217,7 @@ export default function PipeAnimation({
           animate={{ x: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
-          <ArrowRight size={24} weight="bold" color={THEME.accent} />
+          <ArrowRight size={24} color={THEME.accent} />
         </motion.div>
       </div>
 
@@ -229,7 +229,7 @@ export default function PipeAnimation({
         animate={{ opacity: 1, y: 0 }}
       >
         <div className="flex items-center gap-3">
-          <Pipe size={24} weight="duotone" color={THEME.accent} />
+          <Route size={24} color={THEME.accent} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>DELIVERY</p>
             <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{deliveryTarget}</p>
@@ -245,7 +245,7 @@ export default function PipeAnimation({
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center gap-3">
-            <Cylinder size={24} weight="duotone" color={THEME.accent} />
+            <Cylinder size={24} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>TANK HEIGHT</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{overheadTankHeight} ft</p>
@@ -294,7 +294,7 @@ export default function PipeAnimation({
           transition={{ delay: 0.4 }}
         >
           <div className="flex items-center gap-2">
-            <Warning size={20} weight="fill" color={hasHighFriction ? '#EF4444' : '#F59E0B'} />
+            <TriangleAlert size={20} color={hasHighFriction ? '#EF4444' : '#F59E0B'} />
             <div>
               <p className="text-xs font-semibold" style={{ color: hasHighFriction ? '#EF4444' : '#F59E0B' }}>OLD PIPES</p>
               <p className="text-xs" style={{ color: hasHighFriction ? '#EF4444' : '#F59E0B' }}>+{frictionHeadPenalty}% friction</p>
@@ -316,7 +316,7 @@ export default function PipeAnimation({
           transition={{ delay: 0.5 }}
         >
           <div className="flex items-center gap-2">
-            <GitBranch size={18} weight="duotone" color={hasManyElbows ? '#F59E0B' : THEME.accent} />
+            <GitBranch size={18} color={hasManyElbows ? '#F59E0B' : THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: hasManyElbows ? '#F59E0B' : THEME.accent }}>ELBOWS</p>
               <p className="text-sm font-bold" style={{ color: hasManyElbows ? '#F59E0B' : THEME.text }}>{numberOfElbows} bends</p>
@@ -335,7 +335,7 @@ export default function PipeAnimation({
           transition={{ delay: 0.6 }}
         >
           <div className="flex items-center gap-2">
-            <Gauge size={16} weight="duotone" color={THEME.accent} />
+            <Gauge size={16} color={THEME.accent} />
             <span className="text-xs font-bold" style={{ color: THEME.text }}>FLOWMETER</span>
           </div>
         </motion.div>
@@ -351,7 +351,7 @@ export default function PipeAnimation({
           transition={{ delay: 0.7 }}
         >
           <div className="flex items-center gap-2">
-            <Wrench size={16} weight="duotone" color={THEME.accent} />
+            <Wrench size={16} color={THEME.accent} />
             <span className="text-xs font-bold" style={{ color: THEME.text }}>AUX OUTLET</span>
           </div>
         </motion.div>
@@ -367,7 +367,7 @@ export default function PipeAnimation({
           transition={{ delay: 0.8 }}
         >
           <div className="flex items-center gap-2">
-            <Funnel size={18} weight="duotone" color={THEME.accent} />
+            <Funnel size={18} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>CAPACITY</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{tankCapacity}L</p>

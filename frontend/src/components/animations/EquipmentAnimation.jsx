@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Tractor, Drone, Fan, Check, Lightbulb, Target, CalendarBlank, TrendUp } from '@phosphor-icons/react';
+import { Tractor, Drone, Fan, Check, Lightbulb, Target, Calendar, TrendingUp } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -84,7 +84,6 @@ export default function EquipmentAnimation({
               >
                 <Icon 
                   size={36} 
-                  weight={isSelected ? 'fill' : 'regular'} 
                   color={isSelected ? THEME.accent : '#9CA3AF'} 
                 />
               </motion.div>
@@ -106,7 +105,7 @@ export default function EquipmentAnimation({
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 20 }}
                 >
-                  <Check size={12} weight="bold" color="white" />
+                  <Check size={12} color="white" />
                 </motion.div>
               )}
             </motion.div>
@@ -121,7 +120,7 @@ export default function EquipmentAnimation({
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <Target size={20} weight="duotone" color={THEME.accent} />
+        <Target size={20} color={THEME.accent} />
         <p className="text-sm font-semibold" style={{ color: THEME.text }}>
           Equipment: {selectedCount}/{maxEquipment}
         </p>
@@ -147,7 +146,7 @@ export default function EquipmentAnimation({
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <CalendarBlank size={18} weight="duotone" color={THEME.accent} />
+            <Calendar size={18} color={THEME.accent} />
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>HARVEST MONTHS</p>
           </div>
           <div className="flex gap-1">
@@ -187,7 +186,7 @@ export default function EquipmentAnimation({
           transition={{ delay: 0.3 }}
         >
           <div className="flex items-center gap-2 mb-2">
-            <TrendUp size={16} weight="duotone" color="#9333EA" />
+            <TrendingUp size={16} color="#9333EA" />
             <p className="text-xs font-semibold text-purple-700">OPPORTUNITIES</p>
           </div>
           <div className="space-y-1">
@@ -208,7 +207,7 @@ export default function EquipmentAnimation({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <Lightbulb size={24} weight="duotone" color={THEME.accent} className="mx-auto mb-2" />
+          <Lightbulb size={24} color={THEME.accent} className="mx-auto mb-2" />
           <p className="text-sm" style={{ color: THEME.textLight }}>
             Select equipment from the form
           </p>

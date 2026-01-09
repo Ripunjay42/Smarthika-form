@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion';
-import { Lightning, Info, Sun, Plugs, CheckCircle, Warning } from '@phosphor-icons/react';
+import { Info, Sun, Plug2, CircleCheck, CircleAlert } from 'lucide-react';
 import { FormInput, FormSlider, FormButtonGroup, FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { POWER_SOURCES } from '../../constants/formConstants';
+import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 export default function PulseForm() {
-  const { formData, updateModuleData } = useFormContext();
+  const { formData, updateModuleData, moduleErrors } = useFormContext();
   const data = formData.pulse;
+  const errors = moduleErrors?.pulse || {};
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -87,8 +89,8 @@ export default function PulseForm() {
               transition={{ duration: 0.5, repeat: Infinity }}
             >
               {voltageStatus.status === 'OPTIMAL' 
-                ? <CheckCircle size={16} weight="fill" className="text-[#689F38]" />
-                : <Warning size={16} weight="fill" className={voltageStatus.status === 'WARNING' ? 'text-yellow-600' : 'text-red-500'} />
+                ? <CircleCheck size={16} strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
+                : <CircleAlert size={16} strokeWidth={ICON_STROKE_WIDTH} className={voltageStatus.status === 'WARNING' ? 'text-yellow-600' : 'text-red-500'} />
               }
               <span className={`text-sm font-bold ${voltageStatus.color}`}>
                 {voltageStatus.status}
@@ -106,7 +108,7 @@ export default function PulseForm() {
           className="space-y-4 p-4 bg-yellow-50 rounded-xl border border-yellow-200"
         >
           <div className="flex items-center gap-2 text-yellow-700">
-            <Sun size={20} />
+            <Sun size={20} strokeWidth={ICON_STROKE_WIDTH} />
             <span className="font-medium">Solar Configuration</span>
           </div>
           <FormButtonGroup
@@ -219,7 +221,9 @@ export default function PulseForm() {
         value={data.distanceMeterToBorewell}
         onChange={handleChange}
         placeholder="Cable length in meters"
-        icon={Plugs}
+        icon={Plug2}
+        required
+        error={errors.distanceMeterToBorewell}
       />
 
       {/* Additional Options */}
@@ -246,7 +250,7 @@ export default function PulseForm() {
           className="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200"
         >
           <div className="flex items-center gap-3">
-            <Sun className="text-yellow-600" size={24} />
+            <Sun className="text-yellow-600" size={24} strokeWidth={ICON_STROKE_WIDTH} />
             <div>
               <p className="text-sm font-semibold text-yellow-800">Solar Opportunity</p>
               <p className="text-xs text-yellow-600">
@@ -268,7 +272,7 @@ export default function PulseForm() {
       >
         <div className="flex items-start gap-3">
           <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info className="w-5 h-5" style={{ color: '#689F38' }} />
+            <Info className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
           </div>
           <div>
             <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Controller Selection</h4>

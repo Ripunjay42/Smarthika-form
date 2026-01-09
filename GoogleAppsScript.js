@@ -337,7 +337,7 @@ function doPost(e) {
 // ====================================
 function doGet() {
   return ContentService
-    .createTextOutput('🌱 Farm Form Data API is running\n\nStatus: Active\nLast updated: ' + new Date().toISOString())
+    .createTextOutput('Farm Form Data API is running\n\nStatus: Active\nLast updated: ' + new Date().toISOString())
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
@@ -348,63 +348,63 @@ function sendNotificationEmail(data, rowNumber) {
   // UPDATE THIS EMAIL ADDRESS
   const email = 'your-email@example.com';
   
-  const subject = '🌱 New Farm Form Submission #' + rowNumber + ' - ' + (data.profile?.customerName || 'Unknown');
+  const subject = 'New Farm Form Submission #' + rowNumber + ' - ' + (data.profile?.customerName || 'Unknown');
   
   const body = `
 New Farm Form submission received!
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📋 SUBMISSION #${rowNumber}
+SUBMISSION #${rowNumber}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-👤 CUSTOMER PROFILE
+CUSTOMER PROFILE
 Name: ${data.profile?.customerName || 'N/A'}
 WhatsApp: ${data.profile?.whatsappNumber || 'N/A'}
 Email: ${data.profile?.emailAddress || 'N/A'}
 Labor Count: ${data.profile?.laborCount || 0}
 
-🗺️ FIELD CANVAS
+FIELD CANVAS
 Total Area: ${data.canvas?.totalArea || 'N/A'} acres
 Geometry: ${data.canvas?.fieldGeometry || 'N/A'}
 Soil Type: ${data.canvas?.soilTextureTop || 'N/A'}
 Topography: ${data.canvas?.topographyType || 'N/A'}
 
-💧 WATER SOURCE (HEART)
+WATER SOURCE (HEART)
 Source Type: ${data.heart?.sourceType || 'N/A'}
 Static Water Level: ${data.heart?.staticWaterLevel || 'N/A'} ft
 Dynamic Water Level: ${data.heart?.dynamicWaterLevel || 'N/A'} ft
 Water Quality: ${data.heart?.waterQuality || 'N/A'}
 
-🚰 DISTRIBUTION (ARTERIES)
+DISTRIBUTION (ARTERIES)
 Delivery Target: ${data.arteries?.deliveryTarget || 'N/A'}
 Pipe Material: ${data.arteries?.mainlinePipeMaterial || 'N/A'}
 Total Length: ${data.arteries?.totalPipeLength || 'N/A'} m
 
-⚡ ENERGY (PULSE)
+ENERGY (PULSE)
 Source: ${data.pulse?.primaryEnergySource || 'N/A'}
 Grid Phase: ${data.pulse?.gridPhase || 'N/A'}
 Voltage: ${data.pulse?.averageGridVoltage || 'N/A'} V
 
-🏠 SHELTER
+SHELTER
 Structure: ${data.shelter?.shelterStructure || 'N/A'}
 Signal Strength: ${data.shelter?.mobileSignalStrength || 'N/A'}
 
-🌾 CROPS (BIOLOGY)
+CROPS (BIOLOGY)
 Primary Crop: ${data.biology?.primaryCropType || 'N/A'}
 Irrigation Method: ${data.biology?.irrigationMethod || 'N/A'}
 Peak Demand: ${data.biology?.peakWaterDemand || 'N/A'} L/day
 
-📊 PROJECT TYPE
+PROJECT TYPE
 Type: ${data.baseline?.projectType || 'N/A'}
 Old Pump Age: ${data.baseline?.oldPumpAge || 0} years
 
-🎯 VISION
+VISION
 Labor Pain Score: ${data.vision?.laborPainScore || 0}/10
 Target LER: ${data.vision?.targetLER || 1.0}
 Organic Interest: ${data.vision?.organicFarmingInterest ? 'Yes' : 'No'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 View in Google Sheet
+View in Google Sheet
 Row Number: ${rowNumber}
 Submitted: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -460,23 +460,23 @@ function debugSetup() {
     Logger.log('=== DEBUGGING SETUP ===');
     
     const spreadsheet = SpreadsheetApp.openById('1K915AnBXQvuXBLzjCSwMnH8Mmibbq8akG99byeCuwHQ');
-    Logger.log('✅ Spreadsheet found: ' + spreadsheet.getName());
+    Logger.log('[OK] Spreadsheet found: ' + spreadsheet.getName());
     Logger.log('   Spreadsheet URL: ' + spreadsheet.getUrl());
     
     const sheet = spreadsheet.getSheetByName('Farm Form Submissions');
     if (sheet) {
-      Logger.log('✅ Sheet "Farm Form Submissions" found!');
+      Logger.log('[OK] Sheet "Farm Form Submissions" found!');
       Logger.log('   Last row: ' + sheet.getLastRow());
       Logger.log('   Last column: ' + sheet.getLastColumn());
       Logger.log('   Sheet ID: ' + sheet.getSheetId());
     } else {
-      Logger.log('❌ Sheet "Farm Form Submissions" NOT found');
+      Logger.log('[ERROR] Sheet "Farm Form Submissions" NOT found');
       Logger.log('   Available sheets in this spreadsheet:');
       spreadsheet.getSheets().forEach(function(s, index) {
         Logger.log('   ' + (index + 1) + '. "' + s.getName() + '" (ID: ' + s.getSheetId() + ')');
       });
       Logger.log('');
-      Logger.log('⚠️  ACTION REQUIRED:');
+      Logger.log('[ACTION REQUIRED]');
       Logger.log('   Either rename one of the sheets above to "Farm Form Submissions"');
       Logger.log('   OR update line 20 of the script to use one of the sheet names above');
     }
@@ -486,7 +486,7 @@ function debugSetup() {
     Logger.log('   Script owner: ' + Session.getActiveUser().getEmail());
     
   } catch (error) {
-    Logger.log('❌ ERROR: ' + error.toString());
+    Logger.log('[ERROR] ' + error.toString());
     Logger.log('   Stack: ' + error.stack);
   }
 }

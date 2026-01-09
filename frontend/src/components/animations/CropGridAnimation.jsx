@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Plant, Tree, Drop, Ruler, GitBranch, Funnel, Flask, Gauge, GridFour } from '@phosphor-icons/react';
+import { Droplet, FlaskConical, Funnel, Gauge, GitBranch, Grid2x2, Ruler, Sprout, Tractor, TreeDeciduous } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -160,7 +160,7 @@ export default function CropGridAnimation({
         animate={{ opacity: 1, y: 0 }}
       >
         <div className="flex items-center gap-3">
-          <Tree size={24} weight="duotone" color={primaryCropColor} />
+          <TreeDeciduous size={24} color={primaryCropColor} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>PRIMARY CROP</p>
             <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{primaryCropType}</p>
@@ -178,7 +178,7 @@ export default function CropGridAnimation({
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center gap-2">
-            <GitBranch size={18} weight="duotone" color={secondaryCropColor} />
+            <GitBranch size={18} color={secondaryCropColor} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>SECONDARY</p>
               <p className="text-xs font-bold capitalize" style={{ color: THEME.text }}>{secondaryCropType}</p>
@@ -195,7 +195,7 @@ export default function CropGridAnimation({
         animate={{ opacity: 1, y: 0 }}
       >
         <div className="flex items-center gap-3">
-          <Plant size={24} weight="duotone" color={THEME.accent} />
+          <Sprout size={24} color={THEME.accent} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>CROP AGE</p>
             <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{cropAge}</p>
@@ -213,7 +213,7 @@ export default function CropGridAnimation({
           transition={{ delay: 0.3 }}
         >
           <div className="flex items-center gap-2">
-            <GridFour size={18} weight="duotone" color={THEME.accent} />
+            <Grid2x2 size={18} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>PLANT COUNT</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{totalPlantCount}</p>
@@ -231,7 +231,7 @@ export default function CropGridAnimation({
         transition={{ delay: 0.1 }}
       >
         <div className="flex items-center gap-3">
-          <Ruler size={24} weight="duotone" color={THEME.accent} />
+          <Ruler size={24} color={THEME.accent} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>SPACING</p>
             <p className="text-sm font-bold" style={{ color: THEME.text }}>{plantSpacing} ft</p>
@@ -247,7 +247,7 @@ export default function CropGridAnimation({
         animate={{ opacity: 1, x: 0 }}
       >
         <div className="flex items-center gap-3">
-          <Drop size={24} weight="duotone" color="#60A5FA" />
+          <Droplet size={24} color="#60A5FA" />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>IRRIGATION</p>
             <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{irrigationMethod}</p>
@@ -265,7 +265,7 @@ export default function CropGridAnimation({
           transition={{ delay: 0.4 }}
         >
           <div className="flex items-center gap-2">
-            <Drop size={20} weight="fill" color="#60A5FA" />
+            <Droplet size={20} color="#60A5FA" />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>PEAK DEMAND</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{peakWaterDemand} LPD</p>
@@ -284,7 +284,7 @@ export default function CropGridAnimation({
           transition={{ delay: 0.5 }}
         >
           <div className="flex items-center gap-2">
-            <Gauge size={20} weight="duotone" color={THEME.accent} />
+            <Gauge size={20} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>DISCHARGE</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{requiredDischarge} LPM</p>
@@ -303,7 +303,7 @@ export default function CropGridAnimation({
           transition={{ delay: 0.6 }}
         >
           <div className="flex items-center gap-2">
-            <GridFour size={16} weight="duotone" color={THEME.accent} />
+            <Grid2x2 size={16} color={THEME.accent} />
             <span className="text-xs font-bold" style={{ color: THEME.text }}>{numberOfZones} Zones</span>
           </div>
         </motion.div>
@@ -318,7 +318,7 @@ export default function CropGridAnimation({
         transition={{ delay: 0.7 }}
       >
         <div className="flex items-center gap-2">
-          <Funnel size={16} weight="duotone" color={THEME.accent} />
+          <Funnel size={16} color={THEME.accent} />
           <span className="text-xs font-bold capitalize" style={{ color: THEME.text }}>{filtrationRequirement}</span>
         </div>
       </motion.div>
@@ -333,7 +333,7 @@ export default function CropGridAnimation({
           transition={{ delay: 0.8 }}
         >
           <div className="flex items-center gap-2">
-            <Flask size={16} weight="duotone" color={THEME.accent} />
+            <FlaskConical size={16} color={THEME.accent} />
             <span className="text-xs font-bold" style={{ color: THEME.text }}>FERTIGATION</span>
           </div>
         </motion.div>
@@ -348,7 +348,10 @@ export default function CropGridAnimation({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.9 }}
         >
-          <span className="text-xs font-bold" style={{ color: THEME.text }}>🚜 TRACTOR ACCESS</span>
+          <div className="flex items-center gap-2" style={{ color: THEME.text }}>
+            <Tractor size={16} className="shrink-0" />
+            <span className="text-xs font-bold">TRACTOR ACCESS</span>
+          </div>
         </motion.div>
       )}
     </div>

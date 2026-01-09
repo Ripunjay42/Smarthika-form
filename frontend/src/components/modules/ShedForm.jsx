@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
-import { Warehouse, Info, Tractor, Drone, Fan, Check, Lightbulb } from '@phosphor-icons/react';
+import { Warehouse, Info, Tractor, Drone, Fan, Check, Lightbulb, Target } from 'lucide-react';
 import { FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { MONTHS } from '../../constants/formConstants';
+import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 export default function ShedForm() {
   const { formData, updateModuleData } = useFormContext();
@@ -97,8 +98,8 @@ export default function ShedForm() {
                 >
                   <item.icon 
                     size={28} 
-                    weight={data[item.key] ? 'fill' : 'regular'} 
-                    color={data[item.key] ? '#689F38' : '#9CA3AF'} 
+                    strokeWidth={ICON_STROKE_WIDTH}
+                    color={data[item.key] ? ICON_COLOR : '#9CA3AF'} 
                   />
                 </motion.div>
                 <div className="flex-1">
@@ -108,7 +109,7 @@ export default function ShedForm() {
                       className="w-6 h-6 rounded-full flex items-center justify-center"
                       style={data[item.key] ? { backgroundColor: '#689F38', color: 'white' } : { backgroundColor: '#E5E5E5' }}
                     >
-                      {data[item.key] && <Check size={14} weight="bold" color="white" />}
+                      {data[item.key] && <Check size={14} strokeWidth={ICON_STROKE_WIDTH} color="white" />}
                     </div>
                   </div>
                   <p className="text-sm text-gray-500 mt-1">{item.description}</p>
@@ -129,7 +130,7 @@ export default function ShedForm() {
         </div>
       </div>
 
-      {/* Inventory Summary */}
+            <Warehouse className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
       <motion.div
         className="p-4 rounded-xl border"
         style={{ backgroundColor: 'rgba(104, 159, 56, 0.08)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
@@ -167,7 +168,7 @@ export default function ShedForm() {
             animate={{ opacity: 1 }}
             className="text-xs text-blue-600 mt-2 flex items-center gap-2"
           >
-            <Lightbulb size={14} weight="fill" color="#2563EB" />
+            <Lightbulb size={14} strokeWidth={ICON_STROKE_WIDTH} color="#2563EB" />
             Consider EV charging point integration with solar pump
           </motion.p>
         )}
@@ -245,13 +246,16 @@ export default function ShedForm() {
           animate={{ opacity: 1, y: 0 }}
           className="p-4 bg-purple-50 rounded-xl border border-purple-200"
         >
-          <h4 className="text-sm font-semibold text-purple-800 mb-3">🎯 Opportunity Signals</h4>
+          <h4 className="text-sm font-semibold text-purple-800 mb-3 flex items-center gap-2">
+            <Target size={16} strokeWidth={ICON_STROKE_WIDTH} className="text-purple-700" />
+            Opportunity Signals
+          </h4>
           <div className="space-y-2">
             {equipment.filter(e => data[e.key]).map((item) => {
               const ItemIcon = item.icon;
               return (
                 <div key={item.key} className="flex items-center gap-2 text-sm text-purple-700">
-                  <ItemIcon size={18} weight="duotone" color="#7C3AED" />
+                  <ItemIcon size={18} strokeWidth={ICON_STROKE_WIDTH} color="#7C3AED" />
                   <span>{item.opportunity}</span>
                 </div>
               );
@@ -270,7 +274,7 @@ export default function ShedForm() {
       >
         <div className="flex items-start gap-3">
           <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info className="w-5 h-5" style={{ color: '#689F38' }} />
+            <Info className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
           </div>
           <div>
             <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Business Intelligence</h4>

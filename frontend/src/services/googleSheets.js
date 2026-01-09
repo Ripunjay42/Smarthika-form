@@ -13,10 +13,10 @@ export const submitToGoogleSheets = async (formData) => {
       throw new Error('Google Script URL not configured. Please update VITE_GOOGLE_SCRIPT_URL in .env file');
     }
 
-    console.log('📤 Submitting to Farm Form Submissions sheet...');
-    console.log('🔗 URL:', GOOGLE_SCRIPT_URL);
-    console.log('📦 Form data:', formData);
-    console.log('📊 Data size:', JSON.stringify(formData).length, 'bytes');
+    console.log('Submitting to Farm Form Submissions sheet...');
+    console.log('URL:', GOOGLE_SCRIPT_URL);
+    console.log('Form data:', formData);
+    console.log('Data size:', JSON.stringify(formData).length, 'bytes');
     
     const response = await fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
@@ -27,15 +27,15 @@ export const submitToGoogleSheets = async (formData) => {
       body: JSON.stringify(formData),
     });
 
-    console.log('📡 Response type:', response.type);
-    console.log('✅ Request sent successfully');
-    console.log('⚠️  NOTE: With no-cors mode, we cannot verify if data was actually saved.');
+    console.log('Response type:', response.type);
+    console.log('Request sent successfully');
+    console.log('NOTE: With no-cors mode, we cannot verify if data was actually saved.');
     console.log('   Check your Google Sheet and Apps Script logs to confirm.');
     
     return { success: true, message: 'Form submitted successfully!' };
     
   } catch (error) {
-    console.error('❌ Submission error:', error);
+    console.error('Submission error:', error);
     return { success: false, error: error.message };
   }
 };

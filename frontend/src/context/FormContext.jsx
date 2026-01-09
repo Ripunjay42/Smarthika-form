@@ -151,12 +151,50 @@ export function FormProvider({ children }) {
   const [formData, setFormData] = useState(initialFormData);
   const [currentModule, setCurrentModule] = useState(0);
   const [completedModules, setCompletedModules] = useState([]);
+  const [moduleErrors, setModuleErrors] = useState({});
 
   const updateModuleData = useCallback((module, data) => {
     setFormData((prev) => ({
       ...prev,
       [module]: { ...prev[module], ...data },
     }));
+
+    // Clear errors for any updated fields in this module.
+    setModuleErrors((prev) => {
+      const current = prev?.[module];
+      if (!current) return prev;
+
+      const nextForModule = { ...current };
+      Object.keys(data || {}).forEach((key) => {
+        if (key in nextForModule) delete nextForModule[key];
+      });
+
+      if (Object.keys(nextForModule).length === 0) {
+        const { [module]: _removed, ...rest } = prev;
+        return rest;
+      }
+
+      return { ...prev, [module]: nextForModule };
+    });
+  }, []);
+
+  const setErrorsForModule = useCallback((module, fieldErrors) => {
+    setModuleErrors((prev) => ({
+      ...prev,
+      [module]: fieldErrors,
+    }));
+  }, []);
+
+  const clearErrorsForModule = useCallback((module) => {
+    setModuleErrors((prev) => {
+      if (!prev?.[module]) return prev;
+      const { [module]: _removed, ...rest } = prev;
+      return rest;
+    });
+  }, []);
+
+  const setAllModuleErrors = useCallback((allErrors) => {
+    setModuleErrors(allErrors || {});
   }, []);
 
   const completeModule = useCallback((moduleIndex) => {
@@ -183,7 +221,11 @@ export function FormProvider({ children }) {
         formData,
         currentModule,
         completedModules,
+        moduleErrors,
         updateModuleData,
+        setErrorsForModule,
+        clearErrorsForModule,
+        setAllModuleErrors,
         completeModule,
         goToModule,
         nextModule,

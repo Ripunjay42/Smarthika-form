@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Compass, Mountains, ArrowsOutCardinal } from '@phosphor-icons/react';
+import { Compass, Mountain, Move } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -152,7 +152,7 @@ export default function TopographyAnimation({
         transition={{ duration: 4, repeat: Infinity }}
       >
         <div className="w-full h-full rounded-full flex items-center justify-center" style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}>
-          <Compass size={28} weight="duotone" color={THEME.accent} />
+          <Compass size={28} color={THEME.accent} />
         </div>
         <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-xs font-bold" style={{ color: THEME.accent }}>N</span>
       </motion.div>
@@ -165,7 +165,7 @@ export default function TopographyAnimation({
         animate={{ opacity: 1, y: 0 }}
       >
         <div className="flex items-center gap-3">
-          <Mountains size={24} weight="duotone" color={THEME.accent} />
+          <Mountain size={24} color={THEME.accent} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>TERRAIN</p>
             <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{topographyType}</p>
@@ -183,7 +183,7 @@ export default function TopographyAnimation({
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center gap-3">
-            <ArrowsOutCardinal size={24} weight="duotone" color={THEME.accent} />
+            <Move size={24} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>TOTAL AREA</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{totalArea} acres</p>

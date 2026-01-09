@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Drop, Lightning, ArrowDown, Gauge, Warning, Shield, Database } from '@phosphor-icons/react';
+import { ArrowDown, CircleCheck, Database, Droplet, Gauge, Shield, TriangleAlert, Zap } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -146,7 +146,7 @@ export default function BorewellAnimation({
           animate={{ scale: [1, 1.03, 1] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
-          <Lightning size={32} weight="fill" color="#FAF0BF" />
+          <Zap size={32} color="#FAF0BF" />
         </motion.div>
 
         {/* Depth Scale */}
@@ -171,7 +171,7 @@ export default function BorewellAnimation({
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center gap-3">
-            <Gauge size={24} weight="duotone" color={drawdownStatus.color} />
+            <Gauge size={24} color={drawdownStatus.color} />
             <div>
               <p className="text-xs font-semibold" style={{ color: drawdownStatus.color }}>DRAWDOWN</p>
               <p className="text-xl font-bold" style={{ color: drawdownStatus.color }}>{drawdown} ft</p>
@@ -197,9 +197,20 @@ export default function BorewellAnimation({
             <p className="text-xs font-semibold" style={{ color: hasFootValveIssue ? '#EF4444' : '#3B82F6' }}>
               SUCTION: {suctionHead}ft
             </p>
-            <p className="text-xs mt-1" style={{ color: hasFootValveIssue ? '#EF4444' : '#3B82F6' }}>
-              Valve: {footValveCondition === 'good' ? '✓ Good' : '⚠ Leaking'}
-            </p>
+            <div className="text-xs mt-1 flex items-center gap-1" style={{ color: hasFootValveIssue ? '#EF4444' : '#3B82F6' }}>
+              <span>Valve:</span>
+              {footValveCondition === 'good' ? (
+                <>
+                  <CircleCheck size={14} className="shrink-0" />
+                  <span>Good</span>
+                </>
+              ) : (
+                <>
+                  <TriangleAlert size={14} className="shrink-0" />
+                  <span>Leaking</span>
+                </>
+              )}
+            </div>
           </div>
         </motion.div>
       )}
@@ -212,7 +223,7 @@ export default function BorewellAnimation({
         animate={{ opacity: 1 }}
       >
         <div className="flex items-center gap-3">
-          <Drop size={24} weight="duotone" color={waterColor} />
+          <Droplet size={24} color={waterColor} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>WATER QUALITY</p>
             <div className="flex items-center gap-2">
@@ -259,7 +270,7 @@ export default function BorewellAnimation({
         transition={{ delay: 0.2 }}
       >
         <div className="flex items-center gap-2">
-          <Database size={16} weight="duotone" color={THEME.accent} />
+            <Database size={16} color={THEME.accent} />
           <span className="text-xs font-bold uppercase" style={{ color: THEME.text }}>
             {sourceType.replace('-', ' ')}
           </span>
@@ -276,7 +287,7 @@ export default function BorewellAnimation({
           transition={{ delay: 0.3 }}
         >
           <div className="flex items-center gap-2">
-            <Warning size={20} weight="fill" color="#EF4444" />
+            <TriangleAlert size={20} color="#EF4444" />
             <div>
               <p className="text-xs font-semibold text-red-600">HIGH RISK</p>
               <p className="text-xs text-red-500">
@@ -297,7 +308,7 @@ export default function BorewellAnimation({
           transition={{ delay: 0.4 }}
         >
           <div className="flex items-center gap-2">
-            <Shield size={20} weight="duotone" color="#F59E0B" />
+            <Shield size={20} color="#F59E0B" />
             <div>
               <p className="text-xs font-semibold text-amber-600">QUALITY ALERT</p>
               <div className="flex gap-1 mt-1">

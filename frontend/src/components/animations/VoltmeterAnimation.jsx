@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Lightning, Warning, CheckCircle, Gauge, Sun, Shield, Plug, Clock, Engine, BatteryCharging, WifiHigh } from '@phosphor-icons/react';
+import { BatteryCharging, Clock, Fuel, Gauge, Plug, Shield, Sun, TriangleAlert, WifiHigh, Zap, CircleCheck } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -123,7 +123,7 @@ export default function VoltmeterAnimation({
             className="absolute top-1/2 left-1/2 w-10 h-10 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg flex items-center justify-center"
             style={{ backgroundColor: THEME.accent }}
           >
-            <Lightning size={20} weight="fill" color="#FAF0BF" />
+            <Zap size={20} color="#FAF0BF" />
           </div>
 
           {/* Voltage Display */}
@@ -158,9 +158,9 @@ export default function VoltmeterAnimation({
         transition={{ duration: 0.5, repeat: Infinity }}
       >
         {isFluctuating ? (
-          <Warning size={24} weight="duotone" color="#EF4444" />
+          <TriangleAlert size={24} color="#EF4444" />
         ) : (
-          <CheckCircle size={24} weight="duotone" color={THEME.accent} />
+          <CircleCheck size={24} color={THEME.accent} />
         )}
         <div>
           <p className="text-xs font-semibold" style={{ color: isFluctuating ? '#EF4444' : THEME.accent }}>
@@ -180,7 +180,7 @@ export default function VoltmeterAnimation({
         animate={{ opacity: 1, y: 0 }}
       >
         <div className="flex items-center gap-3">
-          <Lightning size={24} weight="duotone" color={THEME.accent} />
+          <Zap size={24} color={THEME.accent} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>POWER SOURCE</p>
             <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{primaryEnergySource}</p>
@@ -197,7 +197,7 @@ export default function VoltmeterAnimation({
         transition={{ delay: 0.1 }}
       >
         <div className="flex items-center gap-3">
-          <Gauge size={24} weight="duotone" color={THEME.accent} />
+          <Gauge size={24} color={THEME.accent} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>GRID PHASE</p>
             <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{gridPhase.replace('-', ' ')}</p>
@@ -213,9 +213,12 @@ export default function VoltmeterAnimation({
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <p className="text-xs font-semibold text-red-500">
-            {isLow ? '⚠ Low Voltage - Motor at risk' : '⚠ High Voltage - Use stabilizer'}
-          </p>
+          <div className="flex items-center gap-2 text-red-500">
+            <TriangleAlert size={16} className="shrink-0" />
+            <p className="text-xs font-semibold">
+              {isLow ? 'Low Voltage - Motor at risk' : 'High Voltage - Use stabilizer'}
+            </p>
+          </div>
         </motion.div>
       )}
 
@@ -229,7 +232,7 @@ export default function VoltmeterAnimation({
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center gap-2">
-            <Sun size={20} weight="duotone" color="#F59E0B" />
+            <Sun size={20} color="#F59E0B" />
             <div>
               <p className="text-xs font-semibold text-yellow-600">SOLAR</p>
               {solarSystemVoltage > 0 && (
@@ -250,7 +253,7 @@ export default function VoltmeterAnimation({
           transition={{ delay: 0.3 }}
         >
           <div className="flex items-center gap-2">
-            <Shield size={20} weight="duotone" color={THEME.accent} />
+            <Shield size={20} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>PROTECTION</p>
               <div className="flex gap-1 mt-1">
@@ -274,7 +277,7 @@ export default function VoltmeterAnimation({
         transition={{ delay: 0.4 }}
       >
         <div className="flex items-center gap-2">
-          <Clock size={18} weight="duotone" color={lowAvailability ? '#EF4444' : THEME.accent} />
+          <Clock size={18} color={lowAvailability ? '#EF4444' : THEME.accent} />
           <div>
             <p className="text-xs font-semibold" style={{ color: lowAvailability ? '#EF4444' : THEME.accent }}>AVAILABILITY</p>
             <p className="text-sm font-bold" style={{ color: lowAvailability ? '#EF4444' : THEME.text }}>{dailyAvailability}h/day</p>
@@ -292,7 +295,7 @@ export default function VoltmeterAnimation({
           transition={{ delay: 0.5 }}
         >
           <div className="flex items-center gap-2">
-            <WifiHigh size={16} weight="duotone" color={THEME.accent} />
+            <WifiHigh size={16} color={THEME.accent} />
             <span className="text-xs font-bold capitalize" style={{ color: THEME.text }}>{powerSchedule}</span>
           </div>
         </motion.div>
@@ -311,7 +314,7 @@ export default function VoltmeterAnimation({
           transition={{ delay: 0.6 }}
         >
           <div className="flex items-center gap-2">
-            <Warning size={20} weight="fill" color={wiringHealth === 'burnt' ? '#EF4444' : '#F59E0B'} />
+            <TriangleAlert size={20} color={wiringHealth === 'burnt' ? '#EF4444' : '#F59E0B'} />
             <div>
               <p className="text-xs font-semibold" style={{ color: wiringHealth === 'burnt' ? '#EF4444' : '#F59E0B' }}>WIRING</p>
               <p className="text-xs capitalize" style={{ color: wiringHealth === 'burnt' ? '#EF4444' : '#F59E0B' }}>{wiringHealth}</p>
@@ -333,7 +336,7 @@ export default function VoltmeterAnimation({
           transition={{ delay: 0.7 }}
         >
           <div className="flex items-center gap-2">
-            <Plug size={18} weight="duotone" color={THEME.accent} />
+            <Plug size={18} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>CABLE DIST</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{distanceMeterToBorewell}m</p>
@@ -352,7 +355,7 @@ export default function VoltmeterAnimation({
           transition={{ delay: 0.8 }}
         >
           <div className="flex items-center gap-2">
-            <Engine size={16} weight="duotone" color={THEME.accent} />
+            <Fuel size={16} color={THEME.accent} />
             <span className="text-xs font-bold" style={{ color: THEME.text }}>GENERATOR</span>
           </div>
         </motion.div>
@@ -368,7 +371,7 @@ export default function VoltmeterAnimation({
           transition={{ delay: 0.9 }}
         >
           <div className="flex items-center gap-2">
-            <BatteryCharging size={16} weight="duotone" color={THEME.accent} />
+            <BatteryCharging size={16} color={THEME.accent} />
             <span className="text-xs font-bold" style={{ color: THEME.text }}>EV READY</span>
           </div>
         </motion.div>

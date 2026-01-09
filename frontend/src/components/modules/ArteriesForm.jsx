@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion';
-import { GitBranch, Info } from '@phosphor-icons/react';
+import { GitBranch, Info } from 'lucide-react';
 import { FormInput, FormSlider, FormButtonGroup, FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { PIPE_MATERIALS } from '../../constants/formConstants';
+import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 export default function ArteriesForm() {
-  const { formData, updateModuleData } = useFormContext();
+  const { formData, updateModuleData, moduleErrors } = useFormContext();
   const data = formData.arteries;
+  const errors = moduleErrors?.arteries || {};
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -164,6 +166,8 @@ export default function ArteriesForm() {
         onChange={handleChange}
         placeholder="Total length (ft)"
         icon={GitBranch}
+        required
+        error={errors.totalPipeLength}
       />
 
       {/* Elbows */}
@@ -228,7 +232,7 @@ export default function ArteriesForm() {
       >
         <div className="flex items-start gap-3">
           <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info className="w-5 h-5" style={{ color: '#689F38' }} />
+            <Info className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
           </div>
           <div>
             <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Friction Calculation</h4>

@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion';
-import { MapPin, Ruler, Mountains, Info } from '@phosphor-icons/react';
+import { MapPin, Ruler, Mountain, Info } from 'lucide-react';
 import { FormInput, FormSelect, FormSlider, FormButtonGroup, FormColorPicker } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { SOIL_TYPES, TOPOGRAPHY_TYPES, FIELD_GEOMETRIES } from '../../constants/formConstants';
+import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 export default function CanvasForm() {
-  const { formData, updateModuleData } = useFormContext();
+  const { formData, updateModuleData, moduleErrors } = useFormContext();
   const data = formData.canvas;
+  const errors = moduleErrors?.canvas || {};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -61,6 +63,8 @@ export default function CanvasForm() {
           onChange={handleChange}
           placeholder="Acres"
           icon={Ruler}
+          required
+          error={errors.totalArea}
         />
         <FormInput
           label="Perimeter Length"
@@ -224,7 +228,7 @@ export default function CanvasForm() {
       >
         <div className="flex items-start gap-3">
           <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.15)' }}>
-            <Info size={20} weight="duotone" style={{ color: '#689F38' }} />
+            <Info size={20} strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
           </div>
           <div>
             <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Land Analysis</h4>

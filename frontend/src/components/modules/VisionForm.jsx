@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
-import { TrendUp, Info, Target, Leaf } from '@phosphor-icons/react';
+import { TrendingUp, Info, Target, Leaf, House, Fish } from 'lucide-react';
 import { FormSlider, FormButtonGroup, FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
+import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 export default function VisionForm() {
   const { formData, updateModuleData, completeModule } = useFormContext();
@@ -67,7 +68,7 @@ export default function VisionForm() {
       {/* Target LER */}
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <Target style={{ color: '#689F38' }} size={20} />
+          <Target style={{ color: ICON_COLOR }} size={20} strokeWidth={ICON_STROKE_WIDTH} />
           <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#689F38' }}>
             Target Land Equivalent Ratio (LER)
           </label>
@@ -115,7 +116,7 @@ export default function VisionForm() {
           className="p-4 bg-white rounded-xl border-2 border-gray-200"
         >
           <div className="flex items-center gap-4">
-            <span className="text-3xl">🏠</span>
+            <House size={24} strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
             <div className="flex-1">
               <p className="font-semibold text-gray-800">Polyhouse/Greenhouse</p>
               <p className="text-sm text-gray-500">Protected cultivation infrastructure</p>
@@ -153,7 +154,7 @@ export default function VisionForm() {
           className="p-4 bg-white rounded-xl border-2 border-gray-200"
         >
           <div className="flex items-center gap-4">
-            <span className="text-3xl">🐟</span>
+            <Fish size={24} strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
             <div className="flex-1">
               <p className="font-semibold text-gray-800">Aquaculture/Fish Pond</p>
               <p className="text-sm text-gray-500">Integrated water-based farming</p>
@@ -189,7 +190,7 @@ export default function VisionForm() {
       {/* Organic Interest */}
       <div className="p-4 bg-gradient-to-r from-green-50 to-lime-50 rounded-xl border border-green-200">
         <div className="flex items-center gap-3 mb-3">
-          <Leaf className="text-green-600" size={24} />
+          <Leaf className="text-green-600" size={24} strokeWidth={ICON_STROKE_WIDTH} />
           <span className="font-semibold text-green-800">Sustainability</span>
         </div>
         <FormToggle
@@ -202,9 +203,10 @@ export default function VisionForm() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-xs text-green-600 mt-2"
+            className="text-xs text-green-600 mt-2 flex items-center gap-2"
           >
-            🌿 Organic certification may unlock premium pricing opportunities
+            <Leaf size={14} strokeWidth={ICON_STROKE_WIDTH} className="text-green-600" />
+            Organic certification may unlock premium pricing opportunities
           </motion.p>
         )}
       </div>
@@ -217,7 +219,7 @@ export default function VisionForm() {
         style={{ background: 'linear-gradient(135deg, #689F38 0%, #7FAF45 100%)' }}
       >
         <div className="flex items-center gap-3 mb-4">
-          <TrendUp size={24} />
+          <TrendingUp size={24} strokeWidth={ICON_STROKE_WIDTH} />
           <h3 className="text-lg font-bold">Your Farm Vision</h3>
         </div>
         
@@ -245,8 +247,9 @@ export default function VisionForm() {
         </div>
 
         <div className="mt-6 pt-4 border-t border-white/20">
-          <p className="text-sm text-white/70 text-center">
-            🎯 Your personalized irrigation solution will be tailored to these goals
+          <p className="text-sm text-white/70 text-center flex items-center justify-center gap-2">
+            <Target size={16} strokeWidth={ICON_STROKE_WIDTH} className="text-white/80" />
+            Your personalized irrigation solution will be tailored to these goals
           </p>
         </div>
       </motion.div>
@@ -261,7 +264,7 @@ export default function VisionForm() {
       >
         <div className="flex items-start gap-3">
           <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info className="w-5 h-5" style={{ color: '#689F38' }} />
+            <Info className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
           </div>
           <div>
             <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>ROI Calculation</h4>

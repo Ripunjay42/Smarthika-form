@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { House, WifiHigh, WifiMedium, WifiLow, WifiSlash, Cpu, Lightning, Shield, Warning, Fire, CheckCircle, Lock, Wrench, Truck } from '@phosphor-icons/react';
+import { CircleCheck, Cpu, Flame, House, Lock, Shield, TriangleAlert, Truck, Wifi, WifiHigh, WifiLow, WifiOff, Wrench } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -19,9 +19,9 @@ const shelterStyles = {
 
 const signalConfig = {
   '4g': { bars: 4, icon: WifiHigh, label: '4G LTE' },
-  '3g': { bars: 3, icon: WifiMedium, label: '3G' },
+  '3g': { bars: 3, icon: Wifi, label: '3G' },
   '2g': { bars: 2, icon: WifiLow, label: '2G' },
-  'none': { bars: 0, icon: WifiSlash, label: 'No Signal' },
+  'none': { bars: 0, icon: WifiOff, label: 'No Signal' },
 };
 
 export default function ShelterAnimation({ 
@@ -115,7 +115,7 @@ export default function ShelterAnimation({
             
             {/* Display Screen */}
             <div className="absolute top-8 inset-x-3 h-12 rounded flex flex-col items-center justify-center" style={{ backgroundColor: THEME.background }}>
-              <Cpu size={18} weight="duotone" color={THEME.accent} />
+              <Cpu size={18} color={THEME.accent} />
               <span className="text-xs font-bold font-mono mt-1" style={{ color: THEME.accent }}>READY</span>
             </div>
 
@@ -143,7 +143,7 @@ export default function ShelterAnimation({
         animate={{ opacity: 1, y: 0 }}
       >
         <div className="flex items-center gap-3">
-          <SignalIcon size={24} weight="duotone" color={signal.bars > 0 ? THEME.accent : '#EF4444'} />
+          <SignalIcon size={24} color={signal.bars > 0 ? THEME.accent : '#EF4444'} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>SIGNAL</p>
             <p className="text-sm font-bold" style={{ color: THEME.text }}>{signal.label}</p>
@@ -175,7 +175,7 @@ export default function ShelterAnimation({
         animate={{ opacity: 1, y: 0 }}
       >
         <div className="flex items-center gap-3">
-          <House size={24} weight="duotone" color={THEME.accent} />
+          <House size={24} color={THEME.accent} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>SHELTER TYPE</p>
             <p className="text-sm font-bold" style={{ color: THEME.text }}>{shelter.label}</p>
@@ -192,7 +192,7 @@ export default function ShelterAnimation({
         transition={{ delay: 0.2 }}
       >
         <div className="flex items-center gap-2">
-          <Shield size={16} weight="duotone" color={THEME.accent} />
+          <Shield size={16} color={THEME.accent} />
           <span className="text-xs font-bold" style={{ color: THEME.text }}>{ipRatingRequirement}</span>
         </div>
       </motion.div>
@@ -207,7 +207,7 @@ export default function ShelterAnimation({
           transition={{ delay: 0.3 }}
         >
           <div className="flex items-center gap-2">
-            <Fire size={20} weight="fill" color="#EF4444" />
+            <Flame size={20} color="#EF4444" />
             <div>
               <p className="text-xs font-semibold text-red-600">HIGH HEAT</p>
               <p className="text-xs text-red-500">Fan Required</p>
@@ -226,7 +226,7 @@ export default function ShelterAnimation({
           transition={{ delay: 0.4 }}
         >
           <div className="flex items-center gap-2">
-            <Warning size={16} weight="fill" color="#F59E0B" />
+            <TriangleAlert size={16} color="#F59E0B" />
             <span className="text-xs font-bold text-yellow-700">SLIMLINE ONLY</span>
           </div>
         </motion.div>
@@ -245,7 +245,7 @@ export default function ShelterAnimation({
           transition={{ delay: 0.5 }}
         >
           <div className="flex items-center gap-2">
-            <Lock size={18} weight={antiTheftHardwareNeed ? 'fill' : 'duotone'} color={antiTheftHardwareNeed ? THEME.accent : '#EF4444'} />
+            <Lock size={18} color={antiTheftHardwareNeed ? THEME.accent : '#EF4444'} />
             <div>
               <p className="text-xs font-semibold" style={{ color: antiTheftHardwareNeed ? THEME.accent : '#EF4444' }}>THEFT RISK</p>
               {antiTheftHardwareNeed && (
@@ -266,7 +266,7 @@ export default function ShelterAnimation({
           transition={{ delay: 0.6 }}
         >
           <div className="flex items-center gap-2">
-            <Warning size={20} weight="fill" color="#EF4444" />
+            <TriangleAlert size={20} color="#EF4444" />
             <div>
               <p className="text-xs font-semibold text-red-600">SAFETY ALERT</p>
               <div className="flex gap-1 mt-1">
@@ -288,7 +288,7 @@ export default function ShelterAnimation({
           transition={{ delay: 0.6 }}
         >
           <div className="flex items-center gap-2">
-            <CheckCircle size={20} weight="fill" color={THEME.accent} />
+            <CircleCheck size={20} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>SAFETY OK</p>
               <div className="flex gap-1 mt-1">
@@ -309,7 +309,7 @@ export default function ShelterAnimation({
         transition={{ delay: 0.7 }}
       >
         <div className="flex items-center gap-2">
-          <Wrench size={18} weight="duotone" color={THEME.accent} />
+          <Wrench size={18} color={THEME.accent} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>INSTALLATION</p>
             <p className="text-xs capitalize" style={{ color: THEME.text }}>{installationPreference}</p>
@@ -326,7 +326,7 @@ export default function ShelterAnimation({
         transition={{ delay: 0.8 }}
       >
         <div className="flex items-center gap-2">
-          <Truck size={18} weight="duotone" color={THEME.accent} />
+          <Truck size={18} color={THEME.accent} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>ACCESS</p>
             <div className="flex gap-1 mt-1">

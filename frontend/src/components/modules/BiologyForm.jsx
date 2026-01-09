@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion';
-import { Leaf, Drop, Info } from '@phosphor-icons/react';
+import { Leaf, Droplet, Info, CloudRain, Waves } from 'lucide-react';
 import { FormInput, FormSelect, FormSlider, FormButtonGroup, FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { CROP_TYPES, IRRIGATION_METHODS } from '../../constants/formConstants';
+import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 export default function BiologyForm() {
-  const { formData, updateModuleData } = useFormContext();
+  const { formData, updateModuleData, moduleErrors } = useFormContext();
   const data = formData.biology;
+  const errors = moduleErrors?.biology || {};
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -46,6 +48,8 @@ export default function BiologyForm() {
           onChange={handleChange}
           options={[{ value: '', label: 'Select Crop' }, ...CROP_TYPES]}
           icon={Leaf}
+          required
+          error={errors.primaryCropType}
         />
         <FormSelect
           label="Secondary Crop (Optional)"
@@ -127,8 +131,10 @@ export default function BiologyForm() {
         value={data.peakWaterDemand}
         onChange={handleChange}
         placeholder="Liters Per Day (LPD)"
-        icon={Drop}
+        icon={Droplet}
         helper="Total water requirement during peak season"
+        required
+        error={errors.peakWaterDemand}
       />
 
       {/* Irrigation Method */}
@@ -156,8 +162,14 @@ export default function BiologyForm() {
                 : { borderColor: 'rgba(104, 159, 56, 0.2)' }
               }
             >
-              <span className="text-2xl block mb-2">
-                {method.value === 'drip' ? '💧' : method.value === 'sprinkler' ? '🌧️' : '🌊'}
+              <span className="block mb-2 flex justify-center">
+                {method.value === 'drip' ? (
+                  <Droplet size={24} strokeWidth={ICON_STROKE_WIDTH} color={data.irrigationMethod === method.value ? 'white' : ICON_COLOR} />
+                ) : method.value === 'sprinkler' ? (
+                  <CloudRain size={24} strokeWidth={ICON_STROKE_WIDTH} color={data.irrigationMethod === method.value ? 'white' : ICON_COLOR} />
+                ) : (
+                  <Waves size={24} strokeWidth={ICON_STROKE_WIDTH} color={data.irrigationMethod === method.value ? 'white' : ICON_COLOR} />
+                )}
               </span>
               <span className="text-sm font-medium block">{method.label}</span>
               <span className={`text-xs ${data.irrigationMethod === method.value ? 'text-white/80' : 'text-gray-500'}`}>
@@ -268,7 +280,7 @@ export default function BiologyForm() {
       >
         <div className="flex items-start gap-3">
           <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info className="w-5 h-5" style={{ color: '#689F38' }} />
+            <Info className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
           </div>
           <div>
             <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Water Demand Calculation</h4>

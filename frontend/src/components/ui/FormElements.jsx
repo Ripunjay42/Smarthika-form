@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 export function FormInput({
   label,
@@ -24,8 +25,8 @@ export function FormInput({
       )}
       <div className="relative">
         {Icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#689F38' }}>
-            <Icon size={18} weight="duotone" />
+          <div className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: ICON_COLOR }}>
+            <Icon size={18} strokeWidth={ICON_STROKE_WIDTH} />
           </div>
         )}
         <motion.input
@@ -90,8 +91,8 @@ export function FormSelect({
       )}
       <div className="relative">
         {Icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10" style={{ color: '#689F38' }}>
-            <Icon size={18} weight="duotone" />
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10" style={{ color: ICON_COLOR }}>
+            <Icon size={18} strokeWidth={ICON_STROKE_WIDTH} />
           </div>
         )}
         <motion.select

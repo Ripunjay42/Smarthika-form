@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ArrowLeft, CheckCircle, PaperPlaneTilt, Warning } from '@phosphor-icons/react';
+import { ArrowRight, ArrowLeft, CheckCircle, Send, AlertTriangle } from 'lucide-react';
 import { useFormContext } from '../../context/FormContext';
 import { MODULES } from '../../constants/formConstants';
 import { submitToGoogleSheets, validateFormData } from '../../services/googleSheets';
+import { validateAllModules, validateModule } from '../../utils/moduleValidation';
+import SubmissionPreview from './SubmissionPreview';
 import {
   ProfileForm,
   CanvasForm,
@@ -36,32 +38,89 @@ export default function FormPanel() {
     nextModule, 
     prevModule, 
     completeModule,
+    goToModule,
     completedModules,
-    formData
+    formData,
+    setErrorsForModule,
+    setAllModuleErrors,
+    clearErrorsForModule,
   } = useFormContext();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [isPreviewing, setIsPreviewing] = useState(false);
+  const [showSubmitSuccessModal, setShowSubmitSuccessModal] = useState(false);
 
   const CurrentForm = formComponents[currentModule];
   const isLastModule = currentModule === MODULES.length - 1;
   const isFirstModule = currentModule === 0;
 
+  useEffect(() => {
+    // If user navigates between modules, exit preview.
+    setIsPreviewing(false);
+    setSubmitError(null);
+  }, [currentModule]);
+
   const handleContinue = () => {
+    const moduleId = MODULES[currentModule]?.id;
+    const moduleData = moduleId ? formData?.[moduleId] : undefined;
+
+    if (moduleId) {
+      const validation = validateModule(moduleId, moduleData);
+      if (!validation.isValid) {
+        setErrorsForModule(moduleId, validation.fieldErrors);
+        return;
+      }
+      clearErrorsForModule(moduleId);
+    }
+
     completeModule(currentModule);
     if (!isLastModule) {
       nextModule();
     }
   };
 
+  const handleOpenPreview = () => {
+    const moduleId = MODULES[currentModule]?.id;
+    const moduleData = moduleId ? formData?.[moduleId] : undefined;
+
+    if (moduleId) {
+      const validation = validateModule(moduleId, moduleData);
+      if (!validation.isValid) {
+        setErrorsForModule(moduleId, validation.fieldErrors);
+        return;
+      }
+      clearErrorsForModule(moduleId);
+    }
+
+    completeModule(currentModule);
+    setSubmitError(null);
+    setIsPreviewing(true);
+  };
+
+  const handleClosePreview = () => {
+    setIsPreviewing(false);
+  };
+
   const handleSubmit = async () => {
-    // Validate form data
-    const validation = validateFormData(formData);
-    
-    if (!validation.isValid) {
-      setSubmitError(validation.errors.join(', '));
-      alert('⚠️ Please fill in required fields:\n' + validation.errors.join('\n'));
+    // Validate required fields across modules (no blocking alerts; navigate to first invalid module).
+    const moduleValidation = validateAllModules(MODULES, formData);
+    if (!moduleValidation.isValid) {
+      setAllModuleErrors(moduleValidation.moduleErrors);
+      setIsPreviewing(false);
+      if (moduleValidation.firstInvalidModuleIndex >= 0) {
+        goToModule(moduleValidation.firstInvalidModuleIndex);
+      }
+      setSubmitError('Please fill required fields before submitting.');
+      return;
+    }
+
+    // Back-compat overall validator (kept for safety) but no alerts.
+    const legacyValidation = validateFormData(formData);
+    if (!legacyValidation.isValid) {
+      setSubmitError(legacyValidation.errors.join(', '));
+      setIsPreviewing(false);
       return;
     }
 
@@ -73,13 +132,9 @@ export default function FormPanel() {
       
       if (result.success) {
         setSubmitSuccess(true);
+        setShowSubmitSuccessModal(true);
         completeModule(currentModule);
-        
-        // Show success message
-        setTimeout(() => {
-          alert('✅ Form submitted successfully!\n\nYour data has been saved to:\nGoogle Drive > Farm Form Data > Farm Form Submissions');
-        }, 300);
-        
+
         // Optional: Reset form or redirect after successful submission
         setTimeout(() => {
           console.log('Form submitted successfully!', formData);
@@ -90,7 +145,6 @@ export default function FormPanel() {
     } catch (error) {
       console.error('Submission error:', error);
       setSubmitError(error.message);
-      alert('❌ Submission failed. Please check your internet connection and try again.\n\nError: ' + error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -98,24 +152,92 @@ export default function FormPanel() {
 
   return (
     <div className="h-full flex flex-col" style={{ backgroundColor: '#FAF0BF' }}>
+      <AnimatePresence>
+        {showSubmitSuccessModal && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center px-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Submission successful"
+            onClick={() => setShowSubmitSuccessModal(false)}
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.35)' }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 12, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className="w-full max-w-md rounded-2xl border shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                backgroundColor: '#FAF0BF',
+                borderColor: 'rgba(104, 159, 56, 0.25)',
+              }}
+            >
+              <div className="p-6">
+                <div className="flex items-start gap-3">
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: 'rgba(104, 159, 56, 0.15)' }}
+                  >
+                    <CheckCircle size={22} style={{ color: '#689F38' }} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold" style={{ color: '#33691E' }}>
+                      Submitted successfully
+                    </h3>
+                    <p className="text-sm mt-1" style={{ color: '#558B2F' }}>
+                      Your data has been sent to Google Sheets.
+                    </p>
+                    <p className="text-xs mt-2" style={{ color: '#558B2F' }}>
+                      Location: Google Drive &gt; Farm Form Data &gt; Farm Form Submissions
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-end">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="button"
+                    className="px-5 py-2.5 rounded-xl font-semibold"
+                    style={{
+                      backgroundColor: '#689F38',
+                      color: '#FAF0BF',
+                      boxShadow: '0 4px 14px rgba(104, 159, 56, 0.3)',
+                    }}
+                    onClick={() => setShowSubmitSuccessModal(false)}
+                  >
+                    Done
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Scrollable Form Content */}
       <div className="flex-1 overflow-y-auto px-8 py-6">
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentModule}
+            key={isPreviewing ? 'preview' : currentModule}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
           >
-            {CurrentForm && <CurrentForm />}
+            {isPreviewing ? <SubmissionPreview formData={formData} /> : CurrentForm ? <CurrentForm /> : null}
           </motion.div>
         </AnimatePresence>
       </div>
 
       {/* Navigation Footer */}
       <div 
-        className="flex-shrink-0 px-8 py-4 backdrop-blur-sm"
+        className="shrink-0 px-8 py-4 backdrop-blur-sm"
         style={{ 
           backgroundColor: 'rgba(250, 240, 191, 0.9)',
           borderTop: '2px solid rgba(104, 159, 56, 0.15)'
@@ -126,19 +248,19 @@ export default function FormPanel() {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={prevModule}
-            disabled={isFirstModule}
+            onClick={isPreviewing ? handleClosePreview : prevModule}
+            disabled={isPreviewing ? false : isFirstModule}
             className="flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-200"
             style={{
-              opacity: isFirstModule ? 0 : 1,
-              pointerEvents: isFirstModule ? 'none' : 'auto',
+              opacity: isPreviewing ? 1 : isFirstModule ? 0 : 1,
+              pointerEvents: isPreviewing ? 'auto' : isFirstModule ? 'none' : 'auto',
               backgroundColor: 'rgba(104, 159, 56, 0.1)',
               color: '#33691E',
               border: '2px solid rgba(104, 159, 56, 0.2)'
             }}
           >
-            <ArrowLeft size={18} weight="bold" />
-            Back
+            <ArrowLeft size={18} />
+            {isPreviewing ? 'Edit' : 'Back'}
           </motion.button>
 
           {/* Progress Indicator */}
@@ -165,7 +287,13 @@ export default function FormPanel() {
           <motion.button
             whileHover={{ scale: isSubmitting || submitSuccess ? 1 : 1.02 }}
             whileTap={{ scale: isSubmitting || submitSuccess ? 1 : 0.98 }}
-            onClick={isLastModule ? handleSubmit : handleContinue}
+            onClick={
+              isPreviewing
+                ? handleSubmit
+                : isLastModule
+                ? handleOpenPreview
+                : handleContinue
+            }
             disabled={isSubmitting || submitSuccess}
             className="flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg"
             style={{
@@ -176,10 +304,10 @@ export default function FormPanel() {
               cursor: isSubmitting || submitSuccess ? 'not-allowed' : 'pointer'
             }}
           >
-            {isLastModule ? (
+            {isPreviewing ? (
               submitSuccess ? (
                 <>
-                  <CheckCircle size={20} weight="fill" />
+                  <CheckCircle size={20} />
                   Submitted!
                 </>
               ) : isSubmitting ? (
@@ -188,25 +316,52 @@ export default function FormPanel() {
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   >
-                    <PaperPlaneTilt size={20} weight="bold" />
+                    <Send size={20} />
                   </motion.div>
                   Submitting...
                 </>
               ) : submitError ? (
                 <>
-                  <Warning size={20} weight="bold" />
+                  <AlertTriangle size={20} />
                   Retry Submit
                 </>
               ) : (
                 <>
                   Submit
-                  <PaperPlaneTilt size={20} weight="bold" />
+                  <Send size={20} />
+                </>
+              )
+            ) : isLastModule ? (
+              submitSuccess ? (
+                <>
+                  <CheckCircle size={20} />
+                  Submitted!
+                </>
+              ) : isSubmitting ? (
+                <>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  >
+                    <Send size={20} />
+                  </motion.div>
+                  Submitting...
+                </>
+              ) : submitError ? (
+                <>
+                  <AlertTriangle size={20} />
+                  Retry Submit
+                </>
+              ) : (
+                <>
+                  Preview
+                  <ArrowRight size={20} />
                 </>
               )
             ) : (
               <>
                 Continue
-                <ArrowRight size={20} weight="bold" />
+                <ArrowRight size={20} />
               </>
             )}
           </motion.button>

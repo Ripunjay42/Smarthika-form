@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
-import { ArrowsClockwise, Info, WarningCircle, Plant, ArrowsCounterClockwise } from '@phosphor-icons/react';
+import { Info, TriangleAlert, Sprout, RefreshCcw, Sparkles } from 'lucide-react';
 import { FormButtonGroup, FormSlider, FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
+import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 export default function BaselineForm() {
   const { formData, updateModuleData } = useFormContext();
@@ -58,7 +59,7 @@ export default function BaselineForm() {
             }
           >
             <div className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ backgroundColor: !isRetrofit ? 'rgba(255,255,255,0.2)' : 'rgba(104, 159, 56, 0.1)' }}>
-              <Plant size={28} weight="duotone" color={!isRetrofit ? 'white' : '#689F38'} />
+              <Sprout size={28} strokeWidth={ICON_STROKE_WIDTH} color={!isRetrofit ? 'white' : ICON_COLOR} />
             </div>
             <span className="text-lg font-bold block">New Installation</span>
             <span className={`text-sm ${!isRetrofit ? 'text-white/80' : 'text-gray-500'}`}>
@@ -84,7 +85,7 @@ export default function BaselineForm() {
             }
           >
             <div className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ backgroundColor: isRetrofit ? 'rgba(255,255,255,0.2)' : 'rgba(104, 159, 56, 0.1)' }}>
-              <ArrowsCounterClockwise size={28} weight="duotone" color={isRetrofit ? 'white' : '#689F38'} />
+              <RefreshCcw size={28} strokeWidth={ICON_STROKE_WIDTH} color={isRetrofit ? 'white' : ICON_COLOR} />
             </div>
             <span className="text-lg font-bold block">Replacement</span>
             <span className={`text-sm ${isRetrofit ? 'text-white/80' : 'text-gray-500'}`}>
@@ -104,7 +105,7 @@ export default function BaselineForm() {
           {/* Old Pump Info */}
           <div className="p-4 bg-orange-50 rounded-xl border border-orange-200 space-y-4">
             <div className="flex items-center gap-2 text-orange-700">
-              <ArrowsCounterClockwise size={20} />
+              <RefreshCcw size={20} strokeWidth={ICON_STROKE_WIDTH} />
               <span className="font-medium">Current System Details</span>
             </div>
 
@@ -149,7 +150,7 @@ export default function BaselineForm() {
                 animate={{ opacity: 1 }}
                 className="p-3 bg-red-100 rounded-lg flex items-center gap-2"
               >
-                <WarningCircle className="text-red-600" size={20} />
+                <TriangleAlert className="text-red-600" size={20} strokeWidth={ICON_STROKE_WIDTH} />
                 <span className="text-sm text-red-700">
                   High burnout frequency indicates reliability issues
                 </span>
@@ -203,7 +204,7 @@ export default function BaselineForm() {
                 animate={{ opacity: 1 }}
                 className="text-xs text-orange-600 bg-orange-50 p-2 rounded"
               >
-                ⚠️ Old pipes may add friction penalty to head calculations
+                Old pipes may add friction penalty to head calculations
               </motion.p>
             )}
 
@@ -256,7 +257,7 @@ export default function BaselineForm() {
           className="p-8 rounded-xl border text-center"
           style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
         >
-          <span className="text-6xl block mb-4">✨</span>
+          <Sparkles className="mx-auto mb-4" size={48} strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
           <h3 className="text-xl font-bold mb-2" style={{ color: '#33691E' }}>Fresh Start</h3>
           <p className="text-sm" style={{ color: '#558B2F' }}>
             New installation means optimal efficiency from day one. 

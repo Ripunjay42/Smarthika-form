@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion';
-import { Drop, Info } from '@phosphor-icons/react';
+import { Droplet, Info } from 'lucide-react';
 import { FormInput, FormSelect, FormSlider, FormButtonGroup, FormColorPicker } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { WATER_SOURCES, CASING_DIAMETERS, WATER_QUALITIES } from '../../constants/formConstants';
+import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 export default function HeartForm() {
-  const { formData, updateModuleData } = useFormContext();
+  const { formData, updateModuleData, moduleErrors } = useFormContext();
   const data = formData.heart;
+  const errors = moduleErrors?.heart || {};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,7 +55,9 @@ export default function HeartForm() {
         value={data.totalDepth}
         onChange={handleChange}
         placeholder="Total borewell depth (ft)"
-        icon={Drop}
+        icon={Droplet}
+        required
+        error={errors.totalDepth}
       />
 
       {/* Water Levels */}
@@ -66,6 +70,8 @@ export default function HeartForm() {
           onChange={handleChange}
           placeholder="Resting depth (ft)"
           helper="Water level when pump is off"
+          required
+          error={errors.staticWaterLevel}
         />
         <FormInput
           label="Dynamic Water Level"
@@ -75,6 +81,8 @@ export default function HeartForm() {
           onChange={handleChange}
           placeholder="Pumping depth (ft)"
           helper="Water level during pumping"
+          required
+          error={errors.dynamicWaterLevel}
         />
       </div>
 
@@ -224,7 +232,7 @@ export default function HeartForm() {
       >
         <div className="flex items-start gap-3">
           <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info className="w-5 h-5" style={{ color: '#689F38' }} />
+            <Info className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
           </div>
           <div>
             <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Pump Selection Guide</h4>
