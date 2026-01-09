@@ -44,10 +44,10 @@ export default function HarvestWheelAnimation({
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
       {/* Vision Metrics Dashboard */}
-      <div className="relative w-full h-full flex flex-col items-center justify-center gap-8 p-8">
+      <div className="relative w-full h-full flex flex-col items-center justify-center gap-6 sm:gap-8 p-4 sm:p-8">
         
         {/* Labor Pain Gauge */}
-        <div className="relative w-64 h-64">
+        <div className="relative w-52 h-52 sm:w-64 sm:h-64">
           <div 
             className="absolute inset-0 rounded-full shadow-2xl"
             style={{ 
@@ -101,7 +101,7 @@ export default function HarvestWheelAnimation({
             {/* Pain Score Display */}
             <div className="absolute bottom-12 left-1/2 -translate-x-1/2 text-center">
               <motion.span
-                className="text-4xl font-bold"
+                className="text-3xl sm:text-4xl font-bold"
                 style={{ color: isPainHigh ? '#EF4444' : isPainMedium ? '#F59E0B' : '#22C55E' }}
                 key={laborPainScore}
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -123,15 +123,15 @@ export default function HarvestWheelAnimation({
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Heart size={40} color={isPainHigh ? '#EF4444' : THEME.accent} />
+            <Heart size={34} color={isPainHigh ? '#EF4444' : THEME.accent} />
           </motion.div>
         </div>
 
         {/* Bottom Metrics Grid */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {/* Target LER Card */}
           <motion.div
-            className="px-5 py-4 backdrop-blur-sm rounded-xl"
+            className="px-4 sm:px-5 py-3 sm:py-4 backdrop-blur-sm rounded-xl"
             style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -140,7 +140,7 @@ export default function HarvestWheelAnimation({
             <div className="flex flex-col items-center gap-2">
               <TrendingUp size={24} color={THEME.accent} />
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>TARGET LER</p>
-              <p className="text-2xl font-bold" style={{ color: THEME.text }}>{targetLER.toFixed(1)}</p>
+              <p className="text-xl sm:text-2xl font-bold" style={{ color: THEME.text }}>{targetLER.toFixed(1)}</p>
               <span className="text-xs font-medium" style={{ color: THEME.textLight }}>
                 {yieldAmbition === 'intensive' ? 'Intensive' : yieldAmbition === 'high' ? 'High' : 'Standard'}
               </span>
@@ -149,7 +149,7 @@ export default function HarvestWheelAnimation({
 
           {/* Organic Farming Card */}
           <motion.div
-            className="px-5 py-4 backdrop-blur-sm rounded-xl"
+            className="px-4 sm:px-5 py-3 sm:py-4 backdrop-blur-sm rounded-xl"
             style={{ 
               backgroundColor: organicFarmingInterest ? 'rgba(34, 197, 94, 0.1)' : THEME.cardBg,
               border: `2px solid ${organicFarmingInterest ? 'rgba(34, 197, 94, 0.3)' : THEME.cardBorder}` 
@@ -177,7 +177,7 @@ export default function HarvestWheelAnimation({
 
           {/* Polyhouse Card */}
           <motion.div
-            className="px-5 py-4 backdrop-blur-sm rounded-xl"
+            className="px-4 sm:px-5 py-3 sm:py-4 backdrop-blur-sm rounded-xl"
             style={{ 
               backgroundColor: hasPolyhouse ? 'rgba(59, 130, 246, 0.1)' : THEME.cardBg,
               border: `2px solid ${hasPolyhouse ? 'rgba(59, 130, 246, 0.3)' : THEME.cardBorder}` 
@@ -205,7 +205,7 @@ export default function HarvestWheelAnimation({
 
           {/* Aquaculture Card */}
           <motion.div
-            className="px-5 py-4 backdrop-blur-sm rounded-xl"
+            className="px-4 sm:px-5 py-3 sm:py-4 backdrop-blur-sm rounded-xl"
             style={{ 
               backgroundColor: hasAquaculture ? 'rgba(6, 182, 212, 0.1)' : THEME.cardBg,
               border: `2px solid ${hasAquaculture ? 'rgba(6, 182, 212, 0.3)' : THEME.cardBorder}` 
@@ -234,7 +234,7 @@ export default function HarvestWheelAnimation({
 
         {/* Automation ROI Signal */}
         <motion.div
-          className="absolute top-8 right-8 px-4 py-3 backdrop-blur-sm rounded-xl"
+          className="absolute top-4 sm:top-8 right-4 sm:right-8 px-3 sm:px-4 py-2 sm:py-3 backdrop-blur-sm rounded-xl"
           style={{ 
             backgroundColor: automationPriority === 'high' ? 'rgba(239, 68, 68, 0.1)' : 
                            automationPriority === 'medium' ? 'rgba(245, 158, 11, 0.1)' : 
@@ -248,7 +248,7 @@ export default function HarvestWheelAnimation({
         >
           <div className="flex items-center gap-2">
             <ChartLine
-              size={20}
+              size={18}
               color={automationPriority === 'high' ? '#EF4444' :
                      automationPriority === 'medium' ? '#F59E0B' : '#22C55E'}
             />
@@ -270,13 +270,13 @@ export default function HarvestWheelAnimation({
         {/* Expansion Summary */}
         {isExpanding && (
           <motion.div
-            className="absolute top-8 left-8 px-4 py-3 backdrop-blur-sm rounded-xl"
+            className="absolute top-4 sm:top-8 left-4 sm:left-8 px-3 sm:px-4 py-2 sm:py-3 backdrop-blur-sm rounded-xl"
             style={{ backgroundColor: 'rgba(139, 92, 246, 0.1)', border: '2px solid rgba(139, 92, 246, 0.3)' }}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
             <div className="flex items-center gap-2">
-              <Sparkles size={20} color="#8B5CF6" />
+              <Sparkles size={18} color="#8B5CF6" />
               <div>
                 <p className="text-xs font-semibold text-purple-700">EXPANSION PLANS</p>
                 <p className="text-xs text-purple-600">
@@ -289,14 +289,14 @@ export default function HarvestWheelAnimation({
 
         {/* Vision Status Message */}
         <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 backdrop-blur-sm rounded-xl"
+          className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 px-4 sm:px-6 py-2 sm:py-3 backdrop-blur-sm rounded-xl"
           style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center gap-2">
-            <Target size={20} color={THEME.accent} />
-            <p className="text-sm font-semibold" style={{ color: THEME.text }}>
+            <Target size={18} color={THEME.accent} />
+            <p className="text-xs sm:text-sm font-semibold" style={{ color: THEME.text }}>
               {organicFarmingInterest && isExpanding ? 'Premium Growth Strategy' :
                organicFarmingInterest ? 'Sustainable Focus' :
                isExpanding ? 'Expansion Mode' :

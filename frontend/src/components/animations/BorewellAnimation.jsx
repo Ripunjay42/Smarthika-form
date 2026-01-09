@@ -58,14 +58,14 @@ export default function BorewellAnimation({
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
       {/* Ground Surface */}
-      <div className="absolute top-[22%] left-0 right-0 h-6" style={{ background: `linear-gradient(to bottom, ${THEME.accent}, ${THEME.accentLight})` }}>
+      <div className="absolute top-[22%] left-0 right-0 h-5 sm:h-6" style={{ background: `linear-gradient(to bottom, ${THEME.accent}, ${THEME.accentLight})` }}>
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="text-xs font-medium" style={{ color: '#FAF0BF' }}>Ground Level</span>
         </div>
       </div>
 
       {/* Borewell Cross-section */}
-      <div className="relative h-[380px] w-36 mt-10">
+      <div className="relative h-[300px] sm:h-[380px] w-28 sm:w-36 mt-6 sm:mt-10">
         {/* Casing Pipe */}
         <div className="absolute inset-0 rounded-lg overflow-hidden" style={{ backgroundColor: '#4B5563', border: '3px solid #374151' }}>
           {/* Earth Layers */}
@@ -89,7 +89,7 @@ export default function BorewellAnimation({
               transition={{ duration: 0.6 }}
             >
               <motion.div 
-                className="absolute -left-20 flex items-center gap-1"
+                className="absolute -left-14 sm:-left-20 flex items-center gap-1"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
               >
@@ -108,7 +108,7 @@ export default function BorewellAnimation({
               transition={{ duration: 0.6 }}
             >
               <motion.div 
-                className="absolute -right-20 flex items-center gap-1"
+                className="absolute -right-14 sm:-right-20 flex items-center gap-1"
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
               >
@@ -141,16 +141,16 @@ export default function BorewellAnimation({
 
         {/* Pump Motor at Top */}
         <motion.div
-          className="absolute -top-12 left-1/2 -translate-x-1/2 w-20 h-14 rounded-lg flex items-center justify-center shadow-lg"
+          className="absolute -top-10 sm:-top-12 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-12 sm:h-14 rounded-lg flex items-center justify-center shadow-lg"
           style={{ backgroundColor: THEME.accent }}
           animate={{ scale: [1, 1.03, 1] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
-          <Zap size={32} color="#FAF0BF" />
+          <Zap size={26} color="#FAF0BF" />
         </motion.div>
 
         {/* Depth Scale */}
-        <div className="absolute -right-16 top-0 bottom-0 flex flex-col justify-between text-xs font-medium" style={{ color: THEME.textLight }}>
+        <div className="absolute -right-12 sm:-right-16 top-0 bottom-0 flex flex-col justify-between text-[10px] sm:text-xs font-medium" style={{ color: THEME.textLight }}>
           <span>0</span>
           <span>50ft</span>
           <span>100ft</span>
@@ -161,7 +161,7 @@ export default function BorewellAnimation({
       {/* Drawdown Card with Status */}
       {drawdown > 0 && (
         <motion.div
-          className="absolute top-8 left-8 p-4 backdrop-blur-sm rounded-xl"
+          className="absolute top-4 sm:top-8 left-4 sm:left-8 p-3 sm:p-4 backdrop-blur-sm rounded-xl"
           style={{ 
             backgroundColor: `${drawdownStatus.color}15`,
             border: `2px solid ${drawdownStatus.color}40` 
@@ -171,7 +171,7 @@ export default function BorewellAnimation({
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center gap-3">
-            <Gauge size={24} color={drawdownStatus.color} />
+            <Gauge size={20} color={drawdownStatus.color} />
             <div>
               <p className="text-xs font-semibold" style={{ color: drawdownStatus.color }}>DRAWDOWN</p>
               <p className="text-xl font-bold" style={{ color: drawdownStatus.color }}>{drawdown} ft</p>
@@ -184,7 +184,7 @@ export default function BorewellAnimation({
       {/* Open Well Indicator */}
       {isOpenWell && (
         <motion.div
-          className="absolute top-56 left-8 p-3 backdrop-blur-sm rounded-xl"
+          className="absolute top-48 sm:top-56 left-4 sm:left-8 p-3 backdrop-blur-sm rounded-xl"
           style={{ 
             backgroundColor: hasFootValveIssue ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)',
             border: `2px solid ${hasFootValveIssue ? 'rgba(239, 68, 68, 0.3)' : 'rgba(59, 130, 246, 0.3)'}` 
@@ -217,13 +217,13 @@ export default function BorewellAnimation({
 
       {/* Water Quality Card */}
       <motion.div
-        className="absolute bottom-8 left-8 p-4 backdrop-blur-sm rounded-xl"
+        className="absolute bottom-4 sm:bottom-8 left-4 sm:left-8 p-3 sm:p-4 backdrop-blur-sm rounded-xl"
         style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
         <div className="flex items-center gap-3">
-          <Droplet size={24} color={waterColor} />
+          <Droplet size={20} color={waterColor} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>WATER QUALITY</p>
             <div className="flex items-center gap-2">
@@ -239,7 +239,7 @@ export default function BorewellAnimation({
 
       {/* Diameter Card */}
       <motion.div
-        className="absolute bottom-8 right-8 p-4 backdrop-blur-sm rounded-xl"
+        className="absolute bottom-4 sm:bottom-8 right-4 sm:right-8 p-3 sm:p-4 backdrop-blur-sm rounded-xl"
         style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -251,7 +251,7 @@ export default function BorewellAnimation({
       {/* Total Depth Card */}
       {totalDepth > 0 && (
         <motion.div
-          className="absolute top-8 right-8 p-4 backdrop-blur-sm rounded-xl"
+          className="absolute top-4 sm:top-8 right-4 sm:right-8 p-3 sm:p-4 backdrop-blur-sm rounded-xl"
           style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -263,7 +263,7 @@ export default function BorewellAnimation({
 
       {/* Source Type Badge */}
       <motion.div
-        className="absolute top-8 left-1/2 -translate-x-1/2 px-4 py-2 backdrop-blur-sm rounded-full"
+        className="absolute top-4 sm:top-8 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-2 backdrop-blur-sm rounded-full"
         style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -280,7 +280,7 @@ export default function BorewellAnimation({
       {/* Risk Indicators */}
       {hasHighRisk && (
         <motion.div
-          className="absolute top-32 left-8 p-3 backdrop-blur-sm rounded-xl"
+          className="absolute top-24 sm:top-32 left-4 sm:left-8 p-3 backdrop-blur-sm rounded-xl"
           style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '2px solid rgba(239, 68, 68, 0.3)' }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -301,7 +301,7 @@ export default function BorewellAnimation({
       {/* Quality Issues Indicator */}
       {hasQualityIssues && (
         <motion.div
-          className="absolute bottom-32 left-8 p-3 backdrop-blur-sm rounded-xl"
+          className="absolute bottom-24 sm:bottom-32 left-4 sm:left-8 p-3 backdrop-blur-sm rounded-xl"
           style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', border: '2px solid rgba(245, 158, 11, 0.3)' }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -324,7 +324,7 @@ export default function BorewellAnimation({
       {/* Number of Borewells Badge */}
       {numberOfBorewells > 1 && (
         <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 backdrop-blur-sm rounded-full"
+          className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 backdrop-blur-sm rounded-full"
           style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -339,7 +339,7 @@ export default function BorewellAnimation({
       {/* Seasonal Variance Indicator */}
       {seasonalVariance && seasonalVariance !== 'low' && (
         <motion.div
-          className="absolute top-32 right-8 px-3 py-2 backdrop-blur-sm rounded-lg"
+          className="absolute top-24 sm:top-32 right-4 sm:right-8 px-3 py-2 backdrop-blur-sm rounded-lg"
           style={{ 
             backgroundColor: seasonalVariance === 'high' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
             border: `2px solid ${seasonalVariance === 'high' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`

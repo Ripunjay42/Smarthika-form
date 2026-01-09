@@ -39,6 +39,16 @@ html {
   scrollbar-color: var(--color-accent-light) var(--color-background);
 }
 
+/* Hide scrollbar completely for specific elements */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Focus visible outline - disabled for form inputs, they have custom focus styles */
 button:focus-visible,
 a:focus-visible,

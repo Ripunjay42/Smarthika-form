@@ -221,7 +221,7 @@ export default function FormPanel() {
       </AnimatePresence>
 
       {/* Scrollable Form Content */}
-      <div className="flex-1 overflow-y-auto px-8 py-6">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={isPreviewing ? 'preview' : currentModule}
@@ -237,20 +237,21 @@ export default function FormPanel() {
 
       {/* Navigation Footer */}
       <div 
-        className="shrink-0 px-8 py-4 backdrop-blur-sm"
+        className="shrink-0 px-4 sm:px-6 md:px-8 py-3 sm:py-4 backdrop-blur-sm"
         style={{ 
           backgroundColor: 'rgba(250, 240, 191, 0.9)',
-          borderTop: '2px solid rgba(104, 159, 56, 0.15)'
+          borderTop: '2px solid rgba(104, 159, 56, 0.15)',
+          paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))'
         }}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           {/* Back Button */}
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={isPreviewing ? handleClosePreview : prevModule}
             disabled={isPreviewing ? false : isFirstModule}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-200"
+            className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-medium transition-all duration-200 shrink-0"
             style={{
               opacity: isPreviewing ? 1 : isFirstModule ? 0 : 1,
               pointerEvents: isPreviewing ? 'auto' : isFirstModule ? 'none' : 'auto',
@@ -264,7 +265,7 @@ export default function FormPanel() {
           </motion.button>
 
           {/* Progress Indicator */}
-          <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2">
             {MODULES.map((_, index) => (
               <motion.div
                 key={index}
@@ -295,7 +296,7 @@ export default function FormPanel() {
                 : handleContinue
             }
             disabled={isSubmitting || submitSuccess}
-            className="flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg"
+            className="flex items-center justify-center gap-2 px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg whitespace-nowrap"
             style={{
               backgroundColor: submitSuccess ? '#22C55E' : isSubmitting ? '#9CA3AF' : '#689F38',
               color: '#FAF0BF',

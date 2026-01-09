@@ -41,7 +41,7 @@ export default function EquipmentAnimation({
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
       {/* Equipment Grid */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-6">
         {EQUIPMENT_DATA.map((equipment, index) => {
           const Icon = equipment.icon;
           const isSelected = equipmentMap[equipment.key];
@@ -49,7 +49,7 @@ export default function EquipmentAnimation({
           return (
             <motion.div
               key={equipment.id}
-              className="relative w-32 h-32 rounded-2xl flex flex-col items-center justify-center overflow-hidden"
+              className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-2xl flex flex-col items-center justify-center overflow-hidden"
               style={{ 
                 backgroundColor: isSelected ? THEME.cardBg : 'rgba(0,0,0,0.03)',
                 border: `3px solid ${isSelected ? THEME.accent : 'rgba(0,0,0,0.1)'}`,
@@ -83,14 +83,14 @@ export default function EquipmentAnimation({
                 transition={{ duration: 3, repeat: Infinity }}
               >
                 <Icon 
-                  size={36} 
+                  size={28} 
                   color={isSelected ? THEME.accent : '#9CA3AF'} 
                 />
               </motion.div>
               
               {/* Equipment Name */}
               <span 
-                className="text-xs font-medium mt-2"
+                className="text-[10px] sm:text-xs font-medium mt-1 sm:mt-2"
                 style={{ color: isSelected ? THEME.text : '#6B7280' }}
               >
                 {equipment.name}
@@ -99,13 +99,13 @@ export default function EquipmentAnimation({
               {/* Check Mark for Selected */}
               {isSelected && (
                 <motion.div
-                  className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center"
+                  className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: THEME.accent }}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 20 }}
                 >
-                  <Check size={12} color="white" />
+                  <Check size={10} color="white" />
                 </motion.div>
               )}
             </motion.div>
@@ -115,18 +115,18 @@ export default function EquipmentAnimation({
 
       {/* Progress Header */}
       <motion.div
-        className="absolute top-8 left-1/2 -translate-x-1/2 px-6 py-3 backdrop-blur-sm rounded-full flex items-center gap-4"
+        className="absolute top-4 sm:top-8 left-1/2 -translate-x-1/2 px-4 sm:px-6 py-2 sm:py-3 backdrop-blur-sm rounded-full flex items-center gap-3 sm:gap-4"
         style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <Target size={20} color={THEME.accent} />
-        <p className="text-sm font-semibold" style={{ color: THEME.text }}>
+        <Target size={18} color={THEME.accent} />
+        <p className="text-xs sm:text-sm font-semibold" style={{ color: THEME.text }}>
           Equipment: {selectedCount}/{maxEquipment}
         </p>
         
         {/* Mini Progress Bar */}
-        <div className="w-20 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.1)' }}>
+        <div className="w-16 sm:w-20 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.1)' }}>
           <motion.div 
             className="h-full rounded-full"
             style={{ backgroundColor: THEME.accent }}
@@ -140,7 +140,7 @@ export default function EquipmentAnimation({
       {/* Harvest Calendar */}
       {harvestMonths.length > 0 && (
         <motion.div
-          className="absolute bottom-8 left-8 right-8 p-4 backdrop-blur-sm rounded-xl"
+          className="absolute bottom-4 sm:bottom-8 left-4 sm:left-8 right-4 sm:right-8 p-3 sm:p-4 backdrop-blur-sm rounded-xl"
           style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -179,7 +179,7 @@ export default function EquipmentAnimation({
       {/* Cross-Sell Opportunities */}
       {selectedCount > 0 && (
         <motion.div
-          className="absolute top-32 left-8 p-3 backdrop-blur-sm rounded-xl"
+          className="absolute top-24 sm:top-32 left-4 sm:left-8 p-3 backdrop-blur-sm rounded-xl"
           style={{ backgroundColor: 'rgba(147, 51, 234, 0.1)', border: '2px solid rgba(147, 51, 234, 0.3)' }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -202,7 +202,7 @@ export default function EquipmentAnimation({
       {/* Empty State Message */}
       {selectedCount === 0 && (
         <motion.div
-          className="absolute bottom-24 left-1/2 -translate-x-1/2 text-center"
+          className="absolute bottom-20 sm:bottom-24 left-1/2 -translate-x-1/2 text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
