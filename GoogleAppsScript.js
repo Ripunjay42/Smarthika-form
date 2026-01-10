@@ -4,6 +4,185 @@
 // This script receives form submissions and saves them to Google Sheets
 // Deploy as Web App with access set to "Anyone"
 
+// Google Drive Folder ID for storing uploaded files
+// CREATE A FOLDER IN YOUR GOOGLE DRIVE AND GET ITS ID
+const UPLOAD_FOLDER_ID = '1AElFRG9LomDbz0MOuvEgcyg0SGrcDa6t'; // Replace with your folder ID
+
+// ====================================
+// FILE UPLOAD FUNCTION
+// ====================================
+function uploadFileToGoogleDrive(fileName, base64Data, mimeType) {
+  Logger.log('');
+  Logger.log('╔════════════════════════════════════════╗');
+  Logger.log('║   FILE UPLOAD DIAGNOSTIC STARTED       ║');
+  Logger.log('╚════════════════════════════════════════╝');
+  
+  try {
+    // Step 1: Validate inputs
+    Logger.log('');
+    Logger.log('STEP 1: Validating inputs');
+    Logger.log('  - Folder ID: ' + UPLOAD_FOLDER_ID);
+    Logger.log('  - File name: ' + fileName);
+    Logger.log('  - MIME type: ' + mimeType);
+    Logger.log('  - Base64 data type: ' + typeof base64Data);
+    Logger.log('  - Base64 data length: ' + (base64Data ? base64Data.length : 'null'));
+    
+    if (!UPLOAD_FOLDER_ID || UPLOAD_FOLDER_ID === 'YOUR_GOOGLE_DRIVE_FOLDER_ID') {
+      Logger.log('  ❌ UPLOAD_FOLDER_ID not configured');
+      throw new Error('UPLOAD_FOLDER_ID not configured');
+    }
+
+    if (!base64Data || base64Data.length === 0) {
+      Logger.log('  ❌ No base64 data provided');
+      throw new Error('No base64 data provided');
+    }
+    
+    if (!fileName) {
+      Logger.log('  ❌ No file name provided');
+      throw new Error('No file name provided');
+    }
+
+    Logger.log('  ✓ All inputs valid');
+
+    // Step 2: Check if base64 has data URL prefix and remove if needed
+    Logger.log('');
+    Logger.log('STEP 2: Checking base64 format');
+    let cleanBase64 = base64Data;
+    if (base64Data.includes(',')) {
+      Logger.log('  - Base64 contains data URL prefix');
+      cleanBase64 = base64Data.split(',')[1];
+      Logger.log('  - Extracted base64 length: ' + cleanBase64.length);
+    } else {
+      Logger.log('  - Base64 is clean (no data URL prefix)');
+    }
+    
+    if (!cleanBase64 || cleanBase64.length === 0) {
+      throw new Error('Base64 string is empty after processing');
+    }
+    Logger.log('  ✓ Base64 format valid');
+
+    // Step 3: Decode base64
+    Logger.log('');
+    Logger.log('STEP 3: Decoding base64 to binary');
+    let binaryData;
+    try {
+      // Decode base64 - this returns raw bytes
+      const decodedBytes = Utilities.base64Decode(cleanBase64);
+      // Create a blob from the decoded bytes
+      const blob = Utilities.newBlob(decodedBytes, mimeType);
+      binaryData = blob.getBytes();
+      Logger.log('  ✓ Base64 decoded successfully');
+      Logger.log('  - Binary data length: ' + binaryData.length + ' bytes');
+      Logger.log('  - Decoded data type: ' + typeof binaryData);
+    } catch (decodeError) {
+      Logger.log('  ❌ Base64 decode failed: ' + decodeError.toString());
+      throw decodeError;
+    }
+
+    // Step 4: Get folder reference
+    Logger.log('');
+    Logger.log('STEP 4: Accessing Google Drive folder');
+    let folder;
+    try {
+      folder = DriveApp.getFolderById(UPLOAD_FOLDER_ID);
+      Logger.log('  ✓ Folder accessed');
+      Logger.log('  - Folder name: ' + folder.getName());
+      Logger.log('  - Folder URL: ' + folder.getUrl());
+    } catch (folderError) {
+      Logger.log('  ❌ Cannot access folder: ' + folderError.toString());
+      Logger.log('  - Folder ID may be invalid: ' + UPLOAD_FOLDER_ID);
+      Logger.log('  - Script may not have permission');
+      throw folderError;
+    }
+
+    // Step 5: Create file
+    Logger.log('');
+    Logger.log('STEP 5: Creating file in Drive');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+    const uniqueName = timestamp + '_' + fileName;
+    Logger.log('  - Unique file name: ' + uniqueName);
+    Logger.log('  - Binary data to upload: ' + binaryData.length + ' bytes');
+    
+    let file;
+    try {
+      // Create file directly from binary data
+      const fileBlob = Utilities.newBlob(binaryData, mimeType, fileName);
+      file = folder.createFile(fileBlob);
+      Logger.log('  ✓ File created successfully');
+      Logger.log('  - File name: ' + file.getName());
+      Logger.log('  - File size: ' + file.getSize() + ' bytes');
+      Logger.log('  - File ID: ' + file.getId());
+      Logger.log('  - File MIME type: ' + file.getMimeType());
+      
+      // Rename file to include timestamp
+      file.setName(uniqueName);
+      Logger.log('  ✓ File renamed to: ' + file.getName());
+    } catch (createError) {
+      Logger.log('  ❌ File creation failed: ' + createError.toString());
+      throw createError;
+    }
+
+    // Step 6: Set sharing permissions
+    Logger.log('');
+    Logger.log('STEP 6: Setting sharing permissions');
+    try {
+      file.setSharing(DriveApp.Access.ANYONE, DriveApp.Permission.VIEW);
+      Logger.log('  ✓ File shared with ANYONE as VIEWER');
+    } catch (shareError) {
+      Logger.log('  ⚠️  Sharing failed: ' + shareError.toString());
+      Logger.log('     File created but may not be publicly accessible');
+    }
+
+    // Step 7: Get shareable URL
+    Logger.log('');
+    Logger.log('STEP 7: Generating shareable URL');
+    const fileLink = file.getUrl();
+    Logger.log('  ✓ URL generated');
+    Logger.log('  - File URL: ' + fileLink);
+    
+    // Step 8: Verify file is accessible
+    Logger.log('');
+    Logger.log('STEP 8: Verifying file accessibility');
+    try {
+      // Try to read the first few bytes to verify file isn't corrupted
+      const fileBlob = file.getBlob();
+      const blobSize = fileBlob.getSize();
+      Logger.log('  ✓ File blob accessible');
+      Logger.log('  - Blob size: ' + blobSize + ' bytes');
+      Logger.log('  - Original size: ' + binaryData.length + ' bytes');
+      
+      if (blobSize === binaryData.length) {
+        Logger.log('  ✓ File size matches original data - file is intact');
+      } else {
+        Logger.log('  ⚠️  File size mismatch!');
+        Logger.log('     Original: ' + binaryData.length + ' bytes');
+        Logger.log('     Uploaded: ' + blobSize + ' bytes');
+      }
+    } catch (accessError) {
+      Logger.log('  ❌ Cannot access uploaded file: ' + accessError.toString());
+    }
+
+    Logger.log('');
+    Logger.log('╔════════════════════════════════════════╗');
+    Logger.log('║   ✅ FILE UPLOAD SUCCESSFUL            ║');
+    Logger.log('╚════════════════════════════════════════╝');
+    Logger.log('');
+    
+    return fileLink;
+    
+  } catch (error) {
+    Logger.log('');
+    Logger.log('╔════════════════════════════════════════╗');
+    Logger.log('║   ❌ FILE UPLOAD FAILED                ║');
+    Logger.log('╚════════════════════════════════════════╝');
+    Logger.log('');
+    Logger.log('ERROR: ' + error.toString());
+    Logger.log('Stack trace: ' + error.stack);
+    Logger.log('');
+    return null;
+  }
+}
+
 function doPost(e) {
   try {
     // Log incoming request
@@ -25,7 +204,7 @@ function doPost(e) {
     // const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     
     // Option 2: OR if accessing a different sheet, use Spreadsheet ID:
-    const spreadsheet = SpreadsheetApp.openById('1K915AnBXQvuXBLzjCSwMnH8Mmibbq8akG99byeCuwHQ');
+    const spreadsheet = SpreadsheetApp.openById('1CzifkyZmZuux5Yn5g3Ebr9ZElUsIMIo0sWXDeC4Rpg4');
     Logger.log('Spreadsheet accessed successfully');
     
     // Make sure this matches your actual sheet name
@@ -49,30 +228,33 @@ function doPost(e) {
     if (sheet.getLastRow() === 0) {
       const headers = [
         'Timestamp',
+        // Profile Section
         'Customer Name',
         'WhatsApp Number',
         'Email Address',
+        'Age',
+        'Country',
+        'State',
+        'City',
+        'Farm Same Location',
         'Labor Count',
-        'GPS Latitude',
-        'GPS Longitude',
+        // Canvas Section
+        'Unit System',
         'Total Area (acres)',
-        'Perimeter Length (m)',
+        'Side Length',
+        'Side Width',
         'Field Geometry',
-        'Side Length (m)',
-        'Side Width (m)',
         'Topography Type',
-        'Slope Percentage',
-        'Slope Direction',
         'Soil Texture Top',
-        'Soil Texture Sub',
         'Drainage Class',
-        'Exclusion Zones (%)',
-        'Cultivable Area (acres)',
-        'Road Access Distance (m)',
+        'Unused Land (%)',
         'Soil Test Status',
-        'Soil pH',
-        'Soil EC',
-        'Source Type',
+        'Soil Test Report Link',
+        'Road Accessible',
+        'Road Access Distance (km)',
+        // Heart Section (Borewell/Water Source)
+        'Water Sources',
+        'Number of Borehells',
         'Total Depth (ft)',
         'Static Water Level (ft)',
         'Dynamic Water Level (ft)',
@@ -82,23 +264,23 @@ function doPost(e) {
         'Seasonal Variance',
         'Dry Run Risk',
         'Water Quality',
-        'Scaling Risk',
-        'Iron Content Risk',
-        'Abrasion Risk',
+        'Water Storage Type',
         'Suction Head (ft)',
         'Foot Valve Condition',
-        'Number of Borewells',
+        'Municipal Water Available',
+        'Municipal Water Volume (L/day)',
+        'Pump Size',
+        // Distribution Section (Arteries)
         'Delivery Target',
         'Overhead Tank Height (ft)',
         'Tank Capacity (L)',
         'Ground Sump Depth (ft)',
-        'Sump Distance (m)',
-        'Mainline Diameter (inch)',
-        'Total Pipe Length (m)',
+        'Sump Distance (ft)',
         'Mainline Pipe Material',
+        'Mainline Diameter (inch)',
         'Pipe Condition',
-        'Friction Head Penalty (ft)',
-        'Number of Elbows',
+        'Friction Head Penalty (%)',
+        'Total Pipe Length (ft)',
         'Flowmeter Requirement',
         'Auxiliary Outlet Need',
         'Primary Energy Source',
@@ -115,8 +297,10 @@ function doPost(e) {
         'Distance Meter to Borewell (m)',
         'Generator Ownership',
         'EV Charging Need',
+        // Shelter Section
         'Shelter Structure',
         'Mobile Signal Strength',
+        // Biology Section
         'Primary Crop Type',
         'Secondary Crop Type',
         'Cropping Pattern',
@@ -131,22 +315,26 @@ function doPost(e) {
         'Number of Zones',
         'Filtration Requirement',
         'Slurry Fertigation Usage',
+        // Baseline Section
         'Project Type',
         'Old Pump Type',
         'Old Pump Age (years)',
         'Burnout Frequency',
         'Efficiency Gap (%)',
         'Pipe Reuse Status',
+        // Shed Section
         'Tractor Ownership',
         'Drone Ownership',
         'Sprayer Ownership',
         'EV Status',
         'Harvest Months',
+        // Vision Section
         'Labor Pain Score',
         'Target LER',
         'Organic Farming Interest',
         'Polyhouse Status',
-        'Aquaculture Status'
+        'Aquaculture Status',
+        'Submission Metadata'
       ];
       
       sheet.appendRow(headers);
@@ -187,30 +375,40 @@ function doPost(e) {
     // ====================================
     const row = [
       new Date(),
+      // Profile Section
       get(data, 'profile.customerName'),
       get(data, 'profile.whatsappNumber'),
       get(data, 'profile.emailAddress'),
+      get(data, 'profile.age', 0),
+      get(data, 'profile.country'),
+      get(data, 'profile.state'),
+      get(data, 'profile.city'),
+      get(data, 'profile.farmSameLocation'),
       get(data, 'profile.laborCount', 0),
-      get(data, 'canvas.gpsLatitude'),
-      get(data, 'canvas.gpsLongitude'),
+      // Canvas Section
+      get(data, 'canvas.unitSystem', 'feet'),
       get(data, 'canvas.totalArea'),
-      get(data, 'canvas.perimeterLength'),
-      get(data, 'canvas.fieldGeometry'),
       get(data, 'canvas.sideDimensions.length'),
       get(data, 'canvas.sideDimensions.width'),
+      get(data, 'canvas.fieldGeometry'),
       get(data, 'canvas.topographyType'),
-      get(data, 'canvas.slopePercentage', 0),
-      get(data, 'canvas.slopeDirection'),
       get(data, 'canvas.soilTextureTop'),
-      get(data, 'canvas.soilTextureSub'),
       get(data, 'canvas.drainageClass'),
       get(data, 'canvas.exclusionZones', 0),
-      get(data, 'canvas.cultivableArea'),
-      get(data, 'canvas.roadAccessDistance'),
       get(data, 'canvas.soilTestStatus'),
-      get(data, 'canvas.soilPH', 7),
-      get(data, 'canvas.soilEC', 0),
-      get(data, 'heart.sourceType'),
+      // Handle file upload - store the link if file was uploaded
+      (() => {
+        if (data.uploadedFile) {
+          const fileLink = uploadFileToGoogleDrive(data.uploadedFile.name, data.uploadedFile.data, data.uploadedFile.type);
+          return fileLink || 'Upload failed';
+        }
+        return '';
+      })(),
+      get(data, 'canvas.roadAccessible'),
+      get(data, 'canvas.roadAccessDistance', 0),
+      // Heart Section (Borewell/Water Source)
+      Array.isArray(data.heart?.sourceType) ? data.heart.sourceType.join(', ') : get(data, 'heart.sourceType'),
+      get(data, 'heart.numberOfBorewells', 1),
       get(data, 'heart.totalDepth'),
       get(data, 'heart.staticWaterLevel'),
       get(data, 'heart.dynamicWaterLevel'),
@@ -220,23 +418,24 @@ function doPost(e) {
       get(data, 'heart.seasonalVariance'),
       get(data, 'heart.dryRunRisk'),
       get(data, 'heart.waterQuality'),
-      get(data, 'heart.scalingRisk'),
-      get(data, 'heart.ironContentRisk'),
-      get(data, 'heart.abrasionRisk'),
+      get(data, 'heart.waterStorageType'),
       get(data, 'heart.suctionHead'),
       get(data, 'heart.footValveCondition'),
-      get(data, 'heart.numberOfBorewells', 1),
-      get(data, 'arteries.deliveryTarget'),
+      get(data, 'heart.municipalWaterAvailable'),
+      get(data, 'heart.municipalWaterVolume', 0),
+      get(data, 'heart.pumpSize'),
+      // Distribution Section
+      // Distribution Section (Arteries)
+      Array.isArray(data.arteries?.deliveryTarget) ? data.arteries.deliveryTarget.join(', ') : get(data, 'arteries.deliveryTarget'),
       get(data, 'arteries.overheadTankHeight', 0),
       get(data, 'arteries.tankCapacity', 0),
       get(data, 'arteries.groundSumpDepth', 0),
       get(data, 'arteries.sumpDistance', 0),
-      get(data, 'arteries.mainlineDiameter', 0),
-      get(data, 'arteries.totalPipeLength', 0),
       get(data, 'arteries.mainlinePipeMaterial'),
+      get(data, 'arteries.mainlineDiameter', 0),
       get(data, 'arteries.pipeCondition'),
       get(data, 'arteries.frictionHeadPenalty', 0),
-      get(data, 'arteries.numberOfElbows', 0),
+      get(data, 'arteries.totalPipeLength', 0),
       get(data, 'arteries.flowmeterRequirement') ? 'Yes' : 'No',
       get(data, 'arteries.auxiliaryOutletNeed') ? 'Yes' : 'No',
       get(data, 'pulse.primaryEnergySource'),
@@ -284,7 +483,9 @@ function doPost(e) {
       get(data, 'vision.targetLER', 1.0),
       get(data, 'vision.organicFarmingInterest') ? 'Yes' : 'No',
       get(data, 'vision.polyhouseStatus'),
-      get(data, 'vision.aquacultureStatus')
+      get(data, 'vision.aquacultureStatus'),
+      // File upload link
+      JSON.stringify({submitTime: new Date().toISOString(), submittedBy: get(data, 'profile.customerName')})
     ];
     
     // ====================================
@@ -459,7 +660,7 @@ function debugSetup() {
   try {
     Logger.log('=== DEBUGGING SETUP ===');
     
-    const spreadsheet = SpreadsheetApp.openById('1K915AnBXQvuXBLzjCSwMnH8Mmibbq8akG99byeCuwHQ');
+    const spreadsheet = SpreadsheetApp.openById('1CzifkyZmZuux5Yn5g3Ebr9ZElUsIMIo0sWXDeC4Rpg4');
     Logger.log('[OK] Spreadsheet found: ' + spreadsheet.getName());
     Logger.log('   Spreadsheet URL: ' + spreadsheet.getUrl());
     
@@ -485,8 +686,45 @@ function debugSetup() {
     Logger.log('Current deployment info:');
     Logger.log('   Script owner: ' + Session.getActiveUser().getEmail());
     
+    // Check upload folder
+    Logger.log('');
+    Logger.log('=== CHECKING UPLOAD FOLDER ===');
+    Logger.log('UPLOAD_FOLDER_ID: ' + UPLOAD_FOLDER_ID);
+    try {
+      const folder = DriveApp.getFolderById(UPLOAD_FOLDER_ID);
+      Logger.log('[OK] Folder found: ' + folder.getName());
+      Logger.log('   Folder URL: ' + folder.getUrl());
+      Logger.log('   Can create files: YES');
+    } catch (folderError) {
+      Logger.log('[ERROR] Cannot access folder: ' + folderError.toString());
+      Logger.log('   The folder ID may be incorrect or the script may not have access');
+      Logger.log('   Please verify:');
+      Logger.log('   1. Folder ID is correct: ' + UPLOAD_FOLDER_ID);
+      Logger.log('   2. Folder exists in Google Drive');
+      Logger.log('   3. Script has permission to access it');
+    }
+    
   } catch (error) {
     Logger.log('[ERROR] ' + error.toString());
     Logger.log('   Stack: ' + error.stack);
   }
+}
+
+// ====================================
+// DEBUG: Test file upload function
+// ====================================
+function testFileUpload() {
+  Logger.log('=== TESTING FILE UPLOAD ===');
+  
+  // Create a simple test file
+  const testContent = 'This is a test file content';
+  const base64Content = Utilities.base64Encode(testContent);
+  
+  Logger.log('Test data:');
+  Logger.log('   Original content: ' + testContent);
+  Logger.log('   Base64 length: ' + base64Content.length);
+  Logger.log('   MIME type: text/plain');
+  
+  const result = uploadFileToGoogleDrive('test-file.txt', base64Content, 'text/plain');
+  Logger.log('Upload result: ' + result);
 }

@@ -151,6 +151,9 @@ export function FormSlider({
   step = 1,
   unit = '',
   showValue = true,
+  required = false,
+  error,
+  helper,
   className = '',
 }) {
   const percentage = ((value - min) / (max - min)) * 100;
@@ -161,19 +164,20 @@ export function FormSlider({
         <div className="flex justify-between items-center">
           <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>
             {label}
+            {required && <span className="text-red-500 ml-1">*</span>}
           </label>
           {showValue && (
-            <span className="text-sm font-bold" style={{ color: '#689F38' }}>
+            <span className="text-sm font-bold" style={{ color: error ? '#EF4444' : '#689F38' }}>
               {value}{unit}
             </span>
           )}
         </div>
       )}
       <div className="relative">
-        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
+        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: error ? 'rgba(239, 68, 68, 0.2)' : 'rgba(104, 159, 56, 0.2)' }}>
           <motion.div
             className="h-full rounded-full"
-            style={{ backgroundColor: '#689F38' }}
+            style={{ backgroundColor: error ? '#EF4444' : '#689F38' }}
             initial={false}
             animate={{ width: `${percentage}%` }}
             transition={{ duration: 0.2 }}
@@ -194,7 +198,7 @@ export function FormSlider({
           style={{ 
             left: `calc(${percentage}% - 10px)`,
             backgroundColor: '#EDEDE7',
-            border: '3px solid #689F38'
+            border: `3px solid ${error ? '#EF4444' : '#689F38'}`
           }}
           animate={{ left: `calc(${percentage}% - 10px)` }}
           transition={{ duration: 0.2 }}
@@ -204,9 +208,22 @@ export function FormSlider({
         <span>{min}{unit}</span>
         <span>{max}{unit}</span>
       </div>
+      {helper && !error && (
+        <p className="text-xs" style={{ color: '#558B2F' }}>{helper}</p>
+      )}
+      {error && (
+        <motion.p
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-xs text-red-500"
+        >
+          {error}
+        </motion.p>
+      )}
     </div>
   );
 }
+
 
 export function FormToggle({
   label,

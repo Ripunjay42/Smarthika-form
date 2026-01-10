@@ -35,22 +35,37 @@ export const MODULE_VALIDATION_RULES = {
   ],
   heart: [
     {
-      field: 'totalDepth',
-      message: 'Total depth is required',
-      validate: (data) => isPositiveNumber(data?.totalDepth),
+      field: 'sourceType',
+      message: 'At least one water source type is required',
+      validate: (data) => !isBlank(data?.sourceType),
     },
     {
-      field: 'staticWaterLevel',
-      message: 'Static water level is required',
-      validate: (data) => !isBlank(data?.staticWaterLevel),
+      field: 'numberOfBorewells',
+      message: 'Number of water sources is required',
+      validate: (data) => isPositiveNumber(data?.numberOfBorewells),
     },
-    {
-      field: 'dynamicWaterLevel',
-      message: 'Dynamic water level is required',
-      validate: (data) => !isBlank(data?.dynamicWaterLevel),
-    },
+    // {
+    //   field: 'totalDepth',
+    //   message: 'Total depth of borewell/source is required',
+    //   validate: (data) => isPositiveNumber(data?.totalDepth),
+    // },
+    // {
+    //   field: 'staticWaterLevel',
+    //   message: 'Static water level is required',
+    //   validate: (data) => !isBlank(data?.staticWaterLevel),
+    // },
+    // {
+    //   field: 'dynamicWaterLevel',
+    //   message: 'Dynamic water level is required',
+    //   validate: (data) => !isBlank(data?.dynamicWaterLevel),
+    // },
   ],
   arteries: [
+    {
+      field: 'deliveryTarget',
+      message: 'At least one delivery target is required',
+      validate: (data) => !isBlank(data?.deliveryTarget),
+    },
     {
       field: 'totalPipeLength',
       message: 'Total pipe length is required',

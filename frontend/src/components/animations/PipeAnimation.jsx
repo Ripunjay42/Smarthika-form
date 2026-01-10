@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Cylinder, Droplet, Funnel, Gauge, GitBranch, Route, TriangleAlert, Wrench } from 'lucide-react';
+import { ArrowRight, Cylinder, Droplet, Funnel, Gauge, Route, TriangleAlert, Wrench } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -12,36 +12,36 @@ const THEME = {
 };
 
 export default function PipeAnimation({ 
-  deliveryTarget = 'direct', 
+  deliveryTarget = ['direct'],
   overheadTankHeight = 20,
   tankCapacity = 0,
   groundSumpDepth = 0,
   sumpDistance = 0,
   mainlineDiameter = 3,
   totalPipeLength = 100,
-  mainlinePipeMaterial = 'PVC',
-  pipeCondition = 'new',
+  mainlinePipeMaterial = 'HDPE',
+  pipeCondition = 'old',
   frictionHeadPenalty = 0,
-  numberOfElbows = 0,
   flowmeterRequirement = false,
   auxiliaryOutletNeed = false
 }) {
-  const isTankDelivery = deliveryTarget === 'tank';
-  const isSumpDelivery = deliveryTarget === 'sump';
+  // Handle deliveryTarget as array
+  const targets = Array.isArray(deliveryTarget) ? deliveryTarget : (deliveryTarget ? [deliveryTarget] : ['direct']);
+  const isTankDelivery = targets.includes('tank');
+  const isSumpDelivery = targets.includes('sump');
+  const isDirectDelivery = targets.includes('direct');
   const tankHeightPixels = Math.min(overheadTankHeight * 5, 180);
   
   // Determine pipe color based on material
   const pipeColors = {
-    'PVC': '#374151',
     'HDPE': '#1F2937',
+    'PVC': '#374151',
     'GI': '#6B7280',
-    'MS': '#9CA3AF'
   };
-  const pipeColor = pipeColors[mainlinePipeMaterial] || pipeColors['PVC'];
+  const pipeColor = pipeColors[mainlinePipeMaterial] || pipeColors['HDPE'];
   
   // Determine if pipe has issues
   const hasHighFriction = frictionHeadPenalty > 15;
-  const hasManyElbows = numberOfElbows > 10;
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
@@ -163,7 +163,7 @@ export default function PipeAnimation({
         )}
 
         {/* Direct Delivery Sprinkler (for direct) */}
-        {!isTankDelivery && (
+        {isDirectDelivery && (
           <motion.div
             className="absolute right-8 bottom-16"
             initial={{ opacity: 0, scale: 0 }}
@@ -231,8 +231,10 @@ export default function PipeAnimation({
         <div className="flex items-center gap-3">
           <Route size={24} color={THEME.accent} />
           <div>
-            <p className="text-xs font-semibold" style={{ color: THEME.accent }}>DELIVERY</p>
-            <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{deliveryTarget}</p>
+            <p className="text-xs font-semibold" style={{ color: THEME.accent }}>DELIVERY TARGETS</p>
+            <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>
+              {targets.map(t => t === 'direct' ? 'Direct' : t === 'tank' ? 'Tank' : 'Sump').join(', ')}
+            </p>
           </div>
         </div>
       </motion.div>
@@ -298,28 +300,6 @@ export default function PipeAnimation({
             <div>
               <p className="text-xs font-semibold" style={{ color: hasHighFriction ? '#EF4444' : '#F59E0B' }}>OLD PIPES</p>
               <p className="text-xs" style={{ color: hasHighFriction ? '#EF4444' : '#F59E0B' }}>+{frictionHeadPenalty}% friction</p>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Elbows Indicator */}
-      {numberOfElbows > 0 && (
-        <motion.div
-          className="absolute top-56 left-8 p-3 backdrop-blur-sm rounded-xl"
-          style={{ 
-            backgroundColor: hasManyElbows ? 'rgba(245, 158, 11, 0.1)' : THEME.cardBg,
-            border: `2px solid ${hasManyElbows ? 'rgba(245, 158, 11, 0.3)' : THEME.cardBorder}` 
-          }}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="flex items-center gap-2">
-            <GitBranch size={18} color={hasManyElbows ? '#F59E0B' : THEME.accent} />
-            <div>
-              <p className="text-xs font-semibold" style={{ color: hasManyElbows ? '#F59E0B' : THEME.accent }}>ELBOWS</p>
-              <p className="text-sm font-bold" style={{ color: hasManyElbows ? '#F59E0B' : THEME.text }}>{numberOfElbows} bends</p>
             </div>
           </div>
         </motion.div>

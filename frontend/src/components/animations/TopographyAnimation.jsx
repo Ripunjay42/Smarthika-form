@@ -27,8 +27,7 @@ export default function TopographyAnimation({
   fieldGeometry = 'rectangular',
   sideLength = 0,
   sideWidth = 0,
-  exclusionZones = 0,
-  slopePercentage = 0
+  exclusionZones = 0
 }) {
   const terrainRotation = topographyType === 'flat' ? 50 : topographyType === 'sloped' ? 55 : 60;
   const soilColor = soilColors[soilType] || soilColors.clay;
@@ -36,7 +35,18 @@ export default function TopographyAnimation({
   // Calculate field shape based on geometry
   const isCircular = fieldGeometry === 'circular';
   const isIrregular = fieldGeometry === 'irregular';
+  const isSquare = fieldGeometry === 'square';
+  const isRectangular = fieldGeometry === 'rectangular';
   const aspectRatio = sideLength && sideWidth ? sideWidth / sideLength : 1;
+  
+  // Different dimensions and rotations for square vs rectangular
+  const fieldWidth = isSquare 
+    ? 280 
+    : Math.max(240, Math.min(320, 240 + sideLength * 0.5));
+  const fieldHeight = isSquare 
+    ? 280 
+    : Math.max(240, Math.min(320, 240 * aspectRatio));
+  const rotateZ = isSquare ? 45 : isRectangular ? 30 : 45;
   
   // Calculate usable area after exclusions
   const usableArea = totalArea * (1 - exclusionZones / 100);
@@ -46,7 +56,7 @@ export default function TopographyAnimation({
       {/* 3D Terrain */}
       <motion.div
         className="relative"
-        animate={{ rotateX: terrainRotation, rotateZ: 45 }}
+        animate={{ rotateX: terrainRotation, rotateZ: rotateZ }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
         style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
       >
@@ -55,14 +65,14 @@ export default function TopographyAnimation({
           className="shadow-2xl relative overflow-hidden"
           animate={{ 
             backgroundColor: soilColor,
-            borderRadius: isCircular ? '50%' : isIrregular ? '20% 80% 60% 40%' : '1rem',
-            width: `${Math.max(240, Math.min(320, 240 + sideLength * 0.5))}px`,
-            height: `${Math.max(240, Math.min(320, 240 * aspectRatio))}px`,
+            borderRadius: isCircular ? '50%' : isIrregular ? '20% 80% 60% 40%' : isSquare ? '0.75rem' : '1rem',
+            width: `${fieldWidth}px`,
+            height: `${fieldHeight}px`,
           }}
           transition={{ duration: 0.5 }}
           style={{
             background: `linear-gradient(135deg, ${soilColor}, ${soilColor}cc)`,
-            transform: topographyType === 'sloped' ? `rotateX(-${8 + slopePercentage * 0.3}deg)` : topographyType === 'hilly' ? `rotateX(-${15 + slopePercentage * 0.5}deg)` : 'none',
+            transform: topographyType === 'hilly' ? `rotateX(-15deg) rotateZ(${isSquare ? 0 : 5}deg)` : 'none',
           }}
         >
           {/* Grid Pattern */}
@@ -81,7 +91,7 @@ export default function TopographyAnimation({
           <motion.div 
             className="absolute inset-3 border-2 border-dashed" 
             animate={{
-              borderRadius: isCircular ? '50%' : isIrregular ? '15% 85% 65% 35%' : '0.5rem',
+              borderRadius: isCircular ? '50%' : isIrregular ? '15% 85% 65% 35%' : isSquare ? '0.5rem' : '0.25rem',
             }}
             style={{ borderColor: 'rgba(255,255,255,0.4)' }} 
           />
@@ -106,9 +116,7 @@ export default function TopographyAnimation({
             })}
           </div>
 
-          {/* Borewell Markers - Removed as it's not part of canvas form */}
-
-          {/* Hills for hilly terrain */}
+          {/* Hills for hilly terrain - Visual distinction */}
           {topographyType === 'hilly' && (
             <>
               <motion.div
@@ -125,21 +133,28 @@ export default function TopographyAnimation({
                 animate={{ scaleY: 1 }}
                 transition={{ delay: 0.4 }}
               />
+              <motion.div
+                className="absolute w-14 h-8 rounded-t-full"
+                style={{ backgroundColor: `${soilColor}bb`, bottom: '10%', left: '35%' }}
+                initial={{ scaleY: 0 }}
+                animate={{ scaleY: 1 }}
+                transition={{ delay: 0.5 }}
+              />
             </>
           )}
         </motion.div>
 
-        {/* Elevation Indicator */}
-        {topographyType !== 'flat' && (
+        {/* Elevation Indicator for Hilly */}
+        {topographyType === 'hilly' && (
           <motion.div
-            className="absolute -left-10 top-0 h-full flex flex-col justify-between items-center"
+            className="absolute -left-12 top-0 h-full flex flex-col justify-between items-center"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
           >
             <div className="w-1.5 h-full rounded-full" style={{ background: `linear-gradient(to bottom, ${THEME.accent}, ${THEME.accentLight})` }} />
-            <span className="text-xs mt-2 font-medium" style={{ color: THEME.accent }}>
-              {topographyType === 'sloped' ? '5-15%' : '15-30%'}
+            <span className="text-xs font-medium whitespace-nowrap" style={{ color: THEME.accent }}>
+              Hilly Terrain
             </span>
           </motion.div>
         )}
@@ -188,10 +203,10 @@ export default function TopographyAnimation({
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>TOTAL AREA</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{totalArea} acres</p>
               {sideLength > 0 && sideWidth > 0 && (
-                <p className="text-xs mt-0.5" style={{ color: THEME.textLight }}>{sideLength} × {sideWidth} ft</p>
+                <p className="text-xs mt-0.5" style={{ color: THEME.textLight }}>{sideLength} × {sideWidth}</p>
               )}
               {exclusionZones > 0 && (
-                <p className="text-xs mt-0.5 text-red-600">{exclusionZones}% excluded</p>
+                <p className="text-xs mt-0.5 text-red-600">{exclusionZones}% unused</p>
               )}
             </div>
           </div>

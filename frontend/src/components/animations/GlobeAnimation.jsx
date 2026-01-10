@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Globe, MapPin, WifiHigh, User, Users } from 'lucide-react';
+import { Globe, MapPin, WifiHigh, User, Users, Calendar, Navigation } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -12,7 +12,16 @@ const THEME = {
   cardBorder: 'rgba(104, 159, 56, 0.3)',
 };
 
-export default function GlobeAnimation({ farmerName = '', whatsappNumber = '', laborCount = 0 }) {
+export default function GlobeAnimation({ 
+  farmerName = '', 
+  whatsappNumber = '', 
+  laborCount = 0,
+  age = 0,
+  country = '',
+  state = '',
+  city = '',
+  farmSameLocation = ''
+}) {
   const hasData = farmerName || whatsappNumber;
   
   return (
@@ -122,6 +131,25 @@ export default function GlobeAnimation({ farmerName = '', whatsappNumber = '', l
         </motion.div>
       )}
 
+      {/* Age Card */}
+      {age > 0 && (
+        <motion.div
+          className="absolute top-40 right-8 px-5 py-4 backdrop-blur-sm rounded-xl"
+          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0, y: [0, -8, 0] }}
+          transition={{ y: { duration: 3, repeat: Infinity, delay: 0.3 } }}
+        >
+          <div className="flex items-center gap-3">
+            <Calendar size={20} color={THEME.accent} />
+            <div>
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>AGE</p>
+              <p className="text-sm font-bold" style={{ color: THEME.text }}>{age} years</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* WhatsApp Card */}
       {whatsappNumber && (
         <motion.div
@@ -141,6 +169,26 @@ export default function GlobeAnimation({ farmerName = '', whatsappNumber = '', l
         </motion.div>
       )}
 
+      {/* Location Card */}
+      {city && (
+        <motion.div
+          className="absolute bottom-24 right-8 px-5 py-4 backdrop-blur-sm rounded-xl"
+          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="flex items-center gap-3">
+            <Navigation size={20} color={THEME.accent} />
+            <div>
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>LOCATION</p>
+              <p className="text-sm font-bold" style={{ color: THEME.text }}>{city}</p>
+              {state && <p className="text-xs" style={{ color: THEME.textLight }}>{state}</p>}
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Labor Count Card */}
       {laborCount > 0 && (
         <motion.div
@@ -155,6 +203,27 @@ export default function GlobeAnimation({ farmerName = '', whatsappNumber = '', l
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>WORKFORCE</p>
               <p className="text-lg font-bold" style={{ color: THEME.text }}>{laborCount} Workers</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Farm Location Card */}
+      {farmSameLocation && (
+        <motion.div
+          className="absolute bottom-24 left-8 px-5 py-4 backdrop-blur-sm rounded-xl"
+          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <div className="flex items-center gap-3">
+            <MapPin size={20} color={THEME.accent} />
+            <div>
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>FARM LOCATION</p>
+              <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>
+                {farmSameLocation === 'yes' ? 'Same Location' : 'Different Location'}
+              </p>
             </div>
           </div>
         </motion.div>

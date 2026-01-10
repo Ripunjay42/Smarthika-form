@@ -63,6 +63,11 @@ export default function AnimationPanel() {
           farmerName: moduleData.customerName,
           whatsappNumber: moduleData.whatsappNumber,
           laborCount: moduleData.laborCount || 0,
+          age: moduleData.age || 0,
+          country: moduleData.country,
+          state: moduleData.state,
+          city: moduleData.city,
+          farmSameLocation: moduleData.farmSameLocation,
         };
       
       case 'canvas':
@@ -74,7 +79,6 @@ export default function AnimationPanel() {
           sideLength: parseFloat(moduleData.sideDimensions?.length) || 0,
           sideWidth: parseFloat(moduleData.sideDimensions?.width) || 0,
           exclusionZones: moduleData.exclusionZones || 0,
-          slopePercentage: moduleData.slopePercentage || 0,
         };
       
       case 'heart':
@@ -84,20 +88,20 @@ export default function AnimationPanel() {
           waterQuality: moduleData.waterQuality || 'clear',
           totalDepth: parseFloat(moduleData.totalDepth) || 0,
           casingDiameter: parseFloat(moduleData.casingDiameter) || 4,
-          sourceType: moduleData.sourceType || 'borewell',
+          sourceType: Array.isArray(moduleData.sourceType) ? moduleData.sourceType : (moduleData.sourceType ? [moduleData.sourceType] : []),
           seasonalVariance: moduleData.seasonalVariance || 'low',
           dryRunRisk: moduleData.dryRunRisk || 'low',
-          scalingRisk: moduleData.scalingRisk || 'low',
-          ironContentRisk: moduleData.ironContentRisk || 'low',
-          abrasionRisk: moduleData.abrasionRisk || 'low',
           numberOfBorewells: parseFloat(moduleData.numberOfBorewells) || 1,
           suctionHead: parseFloat(moduleData.suctionHead) || 0,
           footValveCondition: moduleData.footValveCondition || 'good',
+          municipalWaterAvailable: moduleData.municipalWaterAvailable || 'no',
+          municipalWaterVolume: parseFloat(moduleData.municipalWaterVolume) || 0,
+          pumpSize: moduleData.pumpSize || '',
         };
       
       case 'arteries':
         return {
-          deliveryTarget: moduleData.deliveryTarget,
+          deliveryTarget: Array.isArray(moduleData.deliveryTarget) ? moduleData.deliveryTarget : (moduleData.deliveryTarget ? [moduleData.deliveryTarget] : []),
           overheadTankHeight: parseFloat(moduleData.overheadTankHeight) || 20,
           tankCapacity: parseFloat(moduleData.tankCapacity) || 0,
           groundSumpDepth: parseFloat(moduleData.groundSumpDepth) || 0,
@@ -107,7 +111,6 @@ export default function AnimationPanel() {
           pipeCondition: moduleData.pipeCondition,
           frictionHeadPenalty: parseFloat(moduleData.frictionHeadPenalty) || 0,
           totalPipeLength: parseFloat(moduleData.totalPipeLength) || 100,
-          numberOfElbows: parseFloat(moduleData.numberOfElbows) || 0,
           flowmeterRequirement: moduleData.flowmeterRequirement || false,
           auxiliaryOutletNeed: moduleData.auxiliaryOutletNeed || false,
         };

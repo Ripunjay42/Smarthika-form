@@ -98,6 +98,7 @@ export const TOPOGRAPHY_TYPES = [
 export const FIELD_GEOMETRIES = [
   { value: 'rectangular', label: 'Rectangular' },
   { value: 'square', label: 'Square' },
+  { value: 'circular', label: 'Circular' },
   { value: 'irregular', label: 'Irregular' },
 ];
 
@@ -124,7 +125,13 @@ export const WATER_QUALITIES = [
 export const PIPE_MATERIALS = [
   { value: 'hdpe', label: 'HDPE', roughness: 150 },
   { value: 'pvc', label: 'PVC', roughness: 140 },
-  { value: 'gi', label: 'GI (Galvanized Iron)', roughness: 120 },
+  { value: 'gi', label: 'GI', roughness: 120 },
+];
+
+export const DELIVERY_TARGETS = [
+  { value: 'direct', label: 'Direct Irrigation' },
+  { value: 'tank', label: 'Overhead Tank' },
+  { value: 'sump', label: 'Ground Sump' },
 ];
 
 export const POWER_SOURCES = [

@@ -1,8 +1,27 @@
 import { motion } from 'framer-motion';
-import { User, Phone, Mail, Users } from 'lucide-react';
-import { FormInput, FormSlider } from '../ui/FormElements';
+import { User, Phone, Mail, Users, MapPin, Calendar, Globe } from 'lucide-react';
+import { FormInput, FormSlider, FormSelect, FormButtonGroup } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
+
+const COUNTRIES = [
+  { value: 'india', label: 'India' },
+  { value: 'nepal', label: 'Nepal' },
+  { value: 'bangladesh', label: 'Bangladesh' },
+];
+
+const STATES_INDIA = [
+  { value: 'maharashtra', label: 'Maharashtra' },
+  { value: 'karnataka', label: 'Karnataka' },
+  { value: 'tamil-nadu', label: 'Tamil Nadu' },
+  { value: 'andhra-pradesh', label: 'Andhra Pradesh' },
+  { value: 'rajasthan', label: 'Rajasthan' },
+  { value: 'punjab', label: 'Punjab' },
+  { value: 'uttar-pradesh', label: 'Uttar Pradesh' },
+  { value: 'madhya-pradesh', label: 'Madhya Pradesh' },
+  { value: 'west-bengal', label: 'West Bengal' },
+  { value: 'haryana', label: 'Haryana' },
+];
 
 export default function ProfileForm() {
   const { formData, updateModuleData, moduleErrors } = useFormContext();
@@ -25,6 +44,19 @@ export default function ProfileForm() {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
+      {/* Smarthika Header */}
+      <div className="mb-8 p-4 rounded-xl" style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', border: '2px solid rgba(104, 159, 56, 0.2)' }}>
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-lg flex items-center justify-center font-bold text-white" style={{ backgroundColor: '#689F38' }}>
+            S
+          </div>
+          <div>
+            <h1 className="text-xl font-bold" style={{ color: '#33691E' }}>SMARTHIKA</h1>
+            <p className="text-xs" style={{ color: '#558B2F' }}>Smart Irrigation Solutions</p>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="mb-8">
         <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
@@ -43,6 +75,18 @@ export default function ProfileForm() {
           icon={User}
           required
           error={errors.customerName}
+        />
+
+        <FormInput
+          label="Age"
+          name="age"
+          type="number"
+          value={data.age}
+          onChange={handleChange}
+          placeholder="e.g. 45"
+          icon={Calendar}
+          min="18"
+          max="100"
         />
 
         <FormInput
@@ -67,6 +111,50 @@ export default function ProfileForm() {
           placeholder="e.g. farmer@example.com"
           icon={Mail}
           helper="For proposal and document delivery"
+        />
+
+        {/* Location Section */}
+        <div className="border-t pt-5 mt-5">
+          <h3 className="font-semibold mb-4" style={{ color: '#33691E' }}>Location Information</h3>
+          
+          <FormSelect
+            label="Country"
+            name="country"
+            value={data.country}
+            onChange={handleChange}
+            options={COUNTRIES}
+            icon={Globe}
+          />
+
+          <FormSelect
+            label="State"
+            name="state"
+            value={data.state}
+            onChange={handleChange}
+            options={STATES_INDIA}
+            icon={MapPin}
+          />
+
+          <FormInput
+            label="City / Village"
+            name="city"
+            value={data.city}
+            onChange={handleChange}
+            placeholder="e.g. Pune"
+            icon={MapPin}
+          />
+        </div>
+
+        {/* Farm Location Question */}
+        <FormButtonGroup
+          label="Is your farm plot in the same location as where you stay?"
+          name="farmSameLocation"
+          value={data.farmSameLocation}
+          onChange={handleChange}
+          options={[
+            { value: 'yes', label: 'Yes, same location' },
+            { value: 'no', label: 'No, different location' },
+          ]}
         />
 
         <FormSlider
@@ -95,8 +183,9 @@ export default function ProfileForm() {
             <div>
               <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Why we ask this</h4>
               <p className="text-xs mt-1" style={{ color: '#558B2F' }}>
-                Your contact details help us communicate efficiently. Labor count helps estimate 
-                ROI and automation opportunities for your farm.
+                Your contact details help us communicate efficiently. Location and farm information 
+                helps us understand local conditions and provide targeted recommendations. Age and 
+                labor count help estimate ROI and automation opportunities.
               </p>
             </div>
           </div>
