@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Compass, Mountain, Move } from 'lucide-react';
+import { Compass, Mountain, Move, Droplets, AlertCircle } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -27,10 +27,33 @@ export default function TopographyAnimation({
   fieldGeometry = 'rectangular',
   sideLength = 0,
   sideWidth = 0,
-  exclusionZones = 0
+  exclusionZones = 0,
+  drainageClass = 'good'
 }) {
   const terrainRotation = topographyType === 'flat' ? 50 : topographyType === 'sloped' ? 55 : 60;
-  const soilColor = soilColors[soilType] || soilColors.clay;
+  
+  // Handle soilType as array or string for multiple selection
+  const soilArray = Array.isArray(soilType) ? soilType : (soilType ? [soilType] : ['clay']);
+  
+  // Ensure we always have at least one soil type to display and filter out any empty/null values
+  const validSoilArray = (soilArray && soilArray.length > 0 && soilArray.filter(Boolean).length > 0) 
+    ? soilArray.filter(Boolean) 
+    : ['clay'];
+  
+  // Get array of soil colors for multiple selections
+  const soilColorArray = validSoilArray.map((soil) => soilColors[soil] || soilColors.clay);
+  
+  const soilColor = soilColors[validSoilArray[0]] || soilColors.clay;
+  
+  // Format soil label with safe handling
+  const formatSoilName = (soil) => {
+    if (!soil) return 'Clay';
+    return soil.charAt(0).toUpperCase() + soil.slice(1);
+  };
+  
+  const soilLabel = validSoilArray.length > 1 
+    ? validSoilArray.map(formatSoilName).join(' + ')
+    : formatSoilName(validSoilArray[0]);
   
   // Calculate field shape based on geometry
   const isCircular = fieldGeometry === 'circular';
@@ -39,17 +62,25 @@ export default function TopographyAnimation({
   const isRectangular = fieldGeometry === 'rectangular';
   const aspectRatio = sideLength && sideWidth ? sideWidth / sideLength : 1;
   
-  // Different dimensions and rotations for square vs rectangular
+  // IMPROVED: Larger default sizes for large screens, responsive sizing
+  const baseWidth = typeof window !== 'undefined' && window.innerWidth > 1400 ? 360 : 300;
+  const baseHeight = typeof window !== 'undefined' && window.innerWidth > 1400 ? 280 : 240;
+  
+  // Scale based on total area for visualization (more noticeable increase)
+  // Reference: 10 acres = 6.7% larger, 30 acres = 20% larger, 45+ acres = 30% larger
+  const areaScaleFactor = Math.min(1.3, 1 + totalArea / 150);
+  
   const fieldWidth = isSquare 
-    ? 280 
-    : Math.max(240, Math.min(320, 240 + sideLength * 0.5));
+    ? baseWidth * areaScaleFactor
+    : Math.max(baseWidth * 0.8 * areaScaleFactor, Math.min(baseWidth * 1.2 * areaScaleFactor, (baseWidth + sideLength * 0.3) * areaScaleFactor));
   const fieldHeight = isSquare 
-    ? 280 
-    : Math.max(240, Math.min(320, 240 * aspectRatio));
+    ? baseHeight * areaScaleFactor
+    : Math.max(baseHeight * 0.8 * areaScaleFactor, Math.min(baseHeight * 1.2 * areaScaleFactor, baseHeight * aspectRatio * areaScaleFactor));
   const rotateZ = isSquare ? 45 : isRectangular ? 30 : 45;
   
   // Calculate usable area after exclusions
   const usableArea = totalArea * (1 - exclusionZones / 100);
+  const usedPercentage = 100 - exclusionZones;
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
@@ -64,14 +95,14 @@ export default function TopographyAnimation({
         <motion.div
           className="shadow-2xl relative overflow-hidden"
           animate={{ 
-            backgroundColor: soilColor,
             borderRadius: isCircular ? '50%' : isIrregular ? '20% 80% 60% 40%' : isSquare ? '0.75rem' : '1rem',
             width: `${fieldWidth}px`,
             height: `${fieldHeight}px`,
           }}
           transition={{ duration: 0.5 }}
           style={{
-            background: `linear-gradient(135deg, ${soilColor}, ${soilColor}cc)`,
+            backgroundColor: '#2d5016',
+            background: 'linear-gradient(135deg, #2d5016, #1a300b)',
             transform: topographyType === 'hilly' ? `rotateX(-15deg) rotateZ(${isSquare ? 0 : 5}deg)` : 'none',
           }}
         >
@@ -96,20 +127,30 @@ export default function TopographyAnimation({
             style={{ borderColor: 'rgba(255,255,255,0.4)' }} 
           />
 
-          {/* Crop Plots - Dynamic based on area */}
+          {/* Crop Plots - Fixed 16 blocks matching percentages with soil colors */}
           <div className="absolute inset-6 grid grid-cols-4 gap-1.5">
-            {Array.from({ length: Math.min(16, Math.max(4, Math.floor(totalArea / 2) || 8)) }).map((_, i) => {
-              const isExcluded = (i / 16) * 100 < exclusionZones;
+            {Array.from({ length: 16 }).map((_, i) => {
+              // 16 blocks total - each block = 6.25%
+              // Calculate how many blocks should be used vs unused
+              const usedBlocksCount = Math.round((usedPercentage / 100) * 16);
+              const isUsed = i < usedBlocksCount;
+              
+              // Cycle through soil colors for multiple selections
+              const blockSoilColor = isUsed && soilColorArray.length > 0
+                ? soilColorArray[i % soilColorArray.length]
+                : '#1a300b';
+              
               return (
                 <motion.div
                   key={i}
                   className="w-full h-full rounded-sm"
                   style={{ 
-                    backgroundColor: isExcluded ? 'rgba(239, 68, 68, 0.3)' : THEME.accentLight,
-                    border: isExcluded ? '1px dashed rgba(239, 68, 68, 0.5)' : 'none'
+                    backgroundColor: blockSoilColor,
+                    border: isUsed ? '1px solid rgba(255, 255, 255, 0.2)' : '1px dashed rgba(255, 255, 255, 0.1)',
+                    opacity: 0.85
                   }}
                   initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: isExcluded ? 0.4 : 0.8 }}
+                  animate={{ scale: 1, opacity: 0.85 }}
                   transition={{ delay: i * 0.04, duration: 0.3 }}
                 />
               );
@@ -188,7 +229,28 @@ export default function TopographyAnimation({
         </div>
       </motion.div>
 
-      {/* Area Card */}
+      {/* Drainage Card */}
+      {drainageClass && (
+        <motion.div
+          className="absolute bottom-8 left-64 p-4 backdrop-blur-sm rounded-xl"
+          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <div className="flex items-center gap-3">
+            <Droplets size={24} color={drainageClass === 'good' ? '#689F38' : '#EF4444'} />
+            <div>
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>DRAINAGE</p>
+              <p className="text-sm font-bold capitalize" style={{ color: drainageClass === 'good' ? '#689F38' : '#DC2626' }}>
+                {drainageClass === 'good' ? 'Well Drained' : 'Waterlogging Risk'}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Area Card with Used/Unused breakdown */}
       {totalArea > 0 && (
         <motion.div
           className="absolute bottom-8 right-8 p-4 backdrop-blur-sm rounded-xl"
@@ -206,7 +268,16 @@ export default function TopographyAnimation({
                 <p className="text-xs mt-0.5" style={{ color: THEME.textLight }}>{sideLength} × {sideWidth}</p>
               )}
               {exclusionZones > 0 && (
-                <p className="text-xs mt-0.5 text-red-600">{exclusionZones}% unused</p>
+                <div className="text-xs mt-1 space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#689F38' }} />
+                    <span style={{ color: '#689F38' }}>Used: {usedPercentage}% ({usableArea.toFixed(2)} acres)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#EF4444' }} />
+                    <span style={{ color: '#DC2626' }}>Unused: {exclusionZones}% ({(totalArea - usableArea).toFixed(2)} acres)</span>
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -221,7 +292,7 @@ export default function TopographyAnimation({
       >
         <div className="px-4 py-2 rounded-full flex items-center gap-2" style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}>
           <div className="w-4 h-4 rounded-full" style={{ backgroundColor: soilColor }} />
-          <span className="text-sm font-medium capitalize" style={{ color: THEME.text }}>{soilType} Soil</span>
+          <span className="text-sm font-medium capitalize" style={{ color: THEME.text }}>{soilLabel} Soil</span>
         </div>
         <div className="px-4 py-2 rounded-full flex items-center gap-2" style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}>
           <div 

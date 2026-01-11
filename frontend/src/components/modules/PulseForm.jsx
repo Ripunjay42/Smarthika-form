@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Info, Sun, Plug2, CircleCheck, CircleAlert } from 'lucide-react';
+import { Info, Sun, Plug2, CircleCheck, CircleAlert, CheckCircle } from 'lucide-react';
 import { FormInput, FormSlider, FormButtonGroup, FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { POWER_SOURCES } from '../../constants/formConstants';
@@ -21,6 +21,25 @@ export default function PulseForm() {
     const { name, value } = e.target;
     updateModuleData('pulse', { [name]: parseFloat(value) });
   };
+
+  const handlePrimaryEnergySelect = (value) => {
+    let current = data.primaryEnergySource || [];
+    if (typeof current === 'string') {
+      current = current ? [current] : [];
+    }
+    
+    if (current.includes(value)) {
+      const updated = current.filter(v => v !== value);
+      updateModuleData('pulse', { primaryEnergySource: updated });
+    } else {
+      const updated = [...current, value];
+      updateModuleData('pulse', { primaryEnergySource: updated });
+    }
+  };
+
+  const primaryEnergySources = Array.isArray(data.primaryEnergySource) ? data.primaryEnergySource : (data.primaryEnergySource ? [data.primaryEnergySource] : []);
+  const hasGrid = primaryEnergySources.includes('grid');
+  const hasSolar = primaryEnergySources.includes('solar');
 
   const getVoltageStatus = (voltage) => {
     if (voltage < 360) return { status: 'LOW', color: 'text-red-500', bg: 'bg-red-100' };
@@ -44,17 +63,43 @@ export default function PulseForm() {
         <p className="text-gray-500">Power infrastructure for controller selection.</p>
       </div>
 
-      {/* Primary Energy Source */}
-      <FormButtonGroup
-        label="Primary Energy Source"
-        name="primaryEnergySource"
-        value={data.primaryEnergySource}
-        onChange={handleChange}
-        options={POWER_SOURCES}
-      />
+      {/* Primary Energy Source - Multi Select */}
+      <div className="space-y-3">
+        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Primary Energy Source (Select All That Apply)</label>
+        <div className="space-y-2">
+          {POWER_SOURCES.map((source) => (
+            <motion.button
+              key={source.value}
+              onClick={() => handlePrimaryEnergySelect(source.value)}
+              className="w-full p-3 rounded-lg border-2 transition-all text-left"
+              style={{
+                borderColor: primaryEnergySources.includes(source.value) ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                backgroundColor: primaryEnergySources.includes(source.value) ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
+              }}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-5 h-5 rounded border-2 flex items-center justify-center"
+                  style={{
+                    borderColor: primaryEnergySources.includes(source.value) ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                    backgroundColor: primaryEnergySources.includes(source.value) ? '#689F38' : 'transparent',
+                  }}
+                >
+                  {primaryEnergySources.includes(source.value) && (
+                    <CheckCircle size={16} color="#FAF0BF" />
+                  )}
+                </div>
+                <span className="font-medium" style={{ color: '#33691E' }}>{source.label}</span>
+              </div>
+            </motion.button>
+          ))}
+        </div>
+      </div>
 
       {/* Grid Specific Settings */}
-      {(data.primaryEnergySource === 'grid' || data.primaryEnergySource === 'hybrid') && (
+      {hasGrid && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
@@ -101,7 +146,7 @@ export default function PulseForm() {
       )}
 
       {/* Solar Specific Settings */}
-      {(data.primaryEnergySource === 'solar' || data.primaryEnergySource === 'hybrid') && (
+      {hasSolar && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
@@ -136,29 +181,6 @@ export default function PulseForm() {
         ]}
       />
 
-      {/* Protection Requirements */}
-      {data.voltageStability === 'fluctuating' && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="space-y-3 p-4 bg-red-50 rounded-xl border border-red-200"
-        >
-          <p className="text-sm font-medium text-red-700">Protection Requirements</p>
-          <FormToggle
-            label="Low Voltage Cutoff (< 360V)"
-            name="lowVoltageCutoff"
-            checked={data.lowVoltageCutoff}
-            onChange={handleChange}
-          />
-          <FormToggle
-            label="High Voltage Surge Protection (> 460V)"
-            name="highVoltageSurge"
-            checked={data.highVoltageSurge}
-            onChange={handleChange}
-          />
-        </motion.div>
-      )}
-
       {/* Availability */}
       <FormSlider
         label="Daily Availability"
@@ -192,13 +214,12 @@ export default function PulseForm() {
         onChange={handleChange}
         options={[
           { value: 'good', label: 'Good' },
-          { value: 'jointed', label: 'Jointed' },
-          { value: 'burnt', label: 'Burnt/Damaged' },
+          { value: 'bad', label: 'Bad' },
         ]}
       />
 
       {/* Cable Upgrade */}
-      {data.wiringHealth !== 'good' && (
+      {data.wiringHealth === 'bad' && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -213,14 +234,14 @@ export default function PulseForm() {
         </motion.div>
       )}
 
-      {/* Distance to Borewell */}
+      {/* Distance: Meter to Borewell */}
       <FormInput
-        label="Distance: Meter to Borewell"
+        label="How Far is Your Power Supply from Your Pump House?"
         name="distanceMeterToBorewell"
         type="number"
         value={data.distanceMeterToBorewell}
         onChange={handleChange}
-        placeholder="Cable length in meters"
+        placeholder="Distance in meters"
         icon={Plug2}
         required
         error={errors.distanceMeterToBorewell}
@@ -261,28 +282,6 @@ export default function PulseForm() {
           </div>
         </motion.div>
       )}
-
-      {/* Info Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="mt-6 p-4 rounded-xl border"
-        style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
-      >
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Controller Selection</h4>
-            <p className="text-xs mt-1" style={{ color: '#558B2F' }}>
-              Voltage levels and stability determine VFD requirements and protection circuits. 
-              Cable distance affects conductor sizing.
-            </p>
-          </div>
-        </div>
-      </motion.div>
     </motion.div>
   );
 }

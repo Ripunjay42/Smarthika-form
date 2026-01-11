@@ -128,10 +128,8 @@ export default function FormPanel() {
     setSubmitError(null);
 
     try {
-      // Get the file if one was uploaded
-      const uploadedFile = formData.canvas?.soilTestReport || null;
-      
-      const result = await submitToGoogleSheets(formData, uploadedFile);
+      // Submit to Google Sheets (handles all files from canvas, shelter, etc.)
+      const result = await submitToGoogleSheets(formData);
       
       if (result.success) {
         setSubmitSuccess(true);

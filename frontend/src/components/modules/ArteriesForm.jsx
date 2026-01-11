@@ -6,11 +6,14 @@ import { PIPE_MATERIALS, DELIVERY_TARGETS } from '../../constants/formConstants'
 import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 const PIPE_DIAMETERS = [
-  { value: '2', label: '2"' },
-  { value: '2.5', label: '2.5"' },
-  { value: '3', label: '3"' },
-  { value: '4', label: '4"' },
-  { value: '6', label: '6"' },
+  { value: '1.5', label: '1½″\n40 mm' },
+  { value: '2', label: '2″\n50 mm' },
+  { value: '2.5', label: '2½″\n63 mm' },
+  { value: '3', label: '3″\n75 mm' },
+  { value: '4', label: '4″\n110 mm' },
+  { value: '5', label: '5″\n125 mm' },
+  { value: '6', label: '6″\n160 mm' },
+  { value: 'other', label: 'OTHER' },
 ];
 
 export default function ArteriesForm() {
@@ -173,7 +176,7 @@ export default function ArteriesForm() {
         </motion.div>
       )}
 
-      {/* Pipe Material */}
+      {/* Mainline Pipe Material with capitalized labels */}
       <div className="space-y-3">
         <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Mainline Pipe Material</label>
         <div className="grid grid-cols-3 gap-2">
@@ -190,7 +193,7 @@ export default function ArteriesForm() {
               whileTap={{ scale: 0.98 }}
             >
               <div className="text-sm font-bold" style={{ color: '#33691E' }}>
-                {material.label}
+                {material.label.toUpperCase()}
               </div>
               <div className="text-xs mt-1" style={{ color: '#558B2F' }}>
                 C={material.roughness}
@@ -200,10 +203,10 @@ export default function ArteriesForm() {
         </div>
       </div>
 
-      {/* Mainline Diameter */}
+      {/* Mainline Pipe Size Selection */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Mainline Diameter</label>
-        <div className="grid grid-cols-5 gap-2">
+        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Mainline Pipe Size Selection</label>
+        <div className="grid grid-cols-4 gap-2">
           {PIPE_DIAMETERS.map((diameter) => (
             <motion.button
               key={diameter.value}
@@ -216,7 +219,7 @@ export default function ArteriesForm() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="text-sm font-bold" style={{ color: '#33691E' }}>
+              <div className="text-xs font-bold whitespace-pre-line" style={{ color: '#33691E' }}>
                 {diameter.label}
               </div>
             </motion.button>
@@ -224,9 +227,9 @@ export default function ArteriesForm() {
         </div>
       </div>
 
-      {/* Pipe Condition - Only Old option */}
+      {/* Pipe Condition - How old are your pipes */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Pipe Condition</label>
+        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>How Old Are Your Pipes?</label>
         <div className="space-y-2">
           <motion.button
             onClick={() => handleChange({ target: { name: 'pipeCondition', value: 'new' } })}
@@ -268,27 +271,29 @@ export default function ArteriesForm() {
         </div>
       </div>
 
-      {/* Friction Penalty for old pipes */}
-      {data.pipeCondition === 'old' && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          className="space-y-4 p-4 rounded-xl border-2"
-          style={{ backgroundColor: 'rgba(245, 158, 11, 0.08)', borderColor: 'rgba(245, 158, 11, 0.2)' }}
-        >
-          <FormSlider
-            label="Friction Head Penalty"
-            name="frictionHeadPenalty"
-            value={data.frictionHeadPenalty || 0}
-            onChange={handleSliderChange}
-            min={0}
-            max={30}
-            step={1}
-            unit="% extra"
-            helper="Additional pressure loss due to pipe age"
-          />
-        </motion.div>
-      )}
+      {/* Flowmeter Size with Icon */}
+      <div className="space-y-3">
+        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Flow Meter Size</label>
+        <div className="grid grid-cols-4 gap-2">
+          {PIPE_DIAMETERS.map((diameter) => (
+            <motion.button
+              key={`flowmeter-${diameter.value}`}
+              onClick={() => handleChange({ target: { name: 'flowmeterSize', value: diameter.value } })}
+              className="p-3 rounded-lg border-2 transition-all text-center"
+              style={{
+                borderColor: data.flowmeterSize === diameter.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                backgroundColor: data.flowmeterSize === diameter.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
+              }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="text-xs font-bold whitespace-pre-line" style={{ color: '#33691E' }}>
+                {diameter.label}
+              </div>
+            </motion.button>
+          ))}
+        </div>
+      </div>
 
       {/* Total Pipe Length - Slider instead of text input */}
       <FormSlider
@@ -304,101 +309,6 @@ export default function ArteriesForm() {
         error={errors.totalPipeLength}
       />
 
-      {/* Flowmeter Toggle with Icon */}
-      <div className="space-y-3">
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-lg shrink-0" style={{ backgroundColor: 'rgba(104, 159, 56, 0.15)' }}>
-            <Gauge size={20} color="#689F38" />
-          </div>
-          <div className="flex-1">
-            <label className="text-sm font-semibold" style={{ color: '#33691E' }}>Flow Meter Required</label>
-            <p className="text-xs mt-1" style={{ color: '#558B2F' }}>Track and monitor water discharge</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <motion.button
-            onClick={() => handleChange({ target: { name: 'flowmeterRequirement', type: 'checkbox', checked: true } })}
-            className="flex-1 p-3 rounded-lg border-2 transition-all text-center"
-            style={{
-              borderColor: data.flowmeterRequirement ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-              backgroundColor: data.flowmeterRequirement ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-            }}
-            whileHover={{ scale: 1.01 }}
-          >
-            <span className="font-medium" style={{ color: '#33691E' }}>Yes</span>
-          </motion.button>
-          <motion.button
-            onClick={() => handleChange({ target: { name: 'flowmeterRequirement', type: 'checkbox', checked: false } })}
-            className="flex-1 p-3 rounded-lg border-2 transition-all text-center"
-            style={{
-              borderColor: !data.flowmeterRequirement ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-              backgroundColor: !data.flowmeterRequirement ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-            }}
-            whileHover={{ scale: 1.01 }}
-          >
-            <span className="font-medium" style={{ color: '#33691E' }}>No</span>
-          </motion.button>
-        </div>
-      </div>
-
-      {/* Auxiliary Outlet Toggle */}
-      <div className="space-y-3">
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-lg shrink-0" style={{ backgroundColor: 'rgba(104, 159, 56, 0.15)' }}>
-            <Zap size={20} color="#689F38" />
-          </div>
-          <div className="flex-1">
-            <label className="text-sm font-semibold" style={{ color: '#33691E' }}>Auxiliary Outlet for Future Expansion</label>
-            <p className="text-xs mt-1" style={{ color: '#558B2F' }}>Extra tap for additional irrigation zones</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <motion.button
-            onClick={() => handleChange({ target: { name: 'auxiliaryOutletNeed', type: 'checkbox', checked: true } })}
-            className="flex-1 p-3 rounded-lg border-2 transition-all text-center"
-            style={{
-              borderColor: data.auxiliaryOutletNeed ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-              backgroundColor: data.auxiliaryOutletNeed ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-            }}
-            whileHover={{ scale: 1.01 }}
-          >
-            <span className="font-medium" style={{ color: '#33691E' }}>Yes</span>
-          </motion.button>
-          <motion.button
-            onClick={() => handleChange({ target: { name: 'auxiliaryOutletNeed', type: 'checkbox', checked: false } })}
-            className="flex-1 p-3 rounded-lg border-2 transition-all text-center"
-            style={{
-              borderColor: !data.auxiliaryOutletNeed ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-              backgroundColor: !data.auxiliaryOutletNeed ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-            }}
-            whileHover={{ scale: 1.01 }}
-          >
-            <span className="font-medium" style={{ color: '#33691E' }}>No</span>
-          </motion.button>
-        </div>
-      </div>
-
-      {/* Info Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="p-4 rounded-xl border-2"
-        style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
-      >
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info size={20} strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Delivery Options</h4>
-            <p className="text-xs mt-1" style={{ color: '#558B2F' }}>
-              You can deliver water from multiple borehells to different destinations. 
-              One source can go to direct irrigation while another fills your sump or tank.
-            </p>
-          </div>
-        </div>
-      </motion.div>
     </motion.div>
   );
 }

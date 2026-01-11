@@ -23,7 +23,7 @@ function uploadFileToGoogleDrive(fileName, base64Data, mimeType) {
     Logger.log('STEP 1: Validating inputs');
     Logger.log('  - Folder ID: ' + UPLOAD_FOLDER_ID);
     Logger.log('  - File name: ' + fileName);
-    Logger.log('  - MIME type: ' + mimeType);
+    Logger.log('  - MIME type: ' + (mimeType || 'not specified'));
     Logger.log('  - Base64 data type: ' + typeof base64Data);
     Logger.log('  - Base64 data length: ' + (base64Data ? base64Data.length : 'null'));
     
@@ -61,15 +61,22 @@ function uploadFileToGoogleDrive(fileName, base64Data, mimeType) {
     }
     Logger.log('  ✓ Base64 format valid');
 
-    // Step 3: Decode base64
+    // Step 3: Determine MIME type if not provided
     Logger.log('');
-    Logger.log('STEP 3: Decoding base64 to binary');
+    Logger.log('STEP 3: Determining MIME type');
+    let finalMimeType = mimeType || 'application/octet-stream';
+    Logger.log('  - Original MIME type: ' + (mimeType || 'not provided'));
+    Logger.log('  - Final MIME type: ' + finalMimeType);
+
+    // Step 4: Decode base64
+    Logger.log('');
+    Logger.log('STEP 4: Decoding base64 to binary');
     let binaryData;
     try {
       // Decode base64 - this returns raw bytes
       const decodedBytes = Utilities.base64Decode(cleanBase64);
       // Create a blob from the decoded bytes
-      const blob = Utilities.newBlob(decodedBytes, mimeType);
+      const blob = Utilities.newBlob(decodedBytes, finalMimeType);
       binaryData = blob.getBytes();
       Logger.log('  ✓ Base64 decoded successfully');
       Logger.log('  - Binary data length: ' + binaryData.length + ' bytes');
@@ -79,9 +86,9 @@ function uploadFileToGoogleDrive(fileName, base64Data, mimeType) {
       throw decodeError;
     }
 
-    // Step 4: Get folder reference
+    // Step 5: Get folder reference
     Logger.log('');
-    Logger.log('STEP 4: Accessing Google Drive folder');
+    Logger.log('STEP 5: Accessing Google Drive folder');
     let folder;
     try {
       folder = DriveApp.getFolderById(UPLOAD_FOLDER_ID);
@@ -95,9 +102,9 @@ function uploadFileToGoogleDrive(fileName, base64Data, mimeType) {
       throw folderError;
     }
 
-    // Step 5: Create file
+    // Step 6: Create file
     Logger.log('');
-    Logger.log('STEP 5: Creating file in Drive');
+    Logger.log('STEP 6: Creating file in Drive');
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
     const uniqueName = timestamp + '_' + fileName;
     Logger.log('  - Unique file name: ' + uniqueName);
@@ -105,8 +112,8 @@ function uploadFileToGoogleDrive(fileName, base64Data, mimeType) {
     
     let file;
     try {
-      // Create file directly from binary data
-      const fileBlob = Utilities.newBlob(binaryData, mimeType, fileName);
+      // Create file directly from binary data with proper MIME type
+      const fileBlob = Utilities.newBlob(binaryData, finalMimeType, fileName);
       file = folder.createFile(fileBlob);
       Logger.log('  ✓ File created successfully');
       Logger.log('  - File name: ' + file.getName());
@@ -122,9 +129,9 @@ function uploadFileToGoogleDrive(fileName, base64Data, mimeType) {
       throw createError;
     }
 
-    // Step 6: Set sharing permissions
+    // Step 7: Set sharing permissions
     Logger.log('');
-    Logger.log('STEP 6: Setting sharing permissions');
+    Logger.log('STEP 7: Setting sharing permissions');
     try {
       file.setSharing(DriveApp.Access.ANYONE, DriveApp.Permission.VIEW);
       Logger.log('  ✓ File shared with ANYONE as VIEWER');
@@ -133,16 +140,16 @@ function uploadFileToGoogleDrive(fileName, base64Data, mimeType) {
       Logger.log('     File created but may not be publicly accessible');
     }
 
-    // Step 7: Get shareable URL
+    // Step 8: Get shareable URL
     Logger.log('');
-    Logger.log('STEP 7: Generating shareable URL');
+    Logger.log('STEP 8: Generating shareable URL');
     const fileLink = file.getUrl();
     Logger.log('  ✓ URL generated');
     Logger.log('  - File URL: ' + fileLink);
     
-    // Step 8: Verify file is accessible
+    // Step 9: Verify file is accessible
     Logger.log('');
-    Logger.log('STEP 8: Verifying file accessibility');
+    Logger.log('STEP 9: Verifying file accessibility');
     try {
       // Try to read the first few bytes to verify file isn't corrupted
       const fileBlob = file.getBlob();
@@ -235,7 +242,8 @@ function doPost(e) {
         'Age',
         'Country',
         'State',
-        'City',
+        'District',
+        'Village',
         'Farm Same Location',
         'Labor Count',
         // Canvas Section
@@ -249,6 +257,7 @@ function doPost(e) {
         'Drainage Class',
         'Unused Land (%)',
         'Soil Test Status',
+        'Topography Map Link',
         'Soil Test Report Link',
         'Road Accessible',
         'Road Access Distance (km)',
@@ -300,6 +309,13 @@ function doPost(e) {
         // Shelter Section
         'Shelter Structure',
         'Mobile Signal Strength',
+        'Heat Buildup Risk',
+        'Theft Risk Level',
+        'Lightning Arrestor',
+        'Earthing Pit',
+        'Installation Preference',
+        'Lifting Gear Availability',
+        'Pump House Picture Link',
         // Biology Section
         'Primary Crop Type',
         'Secondary Crop Type',
@@ -382,7 +398,8 @@ function doPost(e) {
       get(data, 'profile.age', 0),
       get(data, 'profile.country'),
       get(data, 'profile.state'),
-      get(data, 'profile.city'),
+      get(data, 'profile.district'),
+      get(data, 'profile.village'),
       get(data, 'profile.farmSameLocation'),
       get(data, 'profile.laborCount', 0),
       // Canvas Section
@@ -392,14 +409,31 @@ function doPost(e) {
       get(data, 'canvas.sideDimensions.width'),
       get(data, 'canvas.fieldGeometry'),
       get(data, 'canvas.topographyType'),
-      get(data, 'canvas.soilTextureTop'),
+      Array.isArray(data.canvas?.soilTextureTop) ? data.canvas.soilTextureTop.join(', ') : get(data, 'canvas.soilTextureTop'),
       get(data, 'canvas.drainageClass'),
       get(data, 'canvas.exclusionZones', 0),
       get(data, 'canvas.soilTestStatus'),
-      // Handle file upload - store the link if file was uploaded
+      // Handle file upload for Canvas/Topography map (Module 2)
       (() => {
+        const uploadedFiles = data.uploadedFiles || [];
+        const canvasFile = uploadedFiles.find(f => f.module === 'canvas' && f.fieldType === 'topographyMap');
+        if (canvasFile) {
+          const fileLink = uploadFileToGoogleDrive(canvasFile.name, canvasFile.data, canvasFile.type);
+          return fileLink || 'Upload failed';
+        }
+        // Fallback to old format for backwards compatibility
         if (data.uploadedFile) {
           const fileLink = uploadFileToGoogleDrive(data.uploadedFile.name, data.uploadedFile.data, data.uploadedFile.type);
+          return fileLink || 'Upload failed';
+        }
+        return '';
+      })(),
+      // Handle file upload for Canvas/Soil Test Report (Module 2)
+      (() => {
+        const uploadedFiles = data.uploadedFiles || [];
+        const soilTestFile = uploadedFiles.find(f => f.module === 'canvas' && f.fieldType === 'soilTestReport');
+        if (soilTestFile) {
+          const fileLink = uploadFileToGoogleDrive(soilTestFile.name, soilTestFile.data, soilTestFile.type);
           return fileLink || 'Upload failed';
         }
         return '';
@@ -418,7 +452,7 @@ function doPost(e) {
       get(data, 'heart.seasonalVariance'),
       get(data, 'heart.dryRunRisk'),
       get(data, 'heart.waterQuality'),
-      get(data, 'heart.waterStorageType'),
+      Array.isArray(data.heart?.waterStorageType) ? data.heart.waterStorageType.join(', ') : get(data, 'heart.waterStorageType'),
       get(data, 'heart.suctionHead'),
       get(data, 'heart.footValveCondition'),
       get(data, 'heart.municipalWaterAvailable'),
@@ -438,7 +472,8 @@ function doPost(e) {
       get(data, 'arteries.totalPipeLength', 0),
       get(data, 'arteries.flowmeterRequirement') ? 'Yes' : 'No',
       get(data, 'arteries.auxiliaryOutletNeed') ? 'Yes' : 'No',
-      get(data, 'pulse.primaryEnergySource'),
+      // Pulse Section (Energy/Power)
+      Array.isArray(data.pulse?.primaryEnergySource) ? data.pulse.primaryEnergySource.join(', ') : get(data, 'pulse.primaryEnergySource'),
       get(data, 'pulse.gridPhase'),
       get(data, 'pulse.averageGridVoltage', 0),
       get(data, 'pulse.voltageStability'),
@@ -454,6 +489,22 @@ function doPost(e) {
       get(data, 'pulse.evChargingNeed') ? 'Yes' : 'No',
       get(data, 'shelter.shelterStructure'),
       get(data, 'shelter.mobileSignalStrength'),
+      get(data, 'shelter.heatBuildupRisk'),
+      get(data, 'shelter.theftRiskLevel'),
+      get(data, 'shelter.lightningArrestor'),
+      get(data, 'shelter.earthingPit'),
+      get(data, 'shelter.installationPreference'),
+      get(data, 'shelter.liftingGearAvailability'),
+      // Handle pump house picture upload (Module 6)
+      (() => {
+        const uploadedFiles = data.uploadedFiles || [];
+        const shelterFile = uploadedFiles.find(f => f.module === 'shelter');
+        if (shelterFile) {
+          const fileLink = uploadFileToGoogleDrive(shelterFile.name, shelterFile.data, shelterFile.type);
+          return fileLink || 'Upload failed';
+        }
+        return '';
+      })(),
       get(data, 'biology.primaryCropType'),
       get(data, 'biology.secondaryCropType'),
       get(data, 'biology.croppingPattern'),

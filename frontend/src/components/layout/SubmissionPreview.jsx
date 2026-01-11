@@ -20,11 +20,47 @@ function toTitleCase(text) {
 }
 
 function formatValue(value, keyPath) {
+  // Show file names for uploaded files
+  if (keyPath === 'canvas.topographyMapFile' || keyPath === 'canvas.soilTestReportFile' || keyPath === 'shelter.pumpHousePictureFile') {
+    return value ? `📎 ${value}` : '';
+  }
+  
+  // Skip base64 data - these are handled by showing the filename above
+  if (keyPath === 'canvas.topographyMapImage' || keyPath === 'canvas.soilTestReport' || keyPath === 'shelter.pumpHousePicture') {
+    return '';
+  }
+  
+  // Skip MIME type fields
+  if (keyPath === 'canvas.topographyMapType' || keyPath === 'canvas.soilTestReportType' || keyPath === 'shelter.pumpHousePictureType') {
+    return '';
+  }
+
   if (keyPath === 'shed.harvestMonths' && Array.isArray(value)) {
     const selected = value
       .map((active, idx) => (active ? MONTHS[idx] : null))
       .filter(Boolean);
     return selected.length ? selected.join(', ') : '';
+  }
+
+  // Handle primaryEnergySource as array
+  if (keyPath === 'pulse.primaryEnergySource' && Array.isArray(value)) {
+    return value.length ? value
+      .map(v => v.charAt(0).toUpperCase() + v.slice(1))
+      .join(', ') : '';
+  }
+
+  // Handle deliveryTarget as array
+  if (keyPath === 'arteries.deliveryTarget' && Array.isArray(value)) {
+    return value.length ? value
+      .map(v => v.charAt(0).toUpperCase() + v.slice(1))
+      .join(', ') : '';
+  }
+
+  // Handle sourceType as array
+  if (keyPath === 'heart.sourceType' && Array.isArray(value)) {
+    return value.length ? value
+      .map(v => toTitleCase(v))
+      .join(', ') : '';
   }
 
   if (Array.isArray(value)) {
@@ -58,6 +94,20 @@ function isEmptyDisplayValue(displayValue) {
   return displayValue === '' || displayValue === '0' || displayValue === 'No';
 }
 
+function shouldExcludeField(keyPath) {
+  // Exclude internal/technical fields that shouldn't be displayed
+  const excludedFields = [
+    'topographyMapType',
+    'topographyMapImage',
+    'soilTestReportType',
+    'soilTestReport',
+    'pumpHousePictureType',
+    'pumpHousePicture',
+  ];
+  
+  return excludedFields.some(field => keyPath.includes(field));
+}
+
 export default function SubmissionPreview({ formData }) {
   return (
     <div className="space-y-5">
@@ -85,7 +135,13 @@ export default function SubmissionPreview({ formData }) {
               label: toTitleCase(keyPath.split('.').slice(1).join('.')),
               value: formatValue(value, keyPath),
             }))
-            .filter((e) => e.value !== '' && e.value !== '[]' && e.value !== '{}' && !isEmptyDisplayValue(e.value));
+            .filter((e) => 
+              !shouldExcludeField(e.keyPath) &&
+              e.value !== '' && 
+              e.value !== '[]' && 
+              e.value !== '{}' && 
+              !isEmptyDisplayValue(e.value)
+            );
 
           return (
             <div

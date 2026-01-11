@@ -1,26 +1,13 @@
 import { motion } from 'framer-motion';
-import { User, Phone, Mail, Users, MapPin, Calendar, Globe } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { User, Phone, Mail, Users, MapPin, Calendar } from 'lucide-react';
 import { FormInput, FormSlider, FormSelect, FormButtonGroup } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
+import { fetchStates, fetchDistricts } from '../../services/locationService';
 
 const COUNTRIES = [
   { value: 'india', label: 'India' },
-  { value: 'nepal', label: 'Nepal' },
-  { value: 'bangladesh', label: 'Bangladesh' },
-];
-
-const STATES_INDIA = [
-  { value: 'maharashtra', label: 'Maharashtra' },
-  { value: 'karnataka', label: 'Karnataka' },
-  { value: 'tamil-nadu', label: 'Tamil Nadu' },
-  { value: 'andhra-pradesh', label: 'Andhra Pradesh' },
-  { value: 'rajasthan', label: 'Rajasthan' },
-  { value: 'punjab', label: 'Punjab' },
-  { value: 'uttar-pradesh', label: 'Uttar Pradesh' },
-  { value: 'madhya-pradesh', label: 'Madhya Pradesh' },
-  { value: 'west-bengal', label: 'West Bengal' },
-  { value: 'haryana', label: 'Haryana' },
 ];
 
 export default function ProfileForm() {
@@ -28,9 +15,59 @@ export default function ProfileForm() {
   const data = formData.profile;
   const errors = moduleErrors?.profile || {};
 
+  const [states, setStates] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [loadingStates, setLoadingStates] = useState(false);
+  const [loadingDistricts, setLoadingDistricts] = useState(false);
+
+  // Load states on component mount
+  useEffect(() => {
+    const loadStates = async () => {
+      setLoadingStates(true);
+      try {
+        const statesList = await fetchStates();
+        setStates(statesList);
+      } catch (error) {
+        console.error('Error loading states:', error);
+      } finally {
+        setLoadingStates(false);
+      }
+    };
+    loadStates();
+  }, []);
+
+  // Load districts when state changes
+  useEffect(() => {
+    if (data.state) {
+      const loadDistricts = async () => {
+        setLoadingDistricts(true);
+        try {
+          const districtsList = await fetchDistricts(data.state);
+          setDistricts(districtsList);
+        } catch (error) {
+          console.error('Error loading districts:', error);
+          setDistricts([]);
+        } finally {
+          setLoadingDistricts(false);
+        }
+      };
+      loadDistricts();
+    } else {
+      setDistricts([]);
+    }
+  }, [data.state]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     updateModuleData('profile', { [name]: value });
+    
+    // Reset dependent fields
+    if (name === 'state') {
+      updateModuleData('profile', { district: '', village: '' });
+    }
+    if (name === 'district') {
+      updateModuleData('profile', { village: '' });
+    }
   };
 
   const handleSliderChange = (e) => {
@@ -114,35 +151,70 @@ export default function ProfileForm() {
         />
 
         {/* Location Section */}
-        <div className="border-t pt-5 mt-5">
+        <div className="border-t pt-5 mt-5 space-y-5">
           <h3 className="font-semibold mb-4" style={{ color: '#33691E' }}>Location Information</h3>
           
+          {/* Country - Fixed to India */}
           <FormSelect
             label="Country"
             name="country"
-            value={data.country}
+            value={data.country || 'india'}
             onChange={handleChange}
             options={COUNTRIES}
-            icon={Globe}
+            icon={MapPin}
           />
 
+          {/* State - From API */}
           <FormSelect
-            label="State"
+            label="State / Province"
             name="state"
             value={data.state}
             onChange={handleChange}
-            options={STATES_INDIA}
+            options={states}
             icon={MapPin}
+            disabled={loadingStates || states.length === 0}
           />
 
-          <FormInput
-            label="City / Village"
-            name="city"
-            value={data.city}
-            onChange={handleChange}
-            placeholder="e.g. Pune"
-            icon={MapPin}
-          />
+          {/* District - From API or text input fallback */}
+          {data.state && (
+            <>
+              {loadingDistricts ? (
+                <div style={{ color: '#558B2F' }} className="text-sm py-2">Loading districts...</div>
+              ) : districts.length > 0 ? (
+                <FormSelect
+                  label="District"
+                  name="district"
+                  value={data.district}
+                  onChange={handleChange}
+                  options={districts}
+                  icon={MapPin}
+                />
+              ) : (
+                <FormInput
+                  label="District"
+                  name="district"
+                  value={data.district}
+                  onChange={handleChange}
+                  placeholder="Enter district name"
+                  icon={MapPin}
+                  helper="Type your district name"
+                />
+              )}
+            </>
+          )}
+
+          {/* Village - Always text input (free text) */}
+          {data.district && (
+            <FormInput
+              label="Village / City / Town"
+              name="village"
+              value={data.village}
+              onChange={handleChange}
+              placeholder="Enter village or city name"
+              icon={MapPin}
+              helper="Type your village, city, or town name"
+            />
+          )}
         </div>
 
         {/* Farm Location Question */}
@@ -169,7 +241,7 @@ export default function ProfileForm() {
         />
 
         {/* Info Card */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
@@ -189,7 +261,7 @@ export default function ProfileForm() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </motion.div> */}
       </div>
     </motion.div>
   );

@@ -22,10 +22,9 @@ const fileToBase64 = (file) => {
 /**
  * Submit form data to Google Sheets via Apps Script
  * @param {Object} formData - Complete form data object
- * @param {File} file - Optional file to upload
  * @returns {Promise<Object>} - Success status and message
  */
-export const submitToGoogleSheets = async (formData, file = null) => {
+export const submitToGoogleSheets = async (formData) => {
   try {
     // Check if Google Script URL is configured
     if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE') {
@@ -40,32 +39,49 @@ export const submitToGoogleSheets = async (formData, file = null) => {
     // Prepare submission data
     let submissionData = { ...formData };
     
-    // Handle file upload if provided
-    if (file) {
-      console.log('File detected:', file.name, file.type, file.size);
-      try {
-        const base64 = await fileToBase64(file);
-        submissionData.uploadedFile = {
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          data: base64
-        };
-        console.log('File converted to base64');
-        console.log('Base64 length:', base64.length);
-        console.log('First 100 chars of base64:', base64.substring(0, 100));
-        console.log('Last 50 chars of base64:', base64.substring(base64.length - 50));
-        
-        // Validate base64
-        const base64Test = /^[A-Za-z0-9+/]*={0,2}$/.test(base64);
-        if (!base64Test && !base64.includes(',')) {
-          console.warn('⚠️ Warning: Base64 may be malformed');
-        } else {
-          console.log('✓ Base64 format looks valid');
-        }
-      } catch (fileError) {
-        console.warn('File conversion failed, continuing without file:', fileError);
-      }
+    // Handle file uploads from different modules
+    const filesToUpload = [];
+    
+    // Module 2: Canvas - Topography map image (if available)
+    if (formData.canvas?.topographyMapImage) {
+      filesToUpload.push({
+        name: formData.canvas.topographyMapFile || 'topography-map',
+        type: formData.canvas.topographyMapType || 'image/png',
+        data: formData.canvas.topographyMapImage,
+        module: 'canvas',
+        fieldType: 'topographyMap'
+      });
+    }
+    
+    // Module 2: Canvas - Soil test report (if available)
+    if (formData.canvas?.soilTestReport) {
+      filesToUpload.push({
+        name: formData.canvas.soilTestReportFile || 'soil-test-report',
+        type: formData.canvas.soilTestReportType || 'application/pdf',
+        data: formData.canvas.soilTestReport,
+        module: 'canvas',
+        fieldType: 'soilTestReport'
+      });
+    }
+    
+    // Module 6: Shelter - Pump house picture (if available)
+    if (formData.shelter?.pumpHousePicture) {
+      filesToUpload.push({
+        name: formData.shelter.pumpHousePictureFile || 'pump-house',
+        type: formData.shelter.pumpHousePictureType || 'image/png',
+        data: formData.shelter.pumpHousePicture,
+        module: 'shelter',
+        fieldType: 'pumpHousePicture'
+      });
+    }
+    
+    // Attach files to submission if any exist
+    if (filesToUpload.length > 0) {
+      submissionData.uploadedFiles = filesToUpload;
+      console.log(`Files to upload: ${filesToUpload.length}`);
+      filesToUpload.forEach(file => {
+        console.log(`  - ${file.module}: ${file.name} (${file.data.length} chars)`);
+      });
     }
     
     // Log total payload size

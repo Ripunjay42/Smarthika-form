@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { House, WifiHigh, Shield, Info, Warehouse, Sun, TriangleAlert } from 'lucide-react';
+import { House, WifiHigh, Wifi, WifiLow, WifiOff, Shield, Info, Warehouse, Sun, TriangleAlert } from 'lucide-react';
 import { FormButtonGroup, FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { SHELTER_TYPES } from '../../constants/formConstants';
@@ -14,6 +14,21 @@ export default function ShelterForm() {
     updateModuleData('shelter', { 
       [name]: type === 'checkbox' ? checked : value 
     });
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        updateModuleData('shelter', {
+          pumpHousePicture: event.target.result,
+          pumpHousePictureFile: file.name,
+          pumpHousePictureType: file.type || 'application/octet-stream'
+        });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -69,18 +84,6 @@ export default function ShelterForm() {
         </div>
       </div>
 
-      {/* IP Rating */}
-      <FormButtonGroup
-        label="IP Rating Requirement"
-        name="ipRatingRequirement"
-        value={data.ipRatingRequirement}
-        onChange={handleChange}
-        options={[
-          { value: 'IP54', label: 'IP54 (Dust Protected)' },
-          { value: 'IP65', label: 'IP65 (Water Resistant)' },
-        ]}
-      />
-
       {/* Heat Risk */}
       {data.shelterStructure === 'tin' && (
         <motion.div
@@ -102,64 +105,47 @@ export default function ShelterForm() {
         </motion.div>
       )}
 
-      {/* Wall Space */}
-      <FormButtonGroup
-        label="Wall Space Available"
-        name="wallSpaceAvailable"
-        value={data.wallSpaceAvailable}
-        onChange={handleChange}
-        options={[
-          { value: 'standard', label: 'Standard Box' },
-          { value: 'slimline', label: 'Slimline Only' },
-        ]}
-      />
-
       {/* Signal Strength */}
       <div>
         <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
           Mobile Signal Strength
         </label>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-3">
           {[
-            { value: '4g', label: '4G', bars: 4 },
-            { value: '3g', label: '3G', bars: 3 },
-            { value: '2g', label: '2G', bars: 2 },
-            { value: 'none', label: 'None', bars: 0 },
-          ].map((signal) => (
-            <motion.button
-              key={signal.value}
-              type="button"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => handleChange({ target: { name: 'mobileSignalStrength', value: signal.value } })}
-              className={`
-                p-3 rounded-xl flex flex-col items-center gap-2 transition-all duration-200
-                ${data.mobileSignalStrength === signal.value
-                  ? 'text-white shadow-lg'
-                  : 'bg-white/80 text-gray-600 border-2'
+            { value: '4g', label: '4G', icon: WifiHigh },
+            { value: '3g', label: '3G', icon: Wifi },
+            { value: '2g', label: '2G', icon: WifiLow },
+            { value: 'none', label: 'None', icon: WifiOff },
+          ].map((signal) => {
+            const IconComponent = signal.icon;
+            return (
+              <motion.button
+                key={signal.value}
+                type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleChange({ target: { name: 'mobileSignalStrength', value: signal.value } })}
+                className={`
+                  p-4 rounded-xl flex flex-col items-center gap-2 transition-all duration-200
+                  ${data.mobileSignalStrength === signal.value
+                    ? 'text-white shadow-lg'
+                    : 'bg-white/80 text-gray-600 border-2'
+                  }
+                `}
+                style={data.mobileSignalStrength === signal.value
+                  ? { backgroundColor: '#689F38' }
+                  : { borderColor: 'rgba(104, 159, 56, 0.2)' }
                 }
-              `}
-              style={data.mobileSignalStrength === signal.value
-                ? { backgroundColor: '#689F38' }
-                : { borderColor: 'rgba(104, 159, 56, 0.2)' }
-              }
-            >
-              <div className="flex items-end gap-0.5 h-5">
-                {[1, 2, 3, 4].map((bar) => (
-                  <div
-                    key={bar}
-                    className={`w-1.5 rounded-sm ${
-                      bar <= signal.bars 
-                        ? data.mobileSignalStrength === signal.value ? 'bg-white' : ''
-                        : 'bg-gray-300'
-                    }`}
-                    style={bar <= signal.bars && data.mobileSignalStrength !== signal.value ? { backgroundColor: '#689F38' } : {}}
-                  />
-                ))}
-              </div>
-              <span className="text-xs font-medium">{signal.label}</span>
-            </motion.button>
-          ))}
+              >
+                <IconComponent 
+                  size={24} 
+                  strokeWidth={ICON_STROKE_WIDTH} 
+                  color={data.mobileSignalStrength === signal.value ? 'white' : '#689F38'}
+                />
+                <span className="text-xs font-medium">{signal.label}</span>
+              </motion.button>
+            );
+          })}
         </div>
         {data.mobileSignalStrength === 'none' && (
           <motion.p
@@ -190,15 +176,6 @@ export default function ShelterForm() {
             { value: 'high', label: 'High Risk' },
           ]}
         />
-
-        {data.theftRiskLevel === 'high' && (
-          <FormToggle
-            label="Anti-Theft Hardware (Lockable Box/Nuts)"
-            name="antiTheftHardwareNeed"
-            checked={data.antiTheftHardwareNeed}
-            onChange={handleChange}
-          />
-        )}
 
         <FormButtonGroup
           label="Lightning Arrestor"
@@ -235,6 +212,7 @@ export default function ShelterForm() {
         ]}
       />
 
+      {/* Lifting Gear Availability */}
       <FormButtonGroup
         label="Lifting Gear Availability"
         name="liftingGearAvailability"
@@ -242,20 +220,22 @@ export default function ShelterForm() {
         onChange={handleChange}
         options={[
           { value: 'chain-pulley', label: 'Chain Pulley' },
-          { value: 'manual', label: 'Manual Only' },
+          { value: 'manual', label: 'Manual Lift' },
         ]}
       />
 
-      <FormButtonGroup
-        label="Site Accessibility"
-        name="siteAccessibility"
-        value={data.siteAccessibility}
-        onChange={handleChange}
-        options={[
-          { value: 'truck', label: 'Truck Accessible' },
-          { value: 'manual', label: 'Manual Carry Only' },
-        ]}
-      />
+      {/* Pump House Picture Upload */}
+      <div>
+        <label className="block text-sm font-semibold mb-2" style={{ color: '#33691E' }}>Pump House Picture</label>
+        <input
+          type="file"
+          name="pumpHousePicture"
+          accept="image/*"
+          onChange={(e) => handleFileChange(e)}
+          className="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-green-500 focus:outline-none"
+        />
+        <p className="text-xs text-gray-500 mt-1">Upload a photo of the pump house for reference</p>
+      </div>
 
       {/* Safety Alerts */}
       {(data.lightningArrestor === 'absent' || data.earthingPit === 'absent') && (
@@ -278,28 +258,6 @@ export default function ShelterForm() {
           </ul>
         </motion.div>
       )}
-
-      {/* Info Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="mt-6 p-4 rounded-xl border"
-        style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
-      >
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Installation Planning</h4>
-            <p className="text-xs mt-1" style={{ color: '#558B2F' }}>
-              Shelter type determines enclosure rating. Signal strength enables IoT 
-              monitoring. Site accessibility affects installation logistics and cost.
-            </p>
-          </div>
-        </div>
-      </motion.div>
     </motion.div>
   );
 }

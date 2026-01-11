@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { CircleCheck, Cpu, Flame, House, Lock, Shield, TriangleAlert, Truck, Wifi, WifiHigh, WifiLow, WifiOff, Wrench } from 'lucide-react';
+import { CircleCheck, Cpu, Flame, House, Lock, Shield, TriangleAlert, Truck, Wifi, WifiHigh, WifiLow, WifiOff, Wrench, Zap } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -27,20 +27,21 @@ const signalConfig = {
 export default function ShelterAnimation({ 
   shelterType = 'concrete', 
   cellularSignalStrength = '4g',
-  ipRatingRequirement = 'IP54',
   heatBuildupRisk = 'low',
-  wallSpaceAvailable = 'standard',
   theftRiskLevel = 'safe',
-  antiTheftHardwareNeed = false,
   lightningArrestor = 'present',
   earthingPit = 'present',
   installationPreference = 'expert',
-  liftingGearAvailability = 'chain-pulley',
-  siteAccessibility = 'truck'
+  liftingGearAvailability = 'manual',
+  pumpHousePictureFile = ''
 }) {
   const shelter = shelterStyles[shelterType] || shelterStyles.concrete;
   const signal = signalConfig[cellularSignalStrength] || signalConfig['4g'];
   const SignalIcon = signal.icon;
+  
+  // Responsive sizing - increase for large screens
+  const shelterWidth = typeof window !== 'undefined' && window.innerWidth > 1400 ? 320 : 256;
+  const shelterHeight = typeof window !== 'undefined' && window.innerWidth > 1400 ? 260 : 208;
   
   // Safety and risk indicators
   const hasSafetyIssues = lightningArrestor === 'absent' || earthingPit === 'absent';
@@ -52,11 +53,11 @@ export default function ShelterAnimation({
       {/* 3D Shelter */}
       <div className="relative" style={{ perspective: '800px' }}>
         <motion.div
-          className="relative w-64 h-52"
+          className="relative"
           initial={{ rotateY: -15 }}
           animate={{ rotateY: [-15, -10, -15] }}
           transition={{ duration: 6, repeat: Infinity }}
-          style={{ transformStyle: 'preserve-3d' }}
+          style={{ transformStyle: 'preserve-3d', width: shelterWidth, height: shelterHeight }}
         >
           {shelterType !== 'open' && (
             <>
@@ -183,19 +184,7 @@ export default function ShelterAnimation({
         </div>
       </motion.div>
 
-      {/* IP Rating */}
-      <motion.div
-        className="absolute top-8 left-1/2 -translate-x-1/2 px-4 py-2 backdrop-blur-sm rounded-full"
-        style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        <div className="flex items-center gap-2">
-          <Shield size={16} color={THEME.accent} />
-          <span className="text-xs font-bold" style={{ color: THEME.text }}>{ipRatingRequirement}</span>
-        </div>
-      </motion.div>
+
 
       {/* Heat Risk Indicator */}
       {hasHighHeat && (
@@ -216,45 +205,9 @@ export default function ShelterAnimation({
         </motion.div>
       )}
 
-      {/* Wall Space */}
-      {wallSpaceAvailable === 'slimline' && (
-        <motion.div
-          className="absolute top-56 left-8 px-3 py-2 backdrop-blur-sm rounded-lg"
-          style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', border: '2px solid rgba(245, 158, 11, 0.3)' }}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <div className="flex items-center gap-2">
-            <TriangleAlert size={16} color="#F59E0B" />
-            <span className="text-xs font-bold text-yellow-700">SLIMLINE ONLY</span>
-          </div>
-        </motion.div>
-      )}
 
-      {/* Theft Protection */}
-      {needsTheftProtection && (
-        <motion.div
-          className="absolute bottom-32 left-8 p-3 backdrop-blur-sm rounded-xl"
-          style={{ 
-            backgroundColor: antiTheftHardwareNeed ? THEME.cardBg : 'rgba(239, 68, 68, 0.1)',
-            border: `2px solid ${antiTheftHardwareNeed ? THEME.cardBorder : 'rgba(239, 68, 68, 0.3)'}` 
-          }}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="flex items-center gap-2">
-            <Lock size={18} color={antiTheftHardwareNeed ? THEME.accent : '#EF4444'} />
-            <div>
-              <p className="text-xs font-semibold" style={{ color: antiTheftHardwareNeed ? THEME.accent : '#EF4444' }}>THEFT RISK</p>
-              {antiTheftHardwareNeed && (
-                <p className="text-xs" style={{ color: THEME.text }}>Protected</p>
-              )}
-            </div>
-          </div>
-        </motion.div>
-      )}
+
+
 
       {/* Safety Issues Warning */}
       {hasSafetyIssues && (
@@ -317,29 +270,26 @@ export default function ShelterAnimation({
         </div>
       </motion.div>
 
-      {/* Lifting & Accessibility */}
+      {/* Lifting Gear Availability */}
       <motion.div
-        className="absolute bottom-56 right-8 p-3 backdrop-blur-sm rounded-xl"
+        className="absolute bottom-16 right-8 p-3 backdrop-blur-sm rounded-xl"
         style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
       >
         <div className="flex items-center gap-2">
-          <Truck size={18} color={THEME.accent} />
+          <Zap size={18} color={THEME.accent} />
           <div>
-            <p className="text-xs font-semibold" style={{ color: THEME.accent }}>ACCESS</p>
-            <div className="flex gap-1 mt-1">
-              <span className="text-xs px-1.5 py-0.5 bg-green-100 text-green-700 rounded capitalize">
-                {siteAccessibility === 'truck' ? 'Truck' : 'Manual'}
-              </span>
-              <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded capitalize">
-                {liftingGearAvailability === 'chain-pulley' ? 'Pulley' : 'Manual'}
-              </span>
-            </div>
+            <p className="text-xs font-semibold" style={{ color: THEME.accent }}>LIFTING GEAR</p>
+            <p className="text-xs capitalize" style={{ color: THEME.text }}>
+              {liftingGearAvailability === 'chain-pulley' ? 'Chain Pulley' : 'Manual Lift'}
+            </p>
           </div>
         </div>
       </motion.div>
+
+
     </div>
   );
 }

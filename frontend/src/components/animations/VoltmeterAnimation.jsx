@@ -14,11 +14,9 @@ const THEME = {
 export default function VoltmeterAnimation({ 
   averageGridVoltage = 400, 
   voltageStability = 'stable',
-  primaryEnergySource = 'grid',
+  primaryEnergySource = ['grid'],
   gridPhase = 'three-phase',
   solarSystemVoltage = 0,
-  lowVoltageCutoff = false,
-  highVoltageSurge = false,
   dailyAvailability = 24,
   powerSchedule = 'day',
   wiringHealth = 'good',
@@ -36,75 +34,68 @@ export default function VoltmeterAnimation({
   const isOptimal = !isLow && !isHigh;
   const isFluctuating = voltageStability === 'fluctuating' || voltageStability === 'unstable';
   
-  // Additional conditions
-  const hasSolar = primaryEnergySource === 'solar' || primaryEnergySource === 'hybrid';
-  const hasProtection = lowVoltageCutoff || highVoltageSurge;
+  // Additional conditions - support array-based primaryEnergySource
+  const energySources = Array.isArray(primaryEnergySource) ? primaryEnergySource : [primaryEnergySource];
+  const hasGrid = energySources.includes('grid');
+  const hasSolar = energySources.includes('solar');
+  const hasGenerator = energySources.includes('generator');
   const hasWiringIssues = wiringHealth !== 'good';
   const lowAvailability = dailyAvailability < 12;
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
-      {/* Voltmeter Gauge */}
-      <div className="relative w-72 h-72">
-        {/* Gauge Background */}
+      {/* Voltmeter Gauge - Pure White Round Meter */}
+      <div className="relative w-96 h-96 flex items-center justify-center">
+        {/* Outer Ring Shadow */}
+        <div className="absolute inset-0 rounded-full" style={{ 
+          background: 'radial-gradient(circle, rgba(104, 159, 56, 0.1) 0%, transparent 70%)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)'
+        }} />
+        
+        {/* Gauge Background - Perfect Circle with white */}
         <div 
-          className="absolute inset-0 rounded-full shadow-2xl"
+          className="absolute inset-8 rounded-full flex items-center justify-center"
           style={{ 
-            background: 'linear-gradient(to bottom, #FAF0BF, #EDEDE7)', 
-            border: `4px solid ${THEME.cardBorder}` 
+            background: '#FFFFFF',
+            border: '8px solid #9CA3AF',
+            boxShadow: 'inset 0 10px 30px rgba(0, 0, 0, 0.05), 0 0 50px rgba(156, 163, 175, 0.3)'
           }}
         >
-          {/* Scale Arc */}
-          <svg className="absolute inset-3" viewBox="0 0 200 200">
-            {/* Danger Zone (Low) - Red */}
-            <path
-              d="M 35 145 A 75 75 0 0 1 55 75"
-              fill="none"
-              stroke="#EF4444"
-              strokeWidth="10"
-              strokeLinecap="round"
-            />
-            {/* Warning Zone (Low) - Yellow */}
-            <path
-              d="M 55 75 A 75 75 0 0 1 80 50"
-              fill="none"
-              stroke="#F59E0B"
-              strokeWidth="10"
-              strokeLinecap="round"
-            />
-            {/* Safe Zone - Green */}
-            <path
-              d="M 80 50 A 75 75 0 0 1 120 50"
-              fill="none"
-              stroke={THEME.accent}
-              strokeWidth="10"
-              strokeLinecap="round"
-            />
-            {/* Warning Zone (High) - Yellow */}
-            <path
-              d="M 120 50 A 75 75 0 0 1 145 75"
-              fill="none"
-              stroke="#F59E0B"
-              strokeWidth="10"
-              strokeLinecap="round"
-            />
-            {/* Danger Zone (High) - Red */}
-            <path
-              d="M 145 75 A 75 75 0 0 1 165 145"
-              fill="none"
-              stroke="#EF4444"
-              strokeWidth="10"
-              strokeLinecap="round"
-            />
+          {/* SVG Gauge with Circular Scale Zones */}
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 300" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.05))' }}>
+            {/* Circular Background Track */}
+            <circle cx="150" cy="150" r="100" fill="none" stroke="#F0F0F0" strokeWidth="14" />
+            
+            {/* Scale Tick Marks - 5 main marks with rounded caps */}
+            <g stroke="#33691E" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+              {/* 300V - Left */}
+              <line x1="30" y1="150" x2="50" y2="150" />
+              {/* 350V - Lower Left */}
+              <line x1="60" y1="230" x2="72" y2="248" />
+              {/* 450V - Lower Right */}
+              <line x1="240" y1="230" x2="228" y2="248" />
+              {/* 500V - Right */}
+              <line x1="250" y1="150" x2="270" y2="150" />
+            </g>
+            
+            {/* Scale Labels - Enhanced typography */}
+            <text x="20" y="163" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#EF4444" opacity="0.9">300</text>
+            <text x="150" y="25" textAnchor="middle" fontSize="22" fontWeight="900" fill={THEME.accent}>400V</text>
+            <text x="280" y="163" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#EF4444" opacity="0.9">500</text>
+            
+            
           </svg>
 
-          {/* Needle */}
+          {/* Needle Base - Rotating element */}
           <motion.div
-            className="absolute top-1/2 left-1/2 w-1.5 h-24 origin-bottom rounded-t-full"
+            className="absolute top-1/2 left-1/2 origin-bottom"
             style={{ 
-              backgroundColor: THEME.accent,
+              width: '6px',
+              height: '85px',
               marginLeft: '-3px',
-              marginTop: '-96px'
+              marginTop: '-85px',
+              backgroundColor: THEME.accent,
+              borderRadius: '3px'
             }}
             animate={{
               rotate: isFluctuating 
@@ -118,32 +109,40 @@ export default function VoltmeterAnimation({
             }}
           />
 
-          {/* Center Cap */}
-          <div 
-            className="absolute top-1/2 left-1/2 w-10 h-10 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg flex items-center justify-center"
-            style={{ backgroundColor: THEME.accent }}
-          >
-            <Zap size={20} color="#FAF0BF" />
-          </div>
-
-          {/* Voltage Display */}
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 text-center">
+          {/* Voltage Display - Large and bold */}
+          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center z-5">
             <motion.span
-              className="text-4xl font-bold font-mono"
-              style={{ color: isOptimal ? THEME.text : isLow || isHigh ? '#EF4444' : '#F59E0B' }}
+              className="text-7xl font-black font-mono block leading-none"
+              style={{ 
+                color: isOptimal ? THEME.accent : isLow || isHigh ? '#EF4444' : '#F59E0B',
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+              }}
               key={averageGridVoltage}
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
             >
               {averageGridVoltage}
             </motion.span>
-            <span className="text-sm block font-semibold" style={{ color: THEME.accent }}>VOLTS</span>
+            <span className="text-base font-bold tracking-widest" style={{ color: THEME.accent }}>VOLTS</span>
           </div>
 
-          {/* Scale Labels */}
-          <span className="absolute bottom-3 left-6 text-xs font-medium" style={{ color: THEME.textLight }}>300V</span>
-          <span className="absolute bottom-3 right-6 text-xs font-medium" style={{ color: THEME.textLight }}>500V</span>
-          <span className="absolute top-4 left-1/2 -translate-x-1/2 text-xs font-medium" style={{ color: THEME.accent }}>400V</span>
+          {/* Status Indicator - Further down */}
+          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 text-center">
+            <motion.div
+              className="px-8 py-2 rounded-full font-black text-sm inline-block"
+              style={{
+                backgroundColor: isOptimal ? 'rgba(104, 159, 56, 0.2)' : isLow || isHigh ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                color: isOptimal ? THEME.accent : isLow || isHigh ? '#EF4444' : '#F59E0B',
+                border: `3px solid ${isOptimal ? THEME.accent : isLow || isHigh ? '#EF4444' : '#F59E0B'}`,
+                letterSpacing: '0.05em'
+              }}
+              animate={isFluctuating ? { scale: [1, 1.05, 1] } : {}}
+              transition={{ duration: 0.6, repeat: Infinity }}
+            >
+              {isOptimal ? '✓ OPTIMAL' : isLow ? '⚠ LOW' : isHigh ? '⚠ HIGH' : '⚠ UNSTABLE'}
+            </motion.div>
+          </div>
         </div>
       </div>
 
@@ -183,7 +182,7 @@ export default function VoltmeterAnimation({
           <Zap size={24} color={THEME.accent} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>POWER SOURCE</p>
-            <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{primaryEnergySource}</p>
+            <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{Array.isArray(primaryEnergySource) ? primaryEnergySource.join(', ') : primaryEnergySource}</p>
           </div>
         </div>
       </motion.div>
@@ -243,27 +242,7 @@ export default function VoltmeterAnimation({
         </motion.div>
       )}
 
-      {/* Protection Indicators */}
-      {hasProtection && (
-        <motion.div
-          className="absolute top-56 left-8 p-3 backdrop-blur-sm rounded-xl"
-          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <div className="flex items-center gap-2">
-            <Shield size={20} color={THEME.accent} />
-            <div>
-              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>PROTECTION</p>
-              <div className="flex gap-1 mt-1">
-                {lowVoltageCutoff && <span className="text-xs px-1.5 py-0.5 bg-green-100 text-green-700 rounded">Low V</span>}
-                {highVoltageSurge && <span className="text-xs px-1.5 py-0.5 bg-green-100 text-green-700 rounded">Surge</span>}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
+
 
       {/* Daily Availability */}
       <motion.div
@@ -302,29 +281,27 @@ export default function VoltmeterAnimation({
       )}
 
       {/* Wiring Health */}
-      {hasWiringIssues && (
-        <motion.div
-          className="absolute top-56 right-8 p-3 backdrop-blur-sm rounded-xl"
-          style={{ 
-            backgroundColor: wiringHealth === 'burnt' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-            border: `2px solid ${wiringHealth === 'burnt' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)'}` 
-          }}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <div className="flex items-center gap-2">
-            <TriangleAlert size={20} color={wiringHealth === 'burnt' ? '#EF4444' : '#F59E0B'} />
-            <div>
-              <p className="text-xs font-semibold" style={{ color: wiringHealth === 'burnt' ? '#EF4444' : '#F59E0B' }}>WIRING</p>
-              <p className="text-xs capitalize" style={{ color: wiringHealth === 'burnt' ? '#EF4444' : '#F59E0B' }}>{wiringHealth}</p>
-              {cableUpgradeRequired && (
-                <span className="text-xs px-1 bg-red-100 text-red-600 rounded block mt-1">Upgrade Needed</span>
-              )}
-            </div>
+      <motion.div
+        className="absolute top-56 right-8 p-3 backdrop-blur-sm rounded-xl"
+        style={{ 
+          backgroundColor: wiringHealth === 'bad' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(104, 159, 56, 0.1)',
+          border: `2px solid ${wiringHealth === 'bad' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(104, 159, 56, 0.3)'}` 
+        }}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.6 }}
+      >
+        <div className="flex items-center gap-2">
+          <TriangleAlert size={20} color={wiringHealth === 'bad' ? '#EF4444' : THEME.accent} />
+          <div>
+            <p className="text-xs font-semibold" style={{ color: wiringHealth === 'bad' ? '#EF4444' : THEME.accent }}>WIRING</p>
+            <p className="text-xs capitalize" style={{ color: wiringHealth === 'bad' ? '#EF4444' : THEME.accent }}>{wiringHealth}</p>
+            {cableUpgradeRequired && (
+              <span className="text-xs px-1 bg-red-100 text-red-600 rounded block mt-1">Upgrade Needed</span>
+            )}
           </div>
-        </motion.div>
-      )}
+        </div>
+      </motion.div>
 
       {/* Cable Distance */}
       {distanceMeterToBorewell > 0 && (

@@ -138,7 +138,6 @@ export const POWER_SOURCES = [
   { value: 'grid', label: 'Grid Power' },
   { value: 'solar', label: 'Solar' },
   { value: 'generator', label: 'Generator' },
-  { value: 'hybrid', label: 'Hybrid (Solar + Grid)' },
 ];
 
 export const SHELTER_TYPES = [

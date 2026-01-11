@@ -66,7 +66,7 @@ export default function AnimationPanel() {
           age: moduleData.age || 0,
           country: moduleData.country,
           state: moduleData.state,
-          city: moduleData.city,
+          village: moduleData.village,
           farmSameLocation: moduleData.farmSameLocation,
         };
       
@@ -79,11 +79,21 @@ export default function AnimationPanel() {
           sideLength: parseFloat(moduleData.sideDimensions?.length) || 0,
           sideWidth: parseFloat(moduleData.sideDimensions?.width) || 0,
           exclusionZones: moduleData.exclusionZones || 0,
+          drainageClass: moduleData.drainageClass || 'good',
         };
       
       case 'heart':
+        // Calculate adjusted static water level based on seasonal variance
+        const baseStaticLevel = parseFloat(moduleData.staticWaterLevel) || 0;
+        let adjustedStaticLevel = baseStaticLevel;
+        if (moduleData.seasonalVariance === 'high') {
+          adjustedStaticLevel = baseStaticLevel + 30;
+        } else if (moduleData.seasonalVariance === 'medium') {
+          adjustedStaticLevel = baseStaticLevel + 15;
+        }
+        
         return {
-          staticWaterLevel: parseFloat(moduleData.staticWaterLevel) || 0,
+          staticWaterLevel: adjustedStaticLevel,
           dynamicWaterLevel: parseFloat(moduleData.dynamicWaterLevel) || 0,
           waterQuality: moduleData.waterQuality || 'clear',
           totalDepth: parseFloat(moduleData.totalDepth) || 0,
@@ -108,11 +118,9 @@ export default function AnimationPanel() {
           sumpDistance: parseFloat(moduleData.sumpDistance) || 0,
           mainlinePipeMaterial: moduleData.mainlinePipeMaterial,
           mainlineDiameter: parseFloat(moduleData.mainlineDiameter) || 3,
-          pipeCondition: moduleData.pipeCondition,
-          frictionHeadPenalty: parseFloat(moduleData.frictionHeadPenalty) || 0,
+          pipeCondition: moduleData.pipeCondition || 'new',
           totalPipeLength: parseFloat(moduleData.totalPipeLength) || 100,
-          flowmeterRequirement: moduleData.flowmeterRequirement || false,
-          auxiliaryOutletNeed: moduleData.auxiliaryOutletNeed || false,
+          flowmeterSize: parseFloat(moduleData.flowmeterSize) || 2,
         };
       
       case 'pulse':
@@ -137,16 +145,13 @@ export default function AnimationPanel() {
         return {
           shelterType: moduleData.shelterStructure,
           cellularSignalStrength: moduleData.mobileSignalStrength,
-          ipRatingRequirement: moduleData.ipRatingRequirement,
           heatBuildupRisk: moduleData.heatBuildupRisk,
-          wallSpaceAvailable: moduleData.wallSpaceAvailable,
           theftRiskLevel: moduleData.theftRiskLevel,
-          antiTheftHardwareNeed: moduleData.antiTheftHardwareNeed || false,
           lightningArrestor: moduleData.lightningArrestor,
           earthingPit: moduleData.earthingPit,
           installationPreference: moduleData.installationPreference,
           liftingGearAvailability: moduleData.liftingGearAvailability,
-          siteAccessibility: moduleData.siteAccessibility,
+          pumpHousePictureFile: moduleData.pumpHousePictureFile || '',
         };
       
       case 'biology':

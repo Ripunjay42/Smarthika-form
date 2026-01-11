@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Globe, MapPin, WifiHigh, User, Users, Calendar, Navigation } from 'lucide-react';
+import { MapPin, WifiHigh, User, Users, Calendar, Navigation } from 'lucide-react';
 
 const THEME = {
   accent: '#689F38',
@@ -19,7 +19,7 @@ export default function GlobeAnimation({
   age = 0,
   country = '',
   state = '',
-  city = '',
+  village = '',
   farmSameLocation = ''
 }) {
   const hasData = farmerName || whatsappNumber;
@@ -27,102 +27,78 @@ export default function GlobeAnimation({
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
 
-      {/* Rotating Earth Globe */}
+      {/* Simplified Globe - Lightweight version */}
       <motion.div
         className="relative"
         animate={{ rotate: 360 }}
-        transition={{ duration: 50, repeat: Infinity, ease: 'linear' }}
+        transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
       >
-        <div className="w-80 h-80 relative">
-          {/* Earth Base */}
+        <div className="w-64 h-64 relative">
+          {/* Simple Earth Circle */}
           <div
             className="absolute inset-0 rounded-full"
             style={{
               background: `linear-gradient(135deg, #FAF0BF 0%, #EDEDE7 100%)`,
               boxShadow: `
-                inset -20px -20px 40px rgba(104, 159, 56, 0.15),
-                inset 10px 10px 30px rgba(255, 255, 255, 0.8),
-                0 20px 60px rgba(104, 159, 56, 0.2)
+                inset -10px -10px 20px rgba(104, 159, 56, 0.1),
+                inset 5px 5px 15px rgba(255, 255, 255, 0.6),
+                0 10px 30px rgba(104, 159, 56, 0.15)
               `,
-              border: `3px solid ${THEME.cardBorder}`
+              border: `2px solid ${THEME.cardBorder}`
             }}
           />
 
-          {/* Latitude Lines */}
-          {[20, 35, 50, 65, 80].map((deg, i) => (
-            <motion.div
-              key={`lat-${i}`}
-              className="absolute left-1/2 top-1/2 rounded-full border"
-              style={{
-                width: `${100 - deg * 0.9}%`,
-                height: `${100 - deg * 0.9}%`,
-                transform: 'translate(-50%, -50%)',
-                borderColor: THEME.accent,
-                borderWidth: '2px',
-                opacity: 0.3,
-              }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0.2, 0.4, 0.2] }}
-              transition={{ duration: 3, repeat: Infinity, delay: i * 0.2 }}
-            />
-          ))}
-          
-          {/* Longitude Lines */}
-          {[0, 30, 60, 90, 120, 150].map((deg, i) => (
-            <motion.div
-              key={`lng-${i}`}
-              className="absolute left-1/2 top-1/2 origin-center"
-              style={{ 
-                width: '2px',
-                height: '100%',
-                transform: `translate(-50%, -50%) rotate(${deg}deg)`,
-                background: `linear-gradient(to bottom, transparent 0%, ${THEME.accent} 50%, transparent 100%)`,
-                opacity: 0.25,
-              }}
-            />
-          ))}
+          {/* Single decorative circle line */}
+          <motion.div
+            className="absolute left-1/2 top-1/2 rounded-full border"
+            style={{
+              width: '85%',
+              height: '85%',
+              transform: 'translate(-50%, -50%)',
+              borderColor: THEME.accent,
+              borderWidth: '1px',
+              opacity: 0.25,
+            }}
+            animate={{ opacity: [0.15, 0.3, 0.15] }}
+            transition={{ duration: 4, repeat: Infinity }}
+          />
 
-          {/* Location Marker - India */}
+          {/* Location Marker - Single dot */}
           {hasData && (
             <motion.div
               className="absolute"
               style={{ top: '35%', left: '60%' }}
               initial={{ scale: 0 }}
               animate={{ 
-                scale: [1, 1.2, 1],
+                scale: [1, 1.15, 1],
               }}
-              transition={{ duration: 2, repeat: Infinity }}
+              transition={{ duration: 2.5, repeat: Infinity }}
             >
               <div className="relative">
-                <div className="w-5 h-5 rounded-full shadow-lg" style={{ backgroundColor: THEME.accent, boxShadow: `0 0 15px ${THEME.accent}` }} />
-                <div className="absolute inset-0 w-5 h-5 rounded-full animate-ping" style={{ backgroundColor: THEME.accent, opacity: 0.5 }} />
-                <MapPin 
-                  size={14} 
-                  color="#FAF0BF" 
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                <div 
+                  className="w-4 h-4 rounded-full shadow-lg" 
+                  style={{ 
+                    backgroundColor: THEME.accent, 
+                    boxShadow: `0 0 10px ${THEME.accent}` 
+                  }} 
                 />
               </div>
             </motion.div>
           )}
-
-          {/* Globe Icon Center */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Globe size={64} color={THEME.accent} style={{ opacity: 0.15 }} />
-          </div>
         </div>
       </motion.div>
 
       {/* Farmer Name Card */}
       {farmerName && (
         <motion.div
-          className="absolute top-16 left-8 px-5 py-4 backdrop-blur-sm rounded-xl"
-          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          className="absolute top-16 left-8 px-4 py-3 rounded-lg"
+          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
           initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0, y: [0, -8, 0] }}
+          animate={{ opacity: 1, x: 0, y: [0, -6, 0] }}
           transition={{ y: { duration: 3, repeat: Infinity } }}
         >
-          <div className="flex items-center gap-3">
-            <User size={20} color={THEME.accent} />
+          <div className="flex items-center gap-2">
+            <User size={18} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>FARMER</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{farmerName}</p>
@@ -134,17 +110,17 @@ export default function GlobeAnimation({
       {/* Age Card */}
       {age > 0 && (
         <motion.div
-          className="absolute top-40 right-8 px-5 py-4 backdrop-blur-sm rounded-xl"
-          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          className="absolute top-40 right-8 px-4 py-3 rounded-lg"
+          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
           initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0, y: [0, -8, 0] }}
-          transition={{ y: { duration: 3, repeat: Infinity, delay: 0.3 } }}
+          animate={{ opacity: 1, x: 0, y: [0, -6, 0] }}
+          transition={{ y: { duration: 3, repeat: Infinity, delay: 0.2 } }}
         >
-          <div className="flex items-center gap-3">
-            <Calendar size={20} color={THEME.accent} />
+          <div className="flex items-center gap-2">
+            <Calendar size={18} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>AGE</p>
-              <p className="text-sm font-bold" style={{ color: THEME.text }}>{age} years</p>
+              <p className="text-sm font-bold" style={{ color: THEME.text }}>{age} yrs</p>
             </div>
           </div>
         </motion.div>
@@ -153,14 +129,14 @@ export default function GlobeAnimation({
       {/* WhatsApp Card */}
       {whatsappNumber && (
         <motion.div
-          className="absolute top-16 right-8 px-5 py-4 backdrop-blur-sm rounded-xl"
-          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          className="absolute top-16 right-8 px-4 py-3 rounded-lg"
+          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
           initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0, y: [0, -8, 0] }}
-          transition={{ y: { duration: 3, repeat: Infinity, delay: 0.5 } }}
+          animate={{ opacity: 1, x: 0, y: [0, -6, 0] }}
+          transition={{ y: { duration: 3, repeat: Infinity, delay: 0.4 } }}
         >
-          <div className="flex items-center gap-3">
-            <WifiHigh size={20} color={THEME.accent} />
+          <div className="flex items-center gap-2">
+            <WifiHigh size={18} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>CONTACT</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>+91 {whatsappNumber}</p>
@@ -170,20 +146,20 @@ export default function GlobeAnimation({
       )}
 
       {/* Location Card */}
-      {city && (
+      {village && (
         <motion.div
-          className="absolute bottom-24 right-8 px-5 py-4 backdrop-blur-sm rounded-xl"
-          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          className="absolute bottom-24 right-8 px-4 py-3 rounded-lg"
+          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.3 }}
         >
-          <div className="flex items-center gap-3">
-            <Navigation size={20} color={THEME.accent} />
+          <div className="flex items-center gap-2">
+            <Navigation size={18} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>LOCATION</p>
-              <p className="text-sm font-bold" style={{ color: THEME.text }}>{city}</p>
-              {state && <p className="text-xs" style={{ color: THEME.textLight }}>{state}</p>}
+              <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{village}</p>
+              {state && <p className="text-xs capitalize" style={{ color: THEME.textLight }}>{state}</p>}
             </div>
           </div>
         </motion.div>
@@ -192,17 +168,17 @@ export default function GlobeAnimation({
       {/* Labor Count Card */}
       {laborCount > 0 && (
         <motion.div
-          className="absolute bottom-16 left-1/2 -translate-x-1/2 px-5 py-4 backdrop-blur-sm rounded-xl"
-          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          className="absolute bottom-16 left-1/2 -translate-x-1/2 px-4 py-3 rounded-lg"
+          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: [20, 12, 20] }}
           transition={{ duration: 4, repeat: Infinity }}
         >
-          <div className="flex items-center gap-3">
-            <Users size={24} color={THEME.accent} />
+          <div className="flex items-center gap-2">
+            <Users size={20} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>WORKFORCE</p>
-              <p className="text-lg font-bold" style={{ color: THEME.text }}>{laborCount} Workers</p>
+              <p className="text-base font-bold" style={{ color: THEME.text }}>{laborCount}</p>
             </div>
           </div>
         </motion.div>
@@ -211,18 +187,18 @@ export default function GlobeAnimation({
       {/* Farm Location Card */}
       {farmSameLocation && (
         <motion.div
-          className="absolute bottom-24 left-8 px-5 py-4 backdrop-blur-sm rounded-xl"
-          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          className="absolute bottom-24 left-8 px-4 py-3 rounded-lg"
+          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.2 }}
         >
-          <div className="flex items-center gap-3">
-            <MapPin size={20} color={THEME.accent} />
+          <div className="flex items-center gap-2">
+            <MapPin size={18} color={THEME.accent} />
             <div>
-              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>FARM LOCATION</p>
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>FARM</p>
               <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>
-                {farmSameLocation === 'yes' ? 'Same Location' : 'Different Location'}
+                {farmSameLocation === 'yes' ? 'Same' : 'Different'}
               </p>
             </div>
           </div>
@@ -230,18 +206,18 @@ export default function GlobeAnimation({
       )}
 
       {/* Network Status */}
-      {!hasData && (
+      {/* {!hasData && (
         <motion.div
-          className="absolute bottom-16 left-1/2 -translate-x-1/2 px-6 py-4 backdrop-blur-sm rounded-xl text-center"
-          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          className="absolute bottom-16 left-1/2 -translate-x-1/2 px-5 py-3 rounded-lg text-center"
+          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
           animate={{ opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={{ duration: 2.5, repeat: Infinity }}
         >
-          <WifiHigh size={32} color={THEME.accent} className="mx-auto mb-2" />
-          <p className="text-sm font-medium" style={{ color: THEME.text }}>Awaiting Farmer Details...</p>
-          <p className="text-xs mt-1" style={{ color: THEME.textLight }}>Fill the form to connect</p>
+          <WifiHigh size={28} color={THEME.accent} className="mx-auto mb-1" />
+          <p className="text-sm font-medium" style={{ color: THEME.text }}>Fill the form</p>
+          <p className="text-xs mt-0.5" style={{ color: THEME.textLight }}>to see details</p>
         </motion.div>
-      )}
+      )} */}
     </div>
   );
 }

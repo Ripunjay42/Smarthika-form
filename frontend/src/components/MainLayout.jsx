@@ -40,7 +40,7 @@ export default function MainLayout() {
       </div>
 
       {/* Bottom/Right Panel - Form */}
-      <div className="w-full lg:w-[620px] bg-white shadow-2xl flex-1 md:flex-none min-h-0">
+      <div className="w-full lg:w-[1000px] bg-white shadow-2xl flex-1 md:flex-none min-h-0">
         <FormPanel />
       </div>
     </div>

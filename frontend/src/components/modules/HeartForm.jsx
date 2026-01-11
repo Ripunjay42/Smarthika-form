@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Droplet, Info, AlertCircle, CheckCircle, TrendingDown } from 'lucide-react';
+import { Droplet, Info, AlertCircle, CheckCircle, TrendingDown, Plus, Minus } from 'lucide-react';
 import { FormInput, FormSelect, FormSlider, FormButtonGroup, FormColorPicker } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { WATER_SOURCES, CASING_DIAMETERS, WATER_QUALITIES } from '../../constants/formConstants';
@@ -8,16 +8,6 @@ import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 const WATER_STORAGE_OPTIONS = [
   { value: 'sump', label: 'Underground Sump' },
   { value: 'tank', label: 'Overhead Tank' },
-  { value: 'both', label: 'Both Sump & Tank' },
-];
-
-const PUMP_SIZES = [
-  { value: '1hp', label: '1 HP' },
-  { value: '2hp', label: '2 HP' },
-  { value: '3hp', label: '3 HP' },
-  { value: '5hp', label: '5 HP' },
-  { value: '7.5hp', label: '7.5 HP' },
-  { value: '10hp', label: '10 HP' },
 ];
 
 export default function HeartForm() {
@@ -44,16 +34,54 @@ export default function HeartForm() {
     
     if (current.includes(value)) {
       const updated = current.filter(v => v !== value);
-      updateModuleData('heart', { [name]: updated });
+      // Also remove count when deselecting
+      const sourceCountKey = `${value}Count`;
+      updateModuleData('heart', { [name]: updated, [sourceCountKey]: 0 });
     } else {
       const updated = [...current, value];
-      updateModuleData('heart', { [name]: updated });
+      // Initialize count to 1 when selecting
+      const sourceCountKey = `${value}Count`;
+      updateModuleData('heart', { [name]: updated, [sourceCountKey]: data[sourceCountKey] || 1 });
     }
   };
 
+  const handleWaterStorageSelect = (value) => {
+    let current = data.waterStorageType || [];
+    if (typeof current === 'string') {
+      current = current ? [current] : [];
+    }
+    
+    if (current.includes(value)) {
+      const updated = current.filter(v => v !== value);
+      updateModuleData('heart', { waterStorageType: updated });
+    } else {
+      const updated = [...current, value];
+      updateModuleData('heart', { waterStorageType: updated });
+    }
+  };
+
+  const handleSourceCountChange = (sourceValue, increment) => {
+    const countKey = `${sourceValue}Count`;
+    const currentCount = data[countKey] || 0;
+    const newCount = Math.max(1, currentCount + (increment ? 1 : -1));
+    updateModuleData('heart', { [countKey]: newCount });
+  };
+
+  // Calculate adjusted static water level based on seasonal variance
+  const getAdjustedStaticLevel = () => {
+    let base = parseFloat(data.staticWaterLevel) || 50;
+    if (data.seasonalVariance === 'high') {
+      return base + 30; // Water level drops more during dry season
+    } else if (data.seasonalVariance === 'medium') {
+      return base + 15; // Moderate seasonal variation
+    }
+    return base; // Low variation
+  };
+  const adjustedStaticLevel = getAdjustedStaticLevel();
+
   // Calculate drawdown
   const drawdown = data.dynamicWaterLevel && data.staticWaterLevel 
-    ? parseFloat(data.dynamicWaterLevel) - parseFloat(data.staticWaterLevel) 
+    ? Math.abs(parseFloat(data.dynamicWaterLevel) - adjustedStaticLevel)
     : 0;
 
   // Get recharge assessment
@@ -81,53 +109,73 @@ export default function HeartForm() {
         <p style={{ color: '#558B2F' }}>Water source assessment and pump sizing.</p>
       </div>
 
-      {/* Number of Borewells - Ask First */}
-      <FormInput
-        label="Number of Water Sources"
-        name="numberOfBorewells"
-        type="number"
-        value={data.numberOfBorewells}
-        onChange={handleChange}
-        placeholder="How many water sources?"
-        icon={Droplet}
-        min="1"
-        max="10"
-        required
-        error={errors.numberOfBorewells}
-      />
-
       {/* Multi-Select Water Sources */}
       <div className="space-y-3">
         <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Available Water Sources</label>
         <div className="space-y-2">
-          {WATER_SOURCES.map((source) => (
-            <motion.button
-              key={source.value}
-              onClick={() => handleMultiSelect('sourceType', source.value)}
-              className="w-full p-3 rounded-lg border-2 transition-all text-left"
-              style={{
-                borderColor: (data.sourceType || []).includes(source.value) ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-                backgroundColor: (data.sourceType || []).includes(source.value) ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-              }}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-5 h-5 rounded border-2 flex items-center justify-center"
-                  style={{
-                    borderColor: (data.sourceType || []).includes(source.value) ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-                    backgroundColor: (data.sourceType || []).includes(source.value) ? '#689F38' : 'transparent',
-                  }}
-                >
-                  {(data.sourceType || []).includes(source.value) && (
-                    <CheckCircle size={16} color="#FAF0BF" />
+          {WATER_SOURCES.map((source) => {
+            const isSelected = (data.sourceType || []).includes(source.value);
+            const countKey = `${source.value}Count`;
+            const count = data[countKey] || 0;
+            
+            return (
+              <motion.div
+                key={source.value}
+                className="p-3 rounded-lg border-2 transition-all"
+                style={{
+                  borderColor: isSelected ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                  backgroundColor: isSelected ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
+                }}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <motion.button
+                    onClick={() => handleMultiSelect('sourceType', source.value)}
+                    className="flex-1 text-left flex items-center gap-3"
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                  >
+                    <div
+                      className="w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0"
+                      style={{
+                        borderColor: isSelected ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                        backgroundColor: isSelected ? '#689F38' : 'transparent',
+                      }}
+                    >
+                      {isSelected && (
+                        <CheckCircle size={16} color="#FAF0BF" />
+                      )}
+                    </div>
+                    <span className="font-medium" style={{ color: '#33691E' }}>{source.label}</span>
+                  </motion.button>
+                  
+                  {/* Counter - Shows only when selected */}
+                  {isSelected && (
+                    <div className="flex items-center gap-2 bg-white rounded-lg p-1" style={{ border: '1px solid rgba(104, 159, 56, 0.3)' }}>
+                      <motion.button
+                        onClick={() => handleSourceCountChange(source.value, false)}
+                        className="p-1 rounded hover:bg-gray-100 transition-colors"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Minus size={18} color="#689F38" strokeWidth={2} />
+                      </motion.button>
+                      <span className="w-8 text-center font-bold" style={{ color: '#33691E' }}>
+                        {count}
+                      </span>
+                      <motion.button
+                        onClick={() => handleSourceCountChange(source.value, true)}
+                        className="p-1 rounded hover:bg-gray-100 transition-colors"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Plus size={18} color="#689F38" strokeWidth={2} />
+                      </motion.button>
+                    </div>
                   )}
                 </div>
-                <span className="font-medium" style={{ color: '#33691E' }}>{source.label}</span>
-              </div>
-            </motion.button>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
         {errors.sourceType && (
           <motion.div
@@ -141,61 +189,6 @@ export default function HeartForm() {
           </motion.div>
         )}
       </div>
-
-      {/* Water Quality - Keep but with description */}
-      <div className="space-y-2">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Water Color/Quality</label>
-        <p className="text-xs" style={{ color: '#558B2F' }}>Visual indication of water quality</p>
-        <FormColorPicker
-          label=""
-          name="waterQuality"
-          value={data.waterQuality}
-          onChange={handleChange}
-          options={WATER_QUALITIES}
-        />
-      </div>
-
-      {/* Seasonal Variance */}
-      <FormButtonGroup
-        label="Seasonal Variance in Water Level"
-        name="seasonalVariance"
-        value={data.seasonalVariance}
-        onChange={handleChange}
-        options={[
-          { value: 'low', label: 'Low (< 10ft drop)' },
-          { value: 'medium', label: 'Medium (10-30ft drop)' },
-          { value: 'high', label: 'High (> 30ft drop)' },
-        ]}
-      />
-
-      {/* Dry Run Risk with Color Coding */}
-      <FormButtonGroup
-        label="Dry Run Risk Assessment"
-        name="dryRunRisk"
-        value={data.dryRunRisk}
-        onChange={handleChange}
-        options={[
-          { value: 'low', label: '✓ Low Risk' },
-          { value: 'high', label: '⚠ High Risk' },
-        ]}
-      />
-
-      {hasHighDryRunRisk && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          className="p-4 rounded-xl flex items-start gap-3"
-          style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '2px solid rgba(239, 68, 68, 0.3)' }}
-        >
-          <AlertCircle size={20} color="#EF4444" className="shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-semibold text-red-600">High Dry Run Risk Detected</p>
-            <p className="text-xs text-red-500 mt-1">
-              Your water source may dry up during peak season. Consider water conservation strategies or multiple sources.
-            </p>
-          </div>
-        </motion.div>
-      )}
 
       {/* Depth Section - Optional */}
       <div className="border-t pt-5">
@@ -267,6 +260,61 @@ export default function HeartForm() {
         )}
       </div>
 
+      {/* Water Quality - Keep but with description */}
+      <div className="space-y-2">
+        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Water Color/Quality</label>
+        <p className="text-xs" style={{ color: '#558B2F' }}>Visual indication of water quality</p>
+        <FormColorPicker
+          label=""
+          name="waterQuality"
+          value={data.waterQuality}
+          onChange={handleChange}
+          options={WATER_QUALITIES}
+        />
+      </div>
+
+      {/* Seasonal Variance */}
+      <FormButtonGroup
+        label="Seasonal Variance in Water Level"
+        name="seasonalVariance"
+        value={data.seasonalVariance}
+        onChange={handleChange}
+        options={[
+          { value: 'low', label: 'Low (< 10ft drop)' },
+          { value: 'medium', label: 'Medium (10-30ft drop)' },
+          { value: 'high', label: 'High (> 30ft drop)' },
+        ]}
+      />
+
+      {/* Dry Run Risk with Color Coding */}
+      <FormButtonGroup
+        label="Dry Run Risk Assessment"
+        name="dryRunRisk"
+        value={data.dryRunRisk}
+        onChange={handleChange}
+        options={[
+          { value: 'low', label: '✓ Low Risk' },
+          { value: 'high', label: '⚠ High Risk' },
+        ]}
+      />
+
+      {hasHighDryRunRisk && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="p-4 rounded-xl flex items-start gap-3"
+          style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '2px solid rgba(239, 68, 68, 0.3)' }}
+        >
+          <AlertCircle size={20} color="#EF4444" className="shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-red-600">High Dry Run Risk Detected</p>
+            <p className="text-xs text-red-500 mt-1">
+              Your water source may dry up during peak season. Consider water conservation strategies or multiple sources.
+            </p>
+          </div>
+        </motion.div>
+      )}
+
       {/* Casing Diameter */}
       <FormButtonGroup
         label="Casing Pipe Diameter"
@@ -284,32 +332,32 @@ export default function HeartForm() {
           className="space-y-4 border-t pt-4"
         >
           <h3 className="font-semibold" style={{ color: '#33691E' }}>Water Storage Options</h3>
-          <div className="space-y-2">
-            {WATER_STORAGE_OPTIONS.map((option) => (
-              <motion.button
-                key={option.value}
-                onClick={() => handleChange({ target: { name: 'waterStorageType', value: option.value } })}
-                className="w-full p-3 rounded-lg border-2 transition-all text-left"
-                style={{
-                  borderColor: data.waterStorageType === option.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-                  backgroundColor: data.waterStorageType === option.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-                }}
-                whileHover={{ scale: 1.01 }}
-              >
-                <span className="font-medium" style={{ color: '#33691E' }}>{option.label}</span>
-              </motion.button>
-            ))}
+          <div className="flex gap-3 flex-wrap">
+            {WATER_STORAGE_OPTIONS.map((option) => {
+              const isSelected = Array.isArray(data.waterStorageType) 
+                ? data.waterStorageType.includes(option.value)
+                : data.waterStorageType === option.value;
+              return (
+                <motion.button
+                  key={option.value}
+                  onClick={() => handleWaterStorageSelect(option.value)}
+                  className="flex-1 min-w-[140px] p-3 rounded-lg border-2 transition-all text-left flex items-center gap-2"
+                  style={{
+                    borderColor: isSelected ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                    backgroundColor: isSelected ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
+                  }}
+                  whileHover={{ scale: 1.01 }}
+                >
+                  <div className="flex-1">
+                    <span className="font-medium" style={{ color: '#33691E' }}>{option.label}</span>
+                  </div>
+                  {isSelected && (
+                    <CheckCircle size={20} color="#689F38" strokeWidth={2.5} />
+                  )}
+                </motion.button>
+              );
+            })}
           </div>
-
-          <FormInput
-            label="Suction Head"
-            name="suctionHead"
-            type="number"
-            value={data.suctionHead}
-            onChange={handleChange}
-            placeholder="Suction head (ft)"
-            helper="Distance from suction point to pump"
-          />
 
           <FormButtonGroup
             label="Foot Valve Condition"
@@ -355,40 +403,6 @@ export default function HeartForm() {
           </motion.div>
         )}
       </div>
-
-      {/* Pump Size Selection */}
-      <div className="border-t pt-5">
-        <h3 className="font-semibold mb-3" style={{ color: '#33691E' }}>Pump Motor Size</h3>
-        <FormButtonGroup
-          label="Select Appropriate Pump Horsepower"
-          name="pumpSize"
-          value={data.pumpSize}
-          onChange={handleChange}
-          options={PUMP_SIZES}
-        />
-      </div>
-
-      {/* Info Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="p-4 rounded-xl"
-        style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', border: '2px solid rgba(104, 159, 56, 0.2)' }}
-      >
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.15)' }}>
-            <Info size={20} strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Borewell Assessment</h4>
-            <p className="text-xs mt-1" style={{ color: '#558B2F' }}>
-              Water source type determines pump configuration. Seasonal variance and recharge rates 
-              affect reliability. Municipal water can provide supplementary supply during dry seasons.
-            </p>
-          </div>
-        </div>
-      </motion.div>
     </motion.div>
   );
 }

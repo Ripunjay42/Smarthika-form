@@ -59,17 +59,10 @@ export default function BorewellAnimation({
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
-      {/* Ground Surface */}
-      <div className="absolute top-[22%] left-0 right-0 h-5 sm:h-6" style={{ background: `linear-gradient(to bottom, ${THEME.accent}, ${THEME.accentLight})` }}>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xs font-medium" style={{ color: '#FAF0BF' }}>Ground Level</span>
-        </div>
-      </div>
-
       {/* Borewell Cross-section */}
-      <div className="relative h-[300px] sm:h-[380px] w-28 sm:w-36 mt-6 sm:mt-10">
+      <div className="relative h-[400px] sm:h-[520px] lg:h-[600px] w-56 sm:w-80 lg:w-96 mt-5 sm:mt-8">
         {/* Casing Pipe */}
-        <div className="absolute inset-0 rounded-lg overflow-hidden" style={{ backgroundColor: '#4B5563', border: '3px solid #374151' }}>
+        <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-2xl" style={{ backgroundColor: '#4B5563', border: '4px solid #374151' }}>
           {/* Earth Layers */}
           <div className="absolute inset-0">
             <div className="h-[25%]" style={{ background: 'linear-gradient(to bottom, #B8860B, #8B6914)' }} />
@@ -78,26 +71,27 @@ export default function BorewellAnimation({
             <div className="h-[25%]" style={{ background: 'linear-gradient(to bottom, #64748B, #334155)' }} />
           </div>
 
-          {/* Inner Pipe */}
+          {/* Inner Pipe - LARGER */}
           <motion.div 
             className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0"
-            animate={{ width: casingDiameter * 2 + 'px' }}
-            style={{ backgroundColor: '#1F2937', borderLeft: '3px solid #4B5563', borderRight: '3px solid #4B5563' }}
+            animate={{ width: casingDiameter * 12 + 'px' }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            style={{ backgroundColor: '#1F2937', borderLeft: '4px solid #4B5563', borderRight: '4px solid #4B5563' }}
           >
             {/* Static Water Level Marker */}
             {staticWaterLevel > 0 && (
               <motion.div
-                className="absolute left-0 right-0 h-1 bg-blue-400 z-10"
+                className="absolute left-0 right-0 h-2 bg-blue-400 z-10"
                 animate={{ top: `${staticPercent}%` }}
                 transition={{ duration: 0.6 }}
               >
                 <motion.div 
-                  className="absolute -left-14 sm:-left-20 flex items-center gap-1"
+                  className="absolute -left-16 sm:-left-24 flex items-center gap-1"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                 >
-                  <ArrowDown size={12} color="#3B82F6" />
-                  <span className="text-xs font-medium whitespace-nowrap" style={{ color: '#3B82F6' }}>
+                  <ArrowDown size={14} color="#3B82F6" />
+                  <span className="text-xs font-bold whitespace-nowrap" style={{ color: '#3B82F6' }}>
                     SWL: {staticWaterLevel}ft
                   </span>
                 </motion.div>
@@ -105,57 +99,45 @@ export default function BorewellAnimation({
             )}
 
             {/* Dynamic Water Level Marker */}
-            {dynamicWaterLevel > 0 && (
+            {dynamicWaterLevel !== undefined && dynamicWaterLevel !== null && dynamicWaterLevel !== '' && (
               <motion.div
-                className="absolute left-0 right-0 h-1 z-10"
+                className="absolute left-0 right-0 h-2 z-10"
                 style={{ backgroundColor: THEME.accent }}
                 animate={{ top: `${dynamicPercent}%` }}
                 transition={{ duration: 0.6 }}
               >
                 <motion.div 
-                  className="absolute -right-14 sm:-right-20 flex items-center gap-1"
+                  className="absolute -right-16 sm:-right-24 flex items-center gap-1"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                 >
-                  <span className="text-xs font-medium whitespace-nowrap" style={{ color: THEME.accent }}>
+                  <span className="text-xs font-bold whitespace-nowrap" style={{ color: THEME.accent }}>
                     DWL: {dynamicWaterLevel}ft
                   </span>
                 </motion.div>
               </motion.div>
             )}
 
-            {/* Water Fill */}
-            {dynamicWaterLevel > 0 && (
+            {/* Water Fill - Always Visible */}
+            <motion.div
+              className="absolute left-0 right-0 bottom-0"
+              animate={{ 
+                height: `${dynamicWaterLevel && dynamicWaterLevel > 0 ? 100 - dynamicPercent : 50}%`,
+                backgroundColor: waterColor,
+              }}
+              transition={{ duration: 0.6 }}
+              style={{ opacity: 0.8 }}
+            >
+              {/* Water Ripple Animation */}
               <motion.div
-                className="absolute left-0 right-0 bottom-0"
-                animate={{ 
-                  height: `${100 - dynamicPercent}%`,
-                  backgroundColor: waterColor,
-                }}
-                transition={{ duration: 0.6 }}
-                style={{ opacity: 0.7 }}
-              >
-                {/* Water Ripple Animation */}
-                <motion.div
-                  className="absolute inset-x-0 top-0 h-2"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.3)' }}
-                  animate={{ y: [0, 3, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                />
-              </motion.div>
-            )}
+                className="absolute inset-x-0 top-0 h-3"
+                style={{ backgroundColor: 'rgba(255,255,255,0.3)' }}
+                animate={{ y: [0, 4, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              />
+            </motion.div>
           </motion.div>
         </div>
-
-        {/* Pump Motor at Top */}
-        <motion.div
-          className="absolute -top-10 sm:-top-12 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-12 sm:h-14 rounded-lg flex items-center justify-center shadow-lg"
-          style={{ backgroundColor: THEME.accent }}
-          animate={{ scale: [1, 1.03, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          <Zap size={26} color="#FAF0BF" />
-        </motion.div>
 
         {/* Depth Scale */}
         {totalDepth > 0 && (
