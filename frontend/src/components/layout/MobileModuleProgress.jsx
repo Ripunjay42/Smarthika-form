@@ -32,9 +32,10 @@ export default function MobileModuleProgress() {
 
   return (
     <div
-      className="w-full px-3 py-2"
+      className="w-full px-3 py-2 bg-gray-100"
       style={{
-        backgroundColor: '#E5E7EB',
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
       }}
     >
       <div 

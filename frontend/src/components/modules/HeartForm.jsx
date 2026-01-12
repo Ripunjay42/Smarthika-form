@@ -10,6 +10,11 @@ const WATER_STORAGE_OPTIONS = [
   { value: 'tank', label: 'Overhead Tank' },
 ];
 
+const UNIT_SYSTEMS = [
+  { value: 'feet', label: 'Feet' },
+  { value: 'meters', label: 'Meters' },
+];
+
 export default function HeartForm() {
   const { formData, updateModuleData, moduleErrors } = useFormContext();
   const data = formData.heart;
@@ -90,6 +95,7 @@ export default function HeartForm() {
   const rechargeStatus = getRechargeAssessment();
   const isOpenWell = data.sourceType && data.sourceType.includes('open-well');
   const hasMunicipalWater = data.municipalWaterAvailable === 'yes';
+  const unitLabel = data.unitSystem === 'meters' ? 'Meters' : 'Feet';
 
   return (
     <motion.div
@@ -97,11 +103,46 @@ export default function HeartForm() {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      {/* Header */}
+      {/* Header with Unit Selector in Corner */}
       <div className="mb-8">
-        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE HYDRAULIC HEART</h2>
-        <p style={{ color: '#558B2F' }}>Water source assessment and pump sizing.</p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
+            <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE HYDRAULIC HEART</h2>
+            <p style={{ color: '#558B2F' }}>Water source assessment and pump sizing.</p>
+          </div>
+          <div className="flex-shrink-0 pt-1">
+            <div className="flex flex-col items-end gap-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>Measurement Unit</label>
+              <div className="relative inline-flex items-center bg-white rounded-full p-1" style={{ border: '2px solid rgba(104, 159, 56, 0.3)' }}>
+                <motion.div
+                  className="absolute h-8 rounded-full"
+                  style={{
+                    backgroundColor: '#689F38',
+                    width: '50%',
+                    left: data.unitSystem === 'feet' ? '0%' : '50%',
+                  }}
+                  layout
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+                <button
+                  onClick={() => handleChange({ target: { name: 'unitSystem', value: 'feet' } })}
+                  className="relative z-10 px-4 py-1.5 text-sm font-semibold transition-colors rounded-full"
+                  style={{ color: data.unitSystem === 'feet' ? '#EDEDE7' : '#33691E' }}
+                >
+                  Feet
+                </button>
+                <button
+                  onClick={() => handleChange({ target: { name: 'unitSystem', value: 'meters' } })}
+                  className="relative z-10 px-4 py-1.5 text-sm font-semibold transition-colors rounded-full"
+                  style={{ color: data.unitSystem === 'meters' ? '#EDEDE7' : '#33691E' }}
+                >
+                  Meters
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Multi-Select Water Sources */}
@@ -191,34 +232,34 @@ export default function HeartForm() {
         <p className="text-xs mb-4" style={{ color: '#558B2F' }}>Provide these if available for precise pump sizing</p>
 
         <FormInput
-          label="Total Depth of Borewell/Source"
+          label={`Total Depth of Borewell/Source (${unitLabel})`}
           name="totalDepth"
           type="number"
           value={data.totalDepth}
           onChange={handleChange}
-          placeholder="Total depth in feet"
+          placeholder={`Total depth in ${unitLabel.toLowerCase()}`}
           icon={Droplet}
           min="0"
         />
 
         <div className="grid grid-cols-2 gap-4 mt-4">
           <FormInput
-            label="Static Water Level"
+            label={`Static Water Level (${unitLabel})`}
             name="staticWaterLevel"
             type="number"
             value={data.staticWaterLevel}
             onChange={handleChange}
-            placeholder="Resting level (ft)"
+            placeholder={`Resting level (${unitLabel.toLowerCase()})`}
             helper="When pump is OFF"
             min="0"
           />
           <FormInput
-            label="Dynamic Water Level"
+            label={`Dynamic Water Level (${unitLabel})`}
             name="dynamicWaterLevel"
             type="number"
             value={data.dynamicWaterLevel}
             onChange={handleChange}
-            placeholder="Pumping level (ft)"
+            placeholder={`Pumping level (${unitLabel.toLowerCase()})`}
             helper="When pump is ON"
             min="0"
           />
@@ -273,13 +314,13 @@ export default function HeartForm() {
 
       {/* Seasonal Variance */}
       <FormInput
-        label="Seasonal Variance in Water Level (feet)"
+        label={`Seasonal Variance in Water Level (${unitLabel})`}
         name="seasonalVariance"
         type="number"
         value={data.seasonalVariance}
         onChange={handleChange}
-        placeholder="Water level drop in feet"
-        helper="Expected drop in water level during dry season (feet)"
+        placeholder={`Water level drop in ${unitLabel.toLowerCase()}`}
+        helper={`Expected drop in water level during dry season (${unitLabel.toLowerCase()})`}
         min="0"
       />
 

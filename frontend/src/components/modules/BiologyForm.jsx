@@ -156,7 +156,7 @@ export default function BiologyForm() {
         placeholder="Liters Per Day (LPD)"
         icon={Droplet}
         helper="Total water requirement during peak season"
-        required
+        // required
         error={errors.peakWaterDemand}
         min="0"
       />

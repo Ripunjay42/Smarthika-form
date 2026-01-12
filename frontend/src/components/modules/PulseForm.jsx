@@ -244,7 +244,7 @@ export default function PulseForm() {
         onChange={handleChange}
         placeholder="Distance in meters"
         icon={Plug2}
-        required
+        // required
         error={errors.distanceMeterToBorewell}
         min="0"
       />

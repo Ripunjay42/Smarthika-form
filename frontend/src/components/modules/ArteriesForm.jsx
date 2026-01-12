@@ -5,6 +5,11 @@ import { useFormContext } from '../../context/FormContext';
 import { PIPE_MATERIALS, DELIVERY_TARGETS } from '../../constants/formConstants';
 import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
+const UNIT_SYSTEMS = [
+  { value: 'feet', label: 'Feet' },
+  { value: 'meters', label: 'Meters' },
+];
+
 const PIPE_DIAMETERS = [
   { value: '1.5', label: '1½″\n40 mm' },
   { value: '2', label: '2″\n50 mm' },
@@ -51,6 +56,7 @@ export default function ArteriesForm() {
   const deliveryTargets = Array.isArray(data.deliveryTarget) ? data.deliveryTarget : [];
   const isTankSelected = deliveryTargets.includes('tank');
   const isSumpSelected = deliveryTargets.includes('sump');
+  const unitLabel = data.unitSystem === 'meters' ? 'Meters' : 'Feet';
 
   return (
     <motion.div
@@ -58,11 +64,46 @@ export default function ArteriesForm() {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      {/* Header */}
+      {/* Header with Unit Selector in Corner */}
       <div className="mb-8">
-        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE ARTERIES</h2>
-        <p style={{ color: '#558B2F' }}>Piping infrastructure for water delivery.</p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
+            <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE ARTERIES</h2>
+            <p style={{ color: '#558B2F' }}>Piping infrastructure for water delivery.</p>
+          </div>
+          <div className="flex-shrink-0 pt-1">
+            <div className="flex flex-col items-end gap-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>Measurement Unit</label>
+              <div className="relative inline-flex items-center bg-white rounded-full p-1" style={{ border: '2px solid rgba(104, 159, 56, 0.3)' }}>
+                <motion.div
+                  className="absolute h-8 rounded-full"
+                  style={{
+                    backgroundColor: '#689F38',
+                    width: '50%',
+                    left: data.unitSystem === 'feet' ? '0%' : '50%',
+                  }}
+                  layout
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+                <button
+                  onClick={() => handleChange({ target: { name: 'unitSystem', value: 'feet' } })}
+                  className="relative z-10 px-4 py-1.5 text-sm font-semibold transition-colors rounded-full"
+                  style={{ color: data.unitSystem === 'feet' ? '#EDEDE7' : '#33691E' }}
+                >
+                  Feet
+                </button>
+                <button
+                  onClick={() => handleChange({ target: { name: 'unitSystem', value: 'meters' } })}
+                  className="relative z-10 px-4 py-1.5 text-sm font-semibold transition-colors rounded-full"
+                  style={{ color: data.unitSystem === 'meters' ? '#EDEDE7' : '#33691E' }}
+                >
+                  Meters
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Delivery Target - Multi-Select */}
@@ -122,14 +163,14 @@ export default function ArteriesForm() {
         >
           <h3 className="font-semibold" style={{ color: '#33691E' }}>Overhead Tank Settings</h3>
           <FormSlider
-            label="Tank Height Above Ground"
+            label={`Tank Height Above Ground (${unitLabel})`}
             name="overheadTankHeight"
             value={data.overheadTankHeight || 20}
             onChange={handleSliderChange}
             min={10}
             max={50}
             step={1}
-            unit=" ft"
+            unit={data.unitSystem === 'meters' ? ' m' : ' ft'}
           />
           <FormSlider
             label="Tank Capacity"
@@ -154,24 +195,24 @@ export default function ArteriesForm() {
         >
           <h3 className="font-semibold" style={{ color: '#33691E' }}>Ground Sump Settings</h3>
           <FormSlider
-            label="Sump Depth Below Ground"
+            label={`Sump Depth Below Ground (${unitLabel})`}
             name="groundSumpDepth"
             value={data.groundSumpDepth || 0}
             onChange={handleSliderChange}
             min={0}
             max={30}
             step={1}
-            unit=" ft"
+            unit={data.unitSystem === 'meters' ? ' m' : ' ft'}
           />
           <FormSlider
-            label="Distance from Pump to Sump"
+            label={`Distance from Pump to Sump (${unitLabel})`}
             name="sumpDistance"
             value={data.sumpDistance || 0}
             onChange={handleSliderChange}
             min={0}
             max={200}
             step={5}
-            unit=" ft"
+            unit={data.unitSystem === 'meters' ? ' m' : ' ft'}
           />
         </motion.div>
       )}
@@ -281,7 +322,7 @@ export default function ArteriesForm() {
 
       {/* Total Pipe Length - Slider instead of text input */}
       <FormSlider
-        label="Total Mainline Length"
+        label={`Total Mainline Length (${unitLabel})`}
         name="totalPipeLength"
         id="field-arteries-totalPipeLength"
         value={data.totalPipeLength || 0}
@@ -289,7 +330,7 @@ export default function ArteriesForm() {
         min={10}
         max={1000}
         step={10}
-        unit=" ft"
+        unit={data.unitSystem === 'meters' ? ' m' : ' ft'}
         required
         error={errors.totalPipeLength}
       />

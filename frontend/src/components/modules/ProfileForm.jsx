@@ -221,20 +221,8 @@ export default function ProfileForm() {
           )}
         </div>
 
-        {/* Farm Location Question */}
-        <FormButtonGroup
-          label="Is your farm plot in the same location as where you stay?"
-          name="farmSameLocation"
-          value={data.farmSameLocation ?? ''}
-          onChange={handleChange}
-          options={[
-            { value: 'yes', label: 'Yes, same location' },
-            { value: 'no', label: 'No, different location' },
-          ]}
-        />
-
         <FormSlider
-          label="Farm Labor Count"
+          label="Farm Labor Count (optional)"
           name="laborCount"
           value={data.laborCount}
           onChange={handleSliderChange}

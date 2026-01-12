@@ -67,7 +67,6 @@ export default function AnimationPanel() {
           country: moduleData.country,
           state: moduleData.state,
           village: moduleData.village,
-          farmSameLocation: moduleData.farmSameLocation,
         };
       
       case 'canvas':
@@ -93,6 +92,7 @@ export default function AnimationPanel() {
         }
         
         return {
+          unitSystem: moduleData.unitSystem || 'feet',
           staticWaterLevel: adjustedStaticLevel,
           dynamicWaterLevel: parseFloat(moduleData.dynamicWaterLevel) || 0,
           waterQuality: moduleData.waterQuality || 'clear',
@@ -111,6 +111,7 @@ export default function AnimationPanel() {
       
       case 'arteries':
         return {
+          unitSystem: moduleData.unitSystem || 'feet',
           deliveryTarget: Array.isArray(moduleData.deliveryTarget) ? moduleData.deliveryTarget : (moduleData.deliveryTarget ? [moduleData.deliveryTarget] : []),
           overheadTankHeight: parseFloat(moduleData.overheadTankHeight) || 20,
           tankCapacity: parseFloat(moduleData.tankCapacity) || 0,
@@ -207,7 +208,7 @@ export default function AnimationPanel() {
   };
 
   return (
-    <div className="w-full h-full overflow-hidden rounded-2xl" style={{ backgroundColor: '#EDEDE7' }}>
+    <div className="w-full h-full overflow-hidden rounded-2xl bg-gray-300">
       <motion.div
         key={moduleId}
         initial={{ y: -50, opacity: 0 }}

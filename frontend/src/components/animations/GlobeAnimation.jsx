@@ -41,8 +41,7 @@ export default function GlobeAnimation({
   age = 0,
   country = '',
   state = '',
-  village = '',
-  farmSameLocation = ''
+  village = ''
 }) {
   const svgRef = useRef(null);
   const containerRef = useRef(null);
@@ -140,7 +139,7 @@ export default function GlobeAnimation({
       .attr("d", (d) => pathGenerator(d))
       .attr("stroke", "#ffffff")
       .attr("stroke-width", 0.8)
-      .attr("fill", 'rgba(229, 231, 235, 0.6)')
+      .attr("fill", 'rgba(180, 180, 180, 0.4)')
       .attr("class", "state-path")
       .attr("data-state", (d) => normalizeStateName(d.properties.NAME_1 || d.properties.name || ''))
       .attr("will-change", "fill")
@@ -347,26 +346,6 @@ export default function GlobeAnimation({
         </motion.div>
       )}
 
-      {/* Farm Location Card */}
-      {farmSameLocation && (
-        <motion.div
-          className="absolute bottom-24 left-8 px-4 py-3 rounded-lg"
-          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <div className="flex items-center gap-2">
-            <MapPin size={16} color={THEME.accent} />
-            <div>
-              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>FARM</p>
-              <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>
-                {farmSameLocation === 'yes' ? 'Same' : 'Different'}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 }

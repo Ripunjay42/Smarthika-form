@@ -168,7 +168,7 @@ export default function FormPanel() {
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ backgroundColor: '#E5E7EB' }}>
+    <div className="h-full flex flex-col bg-gray-100">
       <AnimatePresence>
         {showSubmitSuccessModal && (
           <motion.div
@@ -187,10 +187,9 @@ export default function FormPanel() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.98 }}
               transition={{ duration: 0.2 }}
-              className="w-full max-w-md rounded-2xl border shadow-xl"
+              className="w-full max-w-md rounded-2xl border shadow-xl bg-gray-200"
               onClick={(e) => e.stopPropagation()}
               style={{
-                backgroundColor: '#E5E7EB',
                 borderColor: 'rgba(104, 159, 56, 0.25)',
               }}
             >

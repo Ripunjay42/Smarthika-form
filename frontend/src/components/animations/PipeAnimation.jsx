@@ -12,6 +12,7 @@ const THEME = {
 };
 
 export default function PipeAnimation({ 
+  unitSystem = 'feet',
   deliveryTarget = ['direct'],
   overheadTankHeight = 20,
   tankCapacity = 0,
@@ -28,6 +29,9 @@ export default function PipeAnimation({
   const isTankDelivery = targets.includes('tank');
   const isSumpDelivery = targets.includes('sump');
   const isDirectDelivery = targets.includes('direct');
+  
+  // Unit label
+  const unitLabel = unitSystem === 'meters' ? 'm' : 'ft';
   
   // Responsive sizing - significantly increased for large screens
   const containerWidth = typeof window !== 'undefined' && window.innerWidth > 1400 ? 900 : 700;
@@ -361,7 +365,7 @@ export default function PipeAnimation({
                 <Cylinder size={24} color={THEME.accent} />
                 <div>
                   <p className="text-xs font-semibold" style={{ color: THEME.accent }}>HEIGHT</p>
-                  <p className="text-sm font-bold" style={{ color: THEME.text }}>{overheadTankHeight} ft</p>
+                  <p className="text-sm font-bold" style={{ color: THEME.text }}>{overheadTankHeight} {unitLabel}</p>
                 </div>
               </div>
             </motion.div>
@@ -399,10 +403,10 @@ export default function PipeAnimation({
                 <Gauge size={20} color={THEME.accent} />
                 <div>
                   <p className="text-xs font-semibold" style={{ color: THEME.accent }}>DIAMETER</p>
-                  <p className="text-sm font-bold" style={{ color: THEME.text }}>{mainlineDiameter}"</p>
+                  <p className="text-sm font-bold" style={{ color: THEME.text }}>{mainlineDiameter}{unitSystem === 'meters' ? ' mm' : '"'}</p>
                 </div>
               </div>
-              <div className="text-xs" style={{ color: THEME.textLight }}>Length: {totalPipeLength} ft</div>
+              <div className="text-xs" style={{ color: THEME.textLight }}>Length: {totalPipeLength} {unitLabel}</div>
             </div>
           </motion.div>
 

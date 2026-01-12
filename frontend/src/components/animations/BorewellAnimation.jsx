@@ -19,6 +19,7 @@ const waterColors = {
 };
 
 export default function BorewellAnimation({ 
+  unitSystem = 'feet',
   staticWaterLevel = 50, 
   dynamicWaterLevel = 80, 
   waterQuality = 'clear',
@@ -56,6 +57,9 @@ export default function BorewellAnimation({
   // Check if open well selected
   const isOpenWell = sourceType && sourceType.includes('open-well');
   const hasFootValveIssue = footValveCondition === 'leaking';
+  
+  // Unit label
+  const unitLabel = unitSystem === 'meters' ? 'm' : 'ft';
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
@@ -92,7 +96,7 @@ export default function BorewellAnimation({
                 >
                   <ArrowDown size={14} color="#3B82F6" />
                   <span className="text-xs font-bold whitespace-nowrap" style={{ color: '#3B82F6' }}>
-                    SWL: {adjustedStaticWaterLevel}ft
+                    SWL: {adjustedStaticWaterLevel}{unitLabel}
                   </span>
                 </motion.div>
               </motion.div>
@@ -112,7 +116,7 @@ export default function BorewellAnimation({
                   animate={{ opacity: 1, x: 0 }}
                 >
                   <span className="text-xs font-bold whitespace-nowrap" style={{ color: THEME.accent }}>
-                    DWL: {dynamicWaterLevel}ft
+                    DWL: {dynamicWaterLevel}{unitLabel}
                   </span>
                 </motion.div>
               </motion.div>
@@ -143,9 +147,9 @@ export default function BorewellAnimation({
         {totalDepth > 0 && (
           <div className="absolute -right-12 sm:-right-16 top-0 bottom-0 flex flex-col justify-between text-[10px] sm:text-xs font-medium" style={{ color: THEME.textLight }}>
             <span>0</span>
-            <span>{Math.round(totalDepth / 3)}ft</span>
-            <span>{Math.round(totalDepth * 2 / 3)}ft</span>
-            <span>{totalDepth}ft</span>
+            <span>{Math.round(totalDepth / 3)}{unitLabel}</span>
+            <span>{Math.round(totalDepth * 2 / 3)}{unitLabel}</span>
+            <span>{totalDepth}{unitLabel}</span>
           </div>
         )}
       </div>
@@ -194,7 +198,10 @@ export default function BorewellAnimation({
           animate={{ opacity: 1, y: 0 }}
         >
           <p className="text-xs font-semibold" style={{ color: THEME.accent }}>CASING DIAMETER</p>
-          <p className="text-lg font-bold" style={{ color: THEME.text }}>{casingDiameter}"</p>
+          <p className="text-lg font-bold" style={{ color: THEME.text }}>
+            {unitSystem === 'meters' ? (casingDiameter * 25.4).toFixed(0) : casingDiameter}
+            {unitSystem === 'meters' ? ' mm' : '"'}
+          </p>
         </motion.div>
       )}
 
@@ -207,7 +214,7 @@ export default function BorewellAnimation({
           animate={{ opacity: 1, y: 0 }}
         >
           <p className="text-xs font-semibold" style={{ color: THEME.accent }}>TOTAL DEPTH</p>
-          <p className="text-lg font-bold" style={{ color: THEME.text }}>{totalDepth} ft</p>
+          <p className="text-lg font-bold" style={{ color: THEME.text }}>{totalDepth} {unitLabel}</p>
         </motion.div>
       )}
 
@@ -257,7 +264,7 @@ export default function BorewellAnimation({
           transition={{ delay: 0.4 }}
         >
           <p className="text-xs font-semibold" style={{ color: seasonalVarianceValue > 30 ? '#EF4444' : '#F59E0B' }}>
-            SEASONAL VAR: {seasonalVarianceValue} ft
+            SEASONAL VAR: {seasonalVarianceValue} {unitLabel}
           </p>
           <p className="text-xs mt-0.5" style={{ color: seasonalVarianceValue > 30 ? '#EF4444' : '#F59E0B' }}>
             {seasonalVarianceValue > 30 ? 'High variation' : seasonalVarianceValue > 10 ? 'Medium variation' : 'Low variation'}
@@ -279,7 +286,7 @@ export default function BorewellAnimation({
         >
           <div>
             <p className="text-xs font-semibold" style={{ color: hasFootValveIssue ? '#EF4444' : '#3B82F6' }}>
-              SUCTION: {suctionHead}ft
+              SUCTION: {suctionHead}{unitLabel}
             </p>
             <div className="text-xs mt-1 flex items-center gap-1" style={{ color: hasFootValveIssue ? '#EF4444' : '#3B82F6' }}>
               <span>Valve:</span>

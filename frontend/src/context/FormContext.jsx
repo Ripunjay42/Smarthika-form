@@ -13,11 +13,11 @@ const initialFormData = {
     state: '',
     district: '',
     village: '',
-    farmSameLocation: '',
     laborCount: 0,
   },
   // Module 2: Canvas (Land & Topography)
   canvas: {
+    unitSystem: 'feet',
     gpsLatitude: '',
     gpsLongitude: '',
     totalArea: '',
@@ -40,6 +40,7 @@ const initialFormData = {
   },
   // Module 3: Heart (Borewell Hydraulics)
   heart: {
+    unitSystem: 'feet',
     sourceType: ['borewell'],
     numberOfBorewells: 1,
     totalDepth: '',
@@ -56,6 +57,7 @@ const initialFormData = {
   },
   // Module 4: Arteries (Piping & Storage)
   arteries: {
+    unitSystem: 'feet',
     deliveryTarget: ['direct'],
     overheadTankHeight: 20,
     tankCapacity: '',

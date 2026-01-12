@@ -67,7 +67,7 @@ export default function CanvasForm() {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      {/* Header with Unit Selection */}
+      {/* Header with Unit Selector in Corner */}
       <div className="mb-8">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -78,23 +78,31 @@ export default function CanvasForm() {
           <div className="flex-shrink-0 pt-1">
             <div className="flex flex-col items-end gap-2">
               <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>Measurement Unit</label>
-              <div className="flex gap-2">
-                {UNIT_SYSTEMS.map((unit) => (
-                  <motion.button
-                    key={unit.value}
-                    onClick={() => handleChange({ target: { name: 'unitSystem', value: unit.value } })}
-                    className="px-4 py-2 rounded-lg border-2 font-semibold transition-all text-sm"
-                    style={{
-                      borderColor: data.unitSystem === unit.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-                      backgroundColor: data.unitSystem === unit.value ? '#689F38' : 'transparent',
-                      color: data.unitSystem === unit.value ? '#EDEDE7' : '#33691E',
-                    }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {unit.label}
-                  </motion.button>
-                ))}
+              <div className="relative inline-flex items-center bg-white rounded-full p-1" style={{ border: '2px solid rgba(104, 159, 56, 0.3)' }}>
+                <motion.div
+                  className="absolute h-8 rounded-full"
+                  style={{
+                    backgroundColor: '#689F38',
+                    width: '50%',
+                    left: (data.unitSystem ?? 'feet') === 'feet' ? '0%' : '50%',
+                  }}
+                  layout
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+                <button
+                  onClick={() => handleChange({ target: { name: 'unitSystem', value: 'feet' } })}
+                  className="relative z-10 px-4 py-1.5 text-sm font-semibold transition-colors rounded-full"
+                  style={{ color: (data.unitSystem ?? 'feet') === 'feet' ? '#EDEDE7' : '#33691E' }}
+                >
+                  Feet
+                </button>
+                <button
+                  onClick={() => handleChange({ target: { name: 'unitSystem', value: 'meters' } })}
+                  className="relative z-10 px-4 py-1.5 text-sm font-semibold transition-colors rounded-full"
+                  style={{ color: (data.unitSystem ?? 'feet') === 'meters' ? '#EDEDE7' : '#33691E' }}
+                >
+                  Meters
+                </button>
               </div>
             </div>
           </div>
@@ -102,21 +110,22 @@ export default function CanvasForm() {
       </div>
 
       {/* Area & Dimensions */}
+      <FormInput
+        label="Total Land Area (acres)"
+        name="totalArea"
+        id="field-canvas-totalArea"
+        type="number"
+        value={data.totalArea}
+        onChange={handleChange}
+        placeholder="Area in acres"
+        icon={Ruler}
+        required
+        error={errors.totalArea}
+      />
+
       <div className="grid grid-cols-2 gap-4">
         <FormInput
-          label="Total Land Area (acres)"
-          name="totalArea"
-          id="field-canvas-totalArea"
-          type="number"
-          value={data.totalArea}
-          onChange={handleChange}
-          placeholder="Area in acres"
-          icon={Ruler}
-          required
-          error={errors.totalArea}
-        />
-        <FormInput
-          label="Length (Optional)"
+          label={`Length (Optional, ${unitLabel})`}
           name="sideLength"
           type="number"
           value={data.sideDimensions?.length || ''}
@@ -125,11 +134,8 @@ export default function CanvasForm() {
           })}
           placeholder={unitLabel}
         />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
         <FormInput
-          label="Width (Optional)"
+          label={`Width (Optional, ${unitLabel})`}
           name="sideWidth"
           type="number"
           value={data.sideDimensions?.width || ''}
@@ -257,29 +263,29 @@ export default function CanvasForm() {
         </div>
       </div>
 
-      {/* Drainage Condition with Icons */}
+      {/* Drainage Condition with Icons - Compact */}
       <div className="space-y-3">
         <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Drainage Condition</label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           {[
-            { value: 'good', label: 'Good (Well Drained)', icon: TrendingDown },
-            { value: 'poor', label: 'Poor (Waterlogging)', icon: Droplets },
+            { value: 'good', label: 'Well Drained', icon: TrendingDown },
+            { value: 'poor', label: 'Waterlogging', icon: Droplets },
           ].map((drainage) => {
             const DrainageIcon = drainage.icon;
             return (
               <motion.button
                 key={drainage.value}
                 onClick={() => handleChange({ target: { name: 'drainageClass', value: drainage.value } })}
-                className="p-4 rounded-lg border-2 transition-all flex flex-col items-center gap-2"
+                className="py-4 px-2 rounded-lg border-2 transition-all flex items-center justify-center gap-2"
                 style={{
                   borderColor: data.drainageClass === drainage.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
                   backgroundColor: data.drainageClass === drainage.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
                 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <DrainageIcon size={24} color={data.drainageClass === drainage.value ? '#689F38' : '#558B2F'} />
-                <span className="text-xs font-semibold text-center" style={{ color: '#33691E' }}>{drainage.label}</span>
+                <DrainageIcon size={20} color={data.drainageClass === drainage.value ? '#689F38' : '#558B2F'} />
+                <span className="text-sm font-medium" style={{ color: '#33691E' }}>{drainage.label}</span>
               </motion.button>
             );
           })}
@@ -298,30 +304,30 @@ export default function CanvasForm() {
         unit="%"
       />
 
-      {/* Soil Testing Status with Icon */}
+      {/* Soil Testing Status with Icon - Compact */}
       <div className="border-t pt-5">
         <div className="space-y-3">
           <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Has Your Soil Been Tested?</label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             {[
-              { value: 'done', label: 'Testing Done', icon: CheckCircle2 },
-              { value: 'required', label: 'Testing Required', icon: Beaker },
+              { value: 'done', label: 'Yes, I have the Report !!', icon: CheckCircle2 },
+              { value: 'required', label: 'Nope, a test needs to be done.', icon: Beaker },
             ].map((test) => {
               const TestIcon = test.icon;
               return (
                 <motion.button
                   key={test.value}
                   onClick={() => handleChange({ target: { name: 'soilTestStatus', value: test.value } })}
-                  className="p-4 rounded-lg border-2 transition-all flex flex-col items-center gap-2"
+                  className="py-4 px-2 rounded-lg border-2 transition-all flex items-center justify-center gap-2"
                   style={{
                     borderColor: data.soilTestStatus === test.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
                     backgroundColor: data.soilTestStatus === test.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
                   }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <TestIcon size={28} color={data.soilTestStatus === test.value ? '#689F38' : '#558B2F'} strokeWidth={1.5} />
-                  <span className="text-xs font-semibold text-center" style={{ color: '#33691E' }}>{test.label}</span>
+                  <TestIcon size={20} color={data.soilTestStatus === test.value ? '#689F38' : '#558B2F'} />
+                  <span className="text-sm font-medium text-center" style={{ color: '#33691E' }}>{test.label}</span>
                 </motion.button>
               );
             })}
@@ -360,8 +366,8 @@ export default function CanvasForm() {
           value={data.roadAccessible}
           onChange={handleChange}
           options={[
-            { value: 'yes', label: 'Yes, accessible by road' },
-            { value: 'no', label: 'No, far from main road' },
+            { value: 'yes', label: 'Yes' },
+            { value: 'no', label: 'No, not accessible from the main road' },
           ]}
         />
       </div>
@@ -374,7 +380,7 @@ export default function CanvasForm() {
           className="space-y-3"
         >
           <FormSlider
-            label="Distance from Main Road"
+            label="Distance from Main Road (Approx.)"
             name="roadAccessDistance"
             value={data.roadAccessDistance}
             onChange={handleSliderChange}

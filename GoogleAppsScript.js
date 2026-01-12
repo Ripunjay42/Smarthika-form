@@ -244,7 +244,6 @@ function doPost(e) {
         'State',
         'District',
         'Village',
-        'Farm Same Location',
         'Labor Count',
         // Canvas Section
         'Unit System',
@@ -390,7 +389,6 @@ function doPost(e) {
       get(data, 'profile.state'),
       get(data, 'profile.district'),
       get(data, 'profile.village'),
-      get(data, 'profile.farmSameLocation'),
       get(data, 'profile.laborCount', 0),
       // Canvas Section
       get(data, 'canvas.unitSystem', 'feet'),

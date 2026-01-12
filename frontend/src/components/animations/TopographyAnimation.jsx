@@ -156,33 +156,6 @@ export default function TopographyAnimation({
               );
             })}
           </div>
-
-          {/* Hills for hilly terrain - Visual distinction */}
-          {topographyType === 'hilly' && (
-            <>
-              <motion.div
-                className="absolute w-20 h-12 rounded-t-full"
-                style={{ backgroundColor: `${soilColor}dd`, bottom: '20%', left: '10%' }}
-                initial={{ scaleY: 0 }}
-                animate={{ scaleY: 1 }}
-                transition={{ delay: 0.3 }}
-              />
-              <motion.div
-                className="absolute w-16 h-10 rounded-t-full"
-                style={{ backgroundColor: `${soilColor}cc`, bottom: '15%', right: '20%' }}
-                initial={{ scaleY: 0 }}
-                animate={{ scaleY: 1 }}
-                transition={{ delay: 0.4 }}
-              />
-              <motion.div
-                className="absolute w-14 h-8 rounded-t-full"
-                style={{ backgroundColor: `${soilColor}bb`, bottom: '10%', left: '35%' }}
-                initial={{ scaleY: 0 }}
-                animate={{ scaleY: 1 }}
-                transition={{ delay: 0.5 }}
-              />
-            </>
-          )}
         </motion.div>
 
         {/* Elevation Indicator for Hilly */}

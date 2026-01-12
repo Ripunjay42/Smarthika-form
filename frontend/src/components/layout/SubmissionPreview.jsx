@@ -46,6 +46,11 @@ function formatValue(value, keyPath) {
     return '';
   }
 
+  // Format unitSystem to show capitalized unit name
+  if (keyPath === 'canvas.unitSystem' || keyPath === 'heart.unitSystem' || keyPath === 'arteries.unitSystem') {
+    return value === 'feet' ? 'Feet' : 'Meters';
+  }
+
   if (keyPath === 'shed.harvestMonths' && Array.isArray(value)) {
     const selected = value
       .map((active, idx) => (active ? MONTHS[idx] : null))

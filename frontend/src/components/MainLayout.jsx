@@ -9,8 +9,7 @@ export default function MainLayout() {
 
   return (
     <div
-      className="h-screen w-screen flex flex-col md:flex-row overflow-hidden"
-      style={{ backgroundColor: '#E5E7EB' }}
+      className="h-screen w-screen flex flex-col md:flex-row overflow-hidden bg-gray-100"
     >
       {/* Mobile Top Bar - Module Progress (icons only) */}
       <div className="md:hidden shrink-0">
@@ -33,14 +32,13 @@ export default function MainLayout() {
 
       {/* Top/Center Panel - Animation (on mobile it stays on top) */}
       <div
-        className="w-full md:flex-1 min-w-0 h-[35vh] sm:h-[40vh] md:h-auto"
-        style={{ backgroundColor: '#EDEDE7' }}
+        className="w-full md:flex-1 lg:flex-1 min-w-0 h-[35vh] sm:h-[40vh] md:h-auto bg-gray-100"
       >
         <AnimationPanel />
       </div>
 
       {/* Bottom/Right Panel - Form */}
-      <div className="w-full lg:w-[1000px] bg-white shadow-2xl flex-1 md:flex-none min-h-0">
+      <div className="w-full lg:flex-1 bg-white shadow-2xl flex-1 md:flex-none min-h-0">
         <FormPanel />
       </div>
     </div>
