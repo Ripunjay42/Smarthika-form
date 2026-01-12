@@ -153,7 +153,7 @@ export default function BaselineAnimation({
                 animate={{ rotate: 360, opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <Sparkles size={16} color="#FAF0BF" />
+                <Sparkles size={16} color="#E5E7EB" />
               </motion.div>
             </div>
             
@@ -162,13 +162,13 @@ export default function BaselineAnimation({
               <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
                 <motion.div 
                   className="h-full rounded-full"
-                  style={{ backgroundColor: '#FAF0BF' }}
+                  style={{ backgroundColor: '#E5E7EB' }}
                   initial={{ width: 0 }}
                   animate={{ width: '100%' }}
                   transition={{ duration: 1, delay: 0.5 }}
                 />
               </div>
-              <span className="text-xs font-medium mt-1 block" style={{ color: '#FAF0BF' }}>100% Efficient</span>
+              <span className="text-xs font-medium mt-1 block" style={{ color: '#E5E7EB' }}>100% Efficient</span>
             </div>
           </div>
           
