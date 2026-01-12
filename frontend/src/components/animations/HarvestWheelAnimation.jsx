@@ -51,7 +51,7 @@ export default function HarvestWheelAnimation({
           <div 
             className="absolute inset-0 rounded-full shadow-2xl"
             style={{ 
-              background: 'linear-gradient(to bottom, #FAF0BF, #EDEDE7)', 
+              background: 'linear-gradient(to bottom, #E5E7EB, #EDEDE7)', 
               border: `4px solid ${THEME.cardBorder}` 
             }}
           >

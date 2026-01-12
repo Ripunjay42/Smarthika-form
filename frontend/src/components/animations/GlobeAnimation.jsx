@@ -11,7 +11,7 @@ const THEME = {
   text: '#33691E',
   textLight: '#558B2F',
   background: '#EDEDE7',
-  cardBg: 'rgba(250, 240, 191, 0.7)',
+  cardBg: 'rgba(229, 231, 235, 0.7)',
   cardBorder: 'rgba(104, 159, 56, 0.3)',
 };
 
@@ -140,7 +140,7 @@ export default function GlobeAnimation({
       .attr("d", (d) => pathGenerator(d))
       .attr("stroke", "#ffffff")
       .attr("stroke-width", 0.8)
-      .attr("fill", 'rgba(250, 240, 191, 0.6)')
+      .attr("fill", 'rgba(229, 231, 235, 0.6)')
       .attr("class", "state-path")
       .attr("data-state", (d) => normalizeStateName(d.properties.NAME_1 || d.properties.name || ''))
       .attr("will-change", "fill")

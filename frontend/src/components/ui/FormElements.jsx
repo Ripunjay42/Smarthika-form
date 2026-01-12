@@ -292,7 +292,7 @@ export function FormButtonGroup({
             className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
             style={{
               backgroundColor: (value ?? '') === option.value ? '#689F38' : '#EDEDE7',
-              color: (value ?? '') === option.value ? '#FAF0BF' : '#33691E',
+              color: (value ?? '') === option.value ? '#E5E7EB' : '#33691E',
               border: (value ?? '') === option.value ? '2px solid #689F38' : '2px solid rgba(104, 159, 56, 0.25)',
               boxShadow: (value ?? '') === option.value ? '0 4px 14px rgba(104, 159, 56, 0.25)' : 'none'
             }}

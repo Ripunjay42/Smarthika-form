@@ -137,7 +137,7 @@ export default function HeartForm() {
                       }}
                     >
                       {isSelected && (
-                        <CheckCircle size={16} color="#FAF0BF" />
+                        <CheckCircle size={16} color="#E5E7EB" />
                       )}
                     </div>
                     <span className="font-medium" style={{ color: '#33691E' }}>{source.label}</span>

@@ -1,8 +1,8 @@
 import { MODULES, MONTHS, CROP_TYPES } from '../../constants/formConstants';
 
 const THEME = {
-  bg: '#FAF0BF',
-  panel: 'rgba(250, 240, 191, 0.9)',
+  bg: '#E5E7EB',
+  panel: 'rgba(229, 231, 235, 0.9)',
   border: 'rgba(104, 159, 56, 0.15)',
   cardBg: 'rgba(104, 159, 56, 0.06)',
   cardBorder: 'rgba(104, 159, 56, 0.18)',
@@ -215,7 +215,7 @@ export default function SubmissionPreview({ formData }) {
                       key={e.keyPath}
                       className="rounded-xl px-4 py-3"
                       style={{
-                        backgroundColor: 'rgba(250, 240, 191, 0.75)',
+                        backgroundColor: 'rgba(229, 231, 235, 0.75)',
                         border: `1px solid ${THEME.border}`,
                       }}
                     >

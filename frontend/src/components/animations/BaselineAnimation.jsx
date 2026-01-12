@@ -135,7 +135,7 @@ export default function BaselineAnimation({
             {/* New Pump Body */}
             <div className="absolute inset-3 rounded-lg flex flex-col items-center justify-center" style={{ backgroundColor: 'rgba(0, 0, 0, 0.15)' }}>
               {/* NEW Label */}
-              <span className="text-xs font-bold mb-2" style={{ color: '#FAF0BF' }}>
+              <span className="text-xs font-bold mb-2" style={{ color: '#E5E7EB' }}>
                 {isRetrofit ? 'NEW PUMP' : 'GREENFIELD'}
               </span>
               
@@ -144,7 +144,7 @@ export default function BaselineAnimation({
                 animate={{ scale: [1, 1.15, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
-                <Zap size={40} color="#FAF0BF" />
+                <Zap size={40} color="#E5E7EB" />
               </motion.div>
 
               {/* Sparkles */}

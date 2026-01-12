@@ -34,7 +34,7 @@ export default function ModuleProgress({ isExpanded, onToggle }) {
   const { currentModule, completedModules, goToModule } = useFormContext();
 
   return (
-    <div className="h-full flex flex-col p-3" style={{ backgroundColor: '#FAF0BF' }}>
+    <div className="h-full flex flex-col p-3" style={{ backgroundColor: '#E5E7EB' }}>
       {/* Header */}
       <div className="mb-6">
         <motion.div

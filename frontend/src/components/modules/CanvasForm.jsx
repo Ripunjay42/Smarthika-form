@@ -247,7 +247,7 @@ export default function CanvasForm() {
                   }} 
                 >
                   {isSelected && (
-                    <CheckCircle2 size={16} color="#FAF0BF" strokeWidth={2} />
+                    <CheckCircle2 size={16} color="#E5E7EB" strokeWidth={2} />
                   )}
                 </div>
                 <span className="text-sm font-medium text-left" style={{ color: '#33691E' }}>{soil.label}</span>

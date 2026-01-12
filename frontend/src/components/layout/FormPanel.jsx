@@ -168,7 +168,7 @@ export default function FormPanel() {
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ backgroundColor: '#FAF0BF' }}>
+    <div className="h-full flex flex-col" style={{ backgroundColor: '#E5E7EB' }}>
       <AnimatePresence>
         {showSubmitSuccessModal && (
           <motion.div
@@ -190,7 +190,7 @@ export default function FormPanel() {
               className="w-full max-w-md rounded-2xl border shadow-xl"
               onClick={(e) => e.stopPropagation()}
               style={{
-                backgroundColor: '#FAF0BF',
+                backgroundColor: '#E5E7EB',
                 borderColor: 'rgba(104, 159, 56, 0.25)',
               }}
             >
@@ -220,7 +220,7 @@ export default function FormPanel() {
                     className="px-5 py-2.5 rounded-xl font-semibold"
                     style={{
                       backgroundColor: '#689F38',
-                      color: '#FAF0BF',
+                      color: '#E5E7EB',
                       boxShadow: '0 4px 14px rgba(104, 159, 56, 0.3)',
                     }}
                     onClick={() => setShowSubmitSuccessModal(false)}
@@ -253,7 +253,7 @@ export default function FormPanel() {
       <div 
         className="shrink-0 px-4 sm:px-6 md:px-8 py-3 sm:py-4 backdrop-blur-sm"
         style={{ 
-          backgroundColor: 'rgba(250, 240, 191, 0.9)',
+          backgroundColor: 'rgba(229, 231, 235, 0.9)',
           borderTop: '2px solid rgba(104, 159, 56, 0.15)',
           paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))'
         }}
@@ -313,7 +313,7 @@ export default function FormPanel() {
             className="flex items-center justify-center gap-2 px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg whitespace-nowrap"
             style={{
               backgroundColor: submitSuccess ? '#22C55E' : isSubmitting ? '#9CA3AF' : '#689F38',
-              color: '#FAF0BF',
+              color: '#E5E7EB',
               boxShadow: '0 4px 14px rgba(104, 159, 56, 0.3)',
               opacity: isSubmitting ? 0.8 : 1,
               cursor: isSubmitting || submitSuccess ? 'not-allowed' : 'pointer'

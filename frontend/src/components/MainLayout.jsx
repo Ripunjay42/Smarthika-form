@@ -10,7 +10,7 @@ export default function MainLayout() {
   return (
     <div
       className="h-screen w-screen flex flex-col md:flex-row overflow-hidden"
-      style={{ backgroundColor: '#FAF0BF' }}
+      style={{ backgroundColor: '#E5E7EB' }}
     >
       {/* Mobile Top Bar - Module Progress (icons only) */}
       <div className="md:hidden shrink-0">

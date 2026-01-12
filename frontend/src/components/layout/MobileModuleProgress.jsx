@@ -34,7 +34,7 @@ export default function MobileModuleProgress() {
     <div
       className="w-full px-3 py-2"
       style={{
-        backgroundColor: '#FAF0BF',
+        backgroundColor: '#E5E7EB',
       }}
     >
       <div 
