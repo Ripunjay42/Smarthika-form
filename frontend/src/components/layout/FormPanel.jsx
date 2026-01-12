@@ -207,10 +207,7 @@ export default function FormPanel() {
                       Submitted successfully
                     </h3>
                     <p className="text-sm mt-1" style={{ color: '#558B2F' }}>
-                      Your data has been sent to Google Sheets.
-                    </p>
-                    <p className="text-xs mt-2" style={{ color: '#558B2F' }}>
-                      Location: Google Drive &gt; Farm Form Data &gt; Farm Form Submissions
+                      Your form has been successfully submitted. Thank you!
                     </p>
                   </div>
                 </div>
