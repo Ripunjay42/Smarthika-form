@@ -39,6 +39,26 @@ export const submitToGoogleSheets = async (formData) => {
     // Prepare submission data
     let submissionData = { ...formData };
     
+    // Ensure country is set to 'India' if empty
+    if (!submissionData.profile) {
+      submissionData.profile = {};
+    }
+    if (!submissionData.profile.country || submissionData.profile.country === '') {
+      submissionData.profile.country = 'India';
+    }
+    
+    // For greenfield projects, clear retrofit-specific fields
+    if (submissionData.baseline?.projectType === 'greenfield') {
+      if (submissionData.baseline) {
+        submissionData.baseline = {
+          projectType: 'greenfield',
+          oldPumpType: null,
+          oldPumpAge: null,
+          burnoutFrequency: null
+        };
+      }
+    }
+    
     // Handle file uploads from different modules
     const filesToUpload = [];
     

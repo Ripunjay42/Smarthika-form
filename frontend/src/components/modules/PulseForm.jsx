@@ -238,6 +238,7 @@ export default function PulseForm() {
       <FormInput
         label="How Far is Your Power Supply from Your Pump House?"
         name="distanceMeterToBorewell"
+        id="field-pulse-distanceMeterToBorewell"
         type="number"
         value={data.distanceMeterToBorewell}
         onChange={handleChange}
@@ -245,23 +246,8 @@ export default function PulseForm() {
         icon={Plug2}
         required
         error={errors.distanceMeterToBorewell}
+        min="0"
       />
-
-      {/* Additional Options */}
-      <div className="space-y-3">
-        <FormToggle
-          label="Generator Ownership"
-          name="generatorOwnership"
-          checked={data.generatorOwnership}
-          onChange={handleChange}
-        />
-        <FormToggle
-          label="EV Charging Need"
-          name="evChargingNeed"
-          checked={data.evChargingNeed}
-          onChange={handleChange}
-        />
-      </div>
 
       {/* Solar Opportunity Score */}
       {data.dailyAvailability < 12 && (

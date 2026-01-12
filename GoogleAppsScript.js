@@ -304,8 +304,6 @@ function doPost(e) {
         'Wiring Health',
         'Cable Upgrade Required',
         'Distance Meter to Borewell (m)',
-        'Generator Ownership',
-        'EV Charging Need',
         // Shelter Section
         'Shelter Structure',
         'Mobile Signal Strength',
@@ -317,27 +315,22 @@ function doPost(e) {
         'Lifting Gear Availability',
         'Pump House Picture Link',
         // Biology Section
-        'Primary Crop Type',
-        'Secondary Crop Type',
-        'Cropping Pattern',
-        'Row Count',
+        'Crops & Estimate Count',
         'Plant Spacing (ft)',
         'Tractor Access Requirement',
-        'Total Plant Count',
         'Crop Age',
         'Peak Water Demand (L/day)',
         'Irrigation Method',
         'Required Discharge (LPM)',
         'Number of Zones',
+        'Filtration Required',
         'Filtration Requirement',
         'Slurry Fertigation Usage',
         // Baseline Section
         'Project Type',
         'Old Pump Type',
         'Old Pump Age (years)',
-        'Burnout Frequency',
-        'Efficiency Gap (%)',
-        'Pipe Reuse Status',
+        'Controller Replacement/Repair Frequency',
         // Shed Section
         'Tractor Ownership',
         'Drone Ownership',
@@ -485,8 +478,6 @@ function doPost(e) {
       get(data, 'pulse.wiringHealth'),
       get(data, 'pulse.cableUpgradeRequired') ? 'Yes' : 'No',
       get(data, 'pulse.distanceMeterToBorewell', 0),
-      get(data, 'pulse.generatorOwnership') ? 'Yes' : 'No',
-      get(data, 'pulse.evChargingNeed') ? 'Yes' : 'No',
       get(data, 'shelter.shelterStructure'),
       get(data, 'shelter.mobileSignalStrength'),
       get(data, 'shelter.heatBuildupRisk'),
@@ -505,26 +496,24 @@ function doPost(e) {
         }
         return '';
       })(),
-      get(data, 'biology.primaryCropType'),
-      get(data, 'biology.secondaryCropType'),
-      get(data, 'biology.croppingPattern'),
-      get(data, 'biology.rowCount', 0),
+      (() => {
+        const crops = get(data, 'biology.crops', []);
+        return crops.map(c => `${c.cropType}(${c.estimatedCount})`).join('; ') || '';
+      })(),
       get(data, 'biology.plantSpacing', 0),
       get(data, 'biology.tractorAccessRequirement') ? 'Yes' : 'No',
-      get(data, 'biology.totalPlantCount', 0),
       get(data, 'biology.cropAge'),
       get(data, 'biology.peakWaterDemand', 0),
       get(data, 'biology.irrigationMethod'),
       get(data, 'biology.requiredDischarge', 0),
       get(data, 'biology.numberOfZones', 0),
+      get(data, 'biology.filtrationRequired') ? 'Yes' : 'No',
       get(data, 'biology.filtrationRequirement'),
       get(data, 'biology.slurryFertigationUsage') ? 'Yes' : 'No',
       get(data, 'baseline.projectType'),
       get(data, 'baseline.oldPumpType'),
       get(data, 'baseline.oldPumpAge', 0),
       get(data, 'baseline.burnoutFrequency', 0),
-      get(data, 'baseline.efficiencyGap', 0),
-      get(data, 'baseline.pipeReuseStatus') ? 'Yes' : 'No',
       get(data, 'shed.tractorOwnership') ? 'Yes' : 'No',
       get(data, 'shed.droneOwnership') ? 'Yes' : 'No',
       get(data, 'shed.sprayerOwnership') ? 'Yes' : 'No',
@@ -642,16 +631,18 @@ Structure: ${data.shelter?.shelterStructure || 'N/A'}
 Signal Strength: ${data.shelter?.mobileSignalStrength || 'N/A'}
 
 CROPS (BIOLOGY)
-Primary Crop: ${data.biology?.primaryCropType || 'N/A'}
+Crops & Count: ${(data.biology?.crops || []).map(c => `${c.cropType}(${c.estimatedCount})`).join(', ') || 'N/A'}
 Irrigation Method: ${data.biology?.irrigationMethod || 'N/A'}
 Peak Demand: ${data.biology?.peakWaterDemand || 'N/A'} L/day
+Filtration Required: ${data.biology?.filtrationRequired ? 'Yes' : 'No'}
 
 PROJECT TYPE
 Type: ${data.baseline?.projectType || 'N/A'}
 Old Pump Age: ${data.baseline?.oldPumpAge || 0} years
+Controller Issues: ${data.baseline?.burnoutFrequency || 0} repairs/replacements
 
 VISION
-Labor Pain Score: ${data.vision?.laborPainScore || 0}/10
+Labor Availability Score: ${data.vision?.laborPainScore || 0}/10 (0=easy to find, 10=very hard)
 Target LER: ${data.vision?.targetLER || 1.0}
 Organic Interest: ${data.vision?.organicFarmingInterest ? 'Yes' : 'No'}
 

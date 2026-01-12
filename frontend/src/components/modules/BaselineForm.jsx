@@ -13,6 +13,15 @@ export default function BaselineForm() {
     updateModuleData('baseline', { 
       [name]: type === 'checkbox' ? checked : value 
     });
+    
+    // Clear retrofit-specific fields when switching to greenfield
+    if (name === 'projectType' && value === 'greenfield') {
+      updateModuleData('baseline', { 
+        oldPumpType: 'submersible',
+        oldPumpAge: 0,
+        burnoutFrequency: 0
+      });
+    }
   };
 
   const handleSliderChange = (e) => {
@@ -133,7 +142,7 @@ export default function BaselineForm() {
             />
 
             <FormSlider
-              label="Burnout Frequency (Last 5 years)"
+              label="How many times you had to replace/repair the controller?"
               name="burnoutFrequency"
               value={data.burnoutFrequency}
               onChange={handleSliderChange}
@@ -152,74 +161,13 @@ export default function BaselineForm() {
               >
                 <TriangleAlert className="text-red-600" size={20} strokeWidth={ICON_STROKE_WIDTH} />
                 <span className="text-sm text-red-700">
-                  High burnout frequency indicates reliability issues
+                  High controller failure frequency indicates reliability issues
                 </span>
               </motion.div>
             )}
           </div>
 
-          {/* Efficiency Comparison */}
-          <div className="p-4 rounded-xl border" style={{ backgroundColor: 'rgba(104, 159, 56, 0.08)', borderColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <h4 className="text-sm font-semibold text-gray-800 mb-4">Efficiency Gap Analysis</h4>
-            
-            <FormSlider
-              label="Estimated Efficiency Gap"
-              name="efficiencyGap"
-              value={data.efficiencyGap}
-              onChange={handleSliderChange}
-              min={0}
-              max={50}
-              step={1}
-              unit="% savings potential"
-            />
 
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              <div className="text-center p-3 bg-white rounded-lg">
-                <p className="text-xs text-gray-500">Old System</p>
-                <p className="text-lg font-bold text-orange-600">
-                  {100 - data.efficiencyGap}% eff.
-                </p>
-              </div>
-              <div className="text-center p-3 bg-white rounded-lg">
-                <p className="text-xs text-gray-500">New System</p>
-                <p className="text-lg font-bold" style={{ color: '#689F38' }}>
-                  ~95% eff.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Pipe Reuse */}
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-4">
-            <FormToggle
-              label="Reusing Old Pipes"
-              name="pipeReuseStatus"
-              checked={data.pipeReuseStatus}
-              onChange={handleChange}
-            />
-
-            {data.pipeReuseStatus && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-xs text-orange-600 bg-orange-50 p-2 rounded"
-              >
-                Old pipes may add friction penalty to head calculations
-              </motion.p>
-            )}
-
-            <FormButtonGroup
-              label="Foot Valve Condition"
-              name="footValveCondition"
-              value={data.footValveCondition}
-              onChange={handleChange}
-              options={[
-                { value: 'good', label: 'Good' },
-                { value: 'leaking', label: 'Leaking' },
-                { value: 'replace', label: 'Needs Replacement' },
-              ]}
-            />
-          </div>
 
           {/* Retrofit Summary */}
           <motion.div
@@ -235,14 +183,10 @@ export default function BaselineForm() {
                 <span className="font-medium" style={{ color: '#33691E' }}>{data.oldPumpAge} years</span>
               </div>
               <div className="flex justify-between">
-                <span style={{ color: '#558B2F' }}>Burnout Issues</span>
+                <span style={{ color: '#558B2F' }}>Controller Issues</span>
                 <span className={`font-medium ${data.burnoutFrequency >= 3 ? 'text-red-600' : ''}`} style={data.burnoutFrequency < 3 ? { color: '#33691E' } : {}}>
                   {data.burnoutFrequency >= 3 ? 'Frequent' : 'Normal'}
                 </span>
-              </div>
-              <div className="flex justify-between">
-                <span style={{ color: '#558B2F' }}>Potential Savings</span>
-                <span className="font-medium" style={{ color: '#33691E' }}>{data.efficiencyGap}% power</span>
               </div>
             </div>
           </motion.div>
@@ -265,28 +209,6 @@ export default function BaselineForm() {
           </p>
         </motion.div>
       )}
-
-      {/* Info Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="mt-6 p-4 rounded-xl border"
-        style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
-      >
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info className="w-5 h-5" style={{ color: '#689F38' }} />
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Why This Matters</h4>
-            <p className="text-xs mt-1" style={{ color: '#558B2F' }}>
-              Retrofit projects require understanding current system limitations 
-              to calculate accurate ROI and energy savings projections.
-            </p>
-          </div>
-        </div>
-      </motion.div>
     </motion.div>
   );
 }

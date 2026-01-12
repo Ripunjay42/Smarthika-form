@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { House, WifiHigh, Wifi, WifiLow, WifiOff, Shield, Info, Warehouse, Sun, TriangleAlert } from 'lucide-react';
+import { House, WifiHigh, Wifi, WifiLow, WifiOff, Shield, Info, Warehouse, Sun, TriangleAlert, Upload } from 'lucide-react';
 import { FormButtonGroup, FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { SHELTER_TYPES } from '../../constants/formConstants';
@@ -225,16 +225,25 @@ export default function ShelterForm() {
       />
 
       {/* Pump House Picture Upload */}
-      <div>
-        <label className="block text-sm font-semibold mb-2" style={{ color: '#33691E' }}>Pump House Picture</label>
-        <input
-          type="file"
-          name="pumpHousePicture"
-          accept="image/*"
-          onChange={(e) => handleFileChange(e)}
-          className="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-green-500 focus:outline-none"
-        />
-        <p className="text-xs text-gray-500 mt-1">Upload a photo of the pump house for reference</p>
+      <div className="space-y-3">
+        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Pump House Picture</label>
+        <motion.div
+          className="p-4 rounded-lg border-2 border-dashed" 
+          style={{ borderColor: 'rgba(104, 159, 56, 0.5)', backgroundColor: 'rgba(104, 159, 56, 0.05)' }}
+        >
+          <label className="flex items-center justify-center gap-2 cursor-pointer">
+            <Upload size={18} color="#689F38" />
+            <span className="text-sm font-medium" style={{ color: '#33691E' }}>
+              {data.pumpHousePictureFile ? `✓ ${data.pumpHousePictureFile}` : 'Upload Pump House Picture (JPG/PNG)'}
+            </span>
+            <input 
+              type="file" 
+              className="hidden" 
+              accept=".jpg,.jpeg,.png" 
+              onChange={(e) => handleFileChange(e)}
+            />
+          </label>
+        </motion.div>
       </div>
 
       {/* Safety Alerts */}

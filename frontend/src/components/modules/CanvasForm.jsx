@@ -106,6 +106,7 @@ export default function CanvasForm() {
         <FormInput
           label="Total Land Area (acres)"
           name="totalArea"
+          id="field-canvas-totalArea"
           type="number"
           value={data.totalArea}
           onChange={handleChange}
@@ -348,49 +349,6 @@ export default function CanvasForm() {
               onChange={handleSoilTestReportChange}
             />
           </label>
-        </motion.div>
-      )}
-
-      {/* Conditional: If testing required - ask if should proceed with testing */}
-      {data.soilTestStatus === 'required' && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          className="space-y-3"
-        >
-          <div className="p-4 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', border: '2px solid rgba(104, 159, 56, 0.2)' }}>
-            <label className="block text-sm font-semibold mb-3" style={{ color: '#33691E' }}>Should we proceed with soil testing?</label>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { value: 'yes', label: 'Yes, Proceed with Testing', icon: CheckCircle2 },
-                { value: 'no', label: 'No, Skip Testing', icon: AlertCircle },
-              ].map((option) => {
-                const OptionIcon = option.icon;
-                return (
-                  <motion.button
-                    key={option.value}
-                    onClick={() => handleChange({ target: { name: 'soilTestRequired', value: option.value } })}
-                    className="p-4 rounded-lg border-2 transition-all flex flex-col items-center gap-2"
-                    style={{
-                      borderColor: data.soilTestRequired === option.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-                      backgroundColor: data.soilTestRequired === option.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-                    }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <OptionIcon size={24} color={data.soilTestRequired === option.value ? '#689F38' : '#558B2F'} strokeWidth={1.5} />
-                    <span className="text-xs font-semibold text-center" style={{ color: '#33691E' }}>{option.label}</span>
-                  </motion.button>
-                );
-              })}
-            </div>
-          </div>
-          {/* {data.soilTestRequired === 'yes' && (
-            <div className="p-3 rounded-lg flex items-start gap-2" style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', border: '1px solid rgba(104, 159, 56, 0.3)' }}>
-              <Beaker size={18} color="#689F38" className="flex-shrink-0 mt-0.5" />
-              <span className="text-xs" style={{ color: '#558B2F' }}>Professional soil testing will help determine soil properties, nutrient levels, and recommendations for optimal irrigation system design.</span>
-            </div>
-          )} */}
         </motion.div>
       )}
 

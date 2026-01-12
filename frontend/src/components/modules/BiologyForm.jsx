@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Leaf, Droplet, Info, CloudRain, Waves } from 'lucide-react';
+import { Leaf, Droplet, Info, CloudRain, Waves, Plus, Trash2 } from 'lucide-react';
 import { FormInput, FormSelect, FormSlider, FormButtonGroup, FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { CROP_TYPES, IRRIGATION_METHODS } from '../../constants/formConstants';
@@ -22,6 +22,22 @@ export default function BiologyForm() {
     updateModuleData('biology', { [name]: parseFloat(value) });
   };
 
+  const handleAddCrop = () => {
+    const newCrops = [...(data.crops || []), { cropType: '', estimatedCount: 0 }];
+    updateModuleData('biology', { crops: newCrops });
+  };
+
+  const handleRemoveCrop = (index) => {
+    const newCrops = data.crops.filter((_, i) => i !== index);
+    updateModuleData('biology', { crops: newCrops });
+  };
+
+  const handleCropChange = (index, field, value) => {
+    const newCrops = [...data.crops];
+    newCrops[index] = { ...newCrops[index], [field]: value };
+    updateModuleData('biology', { crops: newCrops });
+  };
+
   // Calculate efficiency based on method
   const currentMethod = IRRIGATION_METHODS.find(m => m.value === data.irrigationMethod);
   const efficiency = currentMethod?.efficiency || 90;
@@ -39,59 +55,75 @@ export default function BiologyForm() {
         <p className="text-gray-500">Crop requirements for water demand calculation.</p>
       </div>
 
-      {/* Crop Selection */}
-      <div className="grid grid-cols-2 gap-4">
-        <FormSelect
-          label="Primary Crop"
-          name="primaryCropType"
-          value={data.primaryCropType}
-          onChange={handleChange}
-          options={[{ value: '', label: 'Select Crop' }, ...CROP_TYPES]}
-          icon={Leaf}
-          required
-          error={errors.primaryCropType}
-        />
-        <FormSelect
-          label="Secondary Crop (Optional)"
-          name="secondaryCropType"
-          value={data.secondaryCropType}
-          onChange={handleChange}
-          options={[{ value: '', label: 'None' }, ...CROP_TYPES]}
-          icon={Leaf}
-        />
-      </div>
+      {/* Crops with Estimated Numbers */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Crops & Estimated Count</label>
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleAddCrop}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium"
+            style={{ backgroundColor: '#689F38', color: 'white' }}
+          >
+            <Plus size={16} />
+            Add Crop
+          </motion.button>
+        </div>
 
-      {/* Cropping Pattern */}
-      <FormButtonGroup
-        label="Cropping Pattern"
-        name="croppingPattern"
-        value={data.croppingPattern}
+        {data.crops && data.crops.length > 0 ? (
+          <div className="space-y-2">
+            {data.crops.map((crop, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="grid gap-2 items-end p-3 rounded-lg"
+                style={{ gridTemplateColumns: '1fr 100px 40px', backgroundColor: 'rgba(104, 159, 56, 0.08)', border: '1px solid rgba(104, 159, 56, 0.2)' }}
+              >
+                <FormInput
+                  label="Crop Name"
+                  type="text"
+                  value={crop.cropType}
+                  onChange={(e) => handleCropChange(index, 'cropType', e.target.value)}
+                  placeholder="Enter crop name"
+                />
+                <FormInput
+                  label="Est. Count"
+                  type="number"
+                  value={crop.estimatedCount}
+                  onChange={(e) => handleCropChange(index, 'estimatedCount', e.target.value)}
+                  placeholder="Number"
+                  min="0"
+                />
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => handleRemoveCrop(index)}
+                  className="p-2 rounded-lg transition-colors"
+                  style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#EF4444' }}
+                  title="Remove crop"
+                >
+                  <Trash2 size={18} />
+                </motion.button>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-gray-500 p-3">No crops added yet. Click "Add Crop" to get started.</p>
+        )}
+      </div>
+      <FormInput
+        label="Plant Spacing"
+        name="plantSpacing"
+        type="number"
+        value={data.plantSpacing}
         onChange={handleChange}
-        options={[
-          { value: 'monoculture', label: 'Monoculture' },
-          { value: 'polyculture', label: 'Polyculture/Intercropping' },
-        ]}
+        placeholder="Spacing in feet"
+        min="0"
       />
-
-      {/* Grid Density */}
-      <div className="grid grid-cols-2 gap-4">
-        <FormInput
-          label="Row Count"
-          name="rowCount"
-          type="number"
-          value={data.rowCount}
-          onChange={handleChange}
-          placeholder="Number of rows"
-        />
-        <FormInput
-          label="Plant Spacing"
-          name="plantSpacing"
-          type="number"
-          value={data.plantSpacing}
-          onChange={handleChange}
-          placeholder="Spacing in feet"
-        />
-      </div>
 
       {/* Tractor Access */}
       <FormToggle
@@ -99,16 +131,6 @@ export default function BiologyForm() {
         name="tractorAccessRequirement"
         checked={data.tractorAccessRequirement}
         onChange={handleChange}
-      />
-
-      {/* Plant Count & Age */}
-      <FormInput
-        label="Estimated Total Plant Count"
-        name="totalPlantCount"
-        type="number"
-        value={data.totalPlantCount}
-        onChange={handleChange}
-        placeholder="Total plants"
       />
 
       <FormButtonGroup
@@ -127,6 +149,7 @@ export default function BiologyForm() {
       <FormInput
         label="Peak Water Demand"
         name="peakWaterDemand"
+        id="field-biology-peakWaterDemand"
         type="number"
         value={data.peakWaterDemand}
         onChange={handleChange}
@@ -135,6 +158,7 @@ export default function BiologyForm() {
         helper="Total water requirement during peak season"
         required
         error={errors.peakWaterDemand}
+        min="0"
       />
 
       {/* Irrigation Method */}
@@ -211,6 +235,7 @@ export default function BiologyForm() {
         onChange={handleChange}
         placeholder="LPM (Liters Per Minute)"
         helper="Calculated: Demand / Power Hours"
+        min="0"
       />
 
       {/* Zones */}
@@ -225,19 +250,35 @@ export default function BiologyForm() {
         unit=" zones"
       />
 
-      {/* Filtration */}
-      <FormButtonGroup
-        label="Filtration Requirement"
-        name="filtrationRequirement"
-        value={data.filtrationRequirement}
+      {/* Filtration Need */}
+      <FormToggle
+        label="Do You Need Filtration?"
+        name="filtrationRequired"
+        checked={data.filtrationRequired}
         onChange={handleChange}
-        options={[
-          { value: 'screen', label: 'Screen Filter' },
-          { value: 'disc', label: 'Disc Filter' },
-          { value: 'hydrocyclone', label: 'Hydrocyclone' },
-          { value: 'sand', label: 'Sand Filter' },
-        ]}
       />
+
+      {/* Filtration Type - Conditional */}
+      {data.filtrationRequired && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+        >
+          <FormButtonGroup
+            label="Filtration Type"
+            name="filtrationRequirement"
+            value={data.filtrationRequirement}
+            onChange={handleChange}
+            options={[
+              { value: 'screen', label: 'Screen Filter' },
+              { value: 'disc', label: 'Disc Filter' },
+              { value: 'hydrocyclone', label: 'Hydrocyclone' },
+              { value: 'sand', label: 'Sand Filter' },
+              { value: 'other', label: 'Other' },
+            ]}
+          />
+        </motion.div>
+      )}
 
       {/* Fertigation */}
       <FormToggle
@@ -269,28 +310,6 @@ export default function BiologyForm() {
           </div>
         </motion.div>
       )}
-
-      {/* Info Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="mt-6 p-4 rounded-xl border"
-        style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
-      >
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Water Demand Calculation</h4>
-            <p className="text-xs mt-1" style={{ color: '#558B2F' }}>
-              Crop type and age determine water demand. Irrigation method affects 
-              efficiency and system design. Multiple zones enable sequential irrigation.
-            </p>
-          </div>
-        </div>
-      </motion.div>
     </motion.div>
   );
 }

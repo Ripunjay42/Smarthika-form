@@ -263,29 +263,6 @@ export default function ShedForm() {
           </div>
         </motion.div>
       )}
-
-      {/* Info Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="mt-6 p-4 rounded-xl border"
-        style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
-      >
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Business Intelligence</h4>
-            <p className="text-xs mt-1" style={{ color: '#558B2F' }}>
-              Equipment ownership indicates tech-readiness and potential for 
-              additional product recommendations. Harvest months help plan 
-              payment schedules.
-            </p>
-          </div>
-        </div>
-      </motion.div>
     </motion.div>
   );
 }

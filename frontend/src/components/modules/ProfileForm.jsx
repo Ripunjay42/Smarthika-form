@@ -106,7 +106,8 @@ export default function ProfileForm() {
         <FormInput
           label="Farmer Full Name"
           name="customerName"
-          value={data.customerName}
+          id="field-profile-customerName"
+          value={data.customerName ?? ''}
           onChange={handleChange}
           placeholder="e.g. Samuel Harvest"
           icon={User}
@@ -117,8 +118,9 @@ export default function ProfileForm() {
         <FormInput
           label="Age"
           name="age"
+          id="field-profile-age"
           type="number"
-          value={data.age}
+          value={data.age ?? ''}
           onChange={handleChange}
           placeholder="e.g. 45"
           icon={Calendar}
@@ -129,8 +131,9 @@ export default function ProfileForm() {
         <FormInput
           label="WhatsApp Number"
           name="whatsappNumber"
+          id="field-profile-whatsappNumber"
           type="tel"
-          value={data.whatsappNumber}
+          value={data.whatsappNumber ?? ''}
           onChange={handleChange}
           placeholder="e.g. 9876543210"
           icon={Phone}
@@ -142,8 +145,9 @@ export default function ProfileForm() {
         <FormInput
           label="Email Address"
           name="emailAddress"
+          id="field-profile-emailAddress"
           type="email"
-          value={data.emailAddress}
+          value={data.emailAddress ?? ''}
           onChange={handleChange}
           placeholder="e.g. farmer@example.com"
           icon={Mail}
@@ -158,7 +162,7 @@ export default function ProfileForm() {
           <FormSelect
             label="Country"
             name="country"
-            value={data.country || 'india'}
+            value={data.country ?? 'india'}
             onChange={handleChange}
             options={COUNTRIES}
             icon={MapPin}
@@ -168,7 +172,7 @@ export default function ProfileForm() {
           <FormSelect
             label="State / Province"
             name="state"
-            value={data.state}
+            value={data.state ?? ''}
             onChange={handleChange}
             options={states}
             icon={MapPin}
@@ -184,7 +188,7 @@ export default function ProfileForm() {
                 <FormSelect
                   label="District"
                   name="district"
-                  value={data.district}
+                  value={data.district ?? ''}
                   onChange={handleChange}
                   options={districts}
                   icon={MapPin}
@@ -193,7 +197,7 @@ export default function ProfileForm() {
                 <FormInput
                   label="District"
                   name="district"
-                  value={data.district}
+                  value={data.district ?? ''}
                   onChange={handleChange}
                   placeholder="Enter district name"
                   icon={MapPin}
@@ -208,7 +212,7 @@ export default function ProfileForm() {
             <FormInput
               label="Village / City / Town"
               name="village"
-              value={data.village}
+              value={data.village ?? ''}
               onChange={handleChange}
               placeholder="Enter village or city name"
               icon={MapPin}
@@ -221,7 +225,7 @@ export default function ProfileForm() {
         <FormButtonGroup
           label="Is your farm plot in the same location as where you stay?"
           name="farmSameLocation"
-          value={data.farmSameLocation}
+          value={data.farmSameLocation ?? ''}
           onChange={handleChange}
           options={[
             { value: 'yes', label: 'Yes, same location' },

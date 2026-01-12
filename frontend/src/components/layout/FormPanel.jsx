@@ -5,6 +5,7 @@ import { useFormContext } from '../../context/FormContext';
 import { MODULES } from '../../constants/formConstants';
 import { submitToGoogleSheets, validateFormData } from '../../services/googleSheets';
 import { validateAllModules, validateModule } from '../../utils/moduleValidation';
+import { useScrollToElement } from '../../hooks/useScrollToElement';
 import SubmissionPreview from './SubmissionPreview';
 import {
   ProfileForm,
@@ -51,16 +52,19 @@ export default function FormPanel() {
   const [submitError, setSubmitError] = useState(null);
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [showSubmitSuccessModal, setShowSubmitSuccessModal] = useState(false);
+  
+  const { scrollToElement, scrollToTop } = useScrollToElement();
 
   const CurrentForm = formComponents[currentModule];
   const isLastModule = currentModule === MODULES.length - 1;
   const isFirstModule = currentModule === 0;
 
   useEffect(() => {
-    // If user navigates between modules, exit preview.
+    // If user navigates between modules, exit preview and scroll to top
     setIsPreviewing(false);
     setSubmitError(null);
-  }, [currentModule]);
+    scrollToTop('smooth');
+  }, [currentModule, scrollToTop]);
 
   const handleContinue = () => {
     const moduleId = MODULES[currentModule]?.id;
@@ -70,6 +74,12 @@ export default function FormPanel() {
       const validation = validateModule(moduleId, moduleData);
       if (!validation.isValid) {
         setErrorsForModule(moduleId, validation.fieldErrors);
+        // Scroll to the first error field
+        if (validation.fieldErrors && Object.keys(validation.fieldErrors).length > 0) {
+          const firstErrorField = Object.keys(validation.fieldErrors)[0];
+          const elementId = `field-${moduleId}-${firstErrorField}`;
+          scrollToElement(elementId, 'smooth', 100);
+        }
         return;
       }
       clearErrorsForModule(moduleId);
@@ -89,6 +99,12 @@ export default function FormPanel() {
       const validation = validateModule(moduleId, moduleData);
       if (!validation.isValid) {
         setErrorsForModule(moduleId, validation.fieldErrors);
+        // Scroll to the first error field
+        if (validation.fieldErrors && Object.keys(validation.fieldErrors).length > 0) {
+          const firstErrorField = Object.keys(validation.fieldErrors)[0];
+          const elementId = `field-${moduleId}-${firstErrorField}`;
+          scrollToElement(elementId, 'smooth', 100);
+        }
         return;
       }
       clearErrorsForModule(moduleId);
@@ -222,7 +238,7 @@ export default function FormPanel() {
       </AnimatePresence>
 
       {/* Scrollable Form Content */}
-      <div className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 form-panel-scroll">
         <AnimatePresence mode="wait">
           <motion.div
             key={isPreviewing ? 'preview' : currentModule}

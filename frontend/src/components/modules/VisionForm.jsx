@@ -21,10 +21,10 @@ export default function VisionForm() {
   };
 
   const getLaborPainDescription = (score) => {
-    if (score <= 2) return { level: 'Low', color: 'text-[#689F38]', desc: 'Manageable labor situation' };
-    if (score <= 5) return { level: 'Medium', color: 'text-yellow-600', desc: 'Some automation could help' };
-    if (score <= 7) return { level: 'High', color: 'text-orange-600', desc: 'Automation recommended' };
-    return { level: 'Critical', color: 'text-red-600', desc: 'Strong automation ROI' };
+    if (score <= 2) return { level: 'Low', color: 'text-[#689F38]', desc: 'Easy to find labor, low dependency' };
+    if (score <= 5) return { level: 'Medium', color: 'text-yellow-600', desc: 'Moderate labor availability' };
+    if (score <= 7) return { level: 'High', color: 'text-orange-600', desc: 'Difficult to find labor' };
+    return { level: 'Critical', color: 'text-red-600', desc: 'Very hard to find labor, high dependency' };
   };
 
   const laborPain = getLaborPainDescription(data.laborPainScore);
@@ -42,26 +42,22 @@ export default function VisionForm() {
         <p className="text-gray-500">Economic goals and future aspirations.</p>
       </div>
 
-      {/* Labor Pain Score */}
+      {/* Labor Availability Score */}
       <div className="space-y-2">
         <FormSlider
-          label="Labor Pain Score"
+          label="Labor Availability Score (0=easy to find, 10=very hard)"
           name="laborPainScore"
           value={data.laborPainScore}
           onChange={handleSliderChange}
           min={0}
           max={10}
           step={1}
-          unit="/10"
         />
         <motion.div
           className={`p-3 rounded-lg bg-gray-50 border border-gray-200`}
           key={data.laborPainScore}
         >
-          <div className="flex items-center justify-between">
-            <span className={`font-semibold ${laborPain.color}`}>{laborPain.level} Pain</span>
-            <span className="text-sm text-gray-500">{laborPain.desc}</span>
-          </div>
+          <p className="text-sm text-gray-600">{laborPain.desc}</p>
         </motion.div>
       </div>
 
@@ -251,28 +247,6 @@ export default function VisionForm() {
             <Target size={16} strokeWidth={ICON_STROKE_WIDTH} className="text-white/80" />
             Your personalized irrigation solution will be tailored to these goals
           </p>
-        </div>
-      </motion.div>
-
-      {/* Info Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="mt-6 p-4 rounded-xl border"
-        style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
-      >
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-            <Info className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>ROI Calculation</h4>
-            <p className="text-xs mt-1" style={{ color: '#558B2F' }}>
-              Your economic goals help us calculate accurate return on investment 
-              and recommend the right tier of automation for your needs.
-            </p>
-          </div>
         </div>
       </motion.div>
     </motion.div>

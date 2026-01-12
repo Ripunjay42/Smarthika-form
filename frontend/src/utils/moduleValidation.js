@@ -82,9 +82,9 @@ export const MODULE_VALIDATION_RULES = {
   shelter: [],
   biology: [
     {
-      field: 'primaryCropType',
-      message: 'Primary crop is required',
-      validate: (data) => !isBlank(data?.primaryCropType),
+      field: 'crops',
+      message: 'At least one crop must be added',
+      validate: (data) => !isBlank(data?.crops),
     },
     {
       field: 'peakWaterDemand',

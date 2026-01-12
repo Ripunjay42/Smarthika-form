@@ -23,36 +23,51 @@ const cropColors = {
 };
 
 export default function CropGridAnimation({ 
-  primaryCropType = 'mango', 
-  secondaryCropType = '',
   croppingPattern = 'monoculture',
-  rowCount = 0,
   plantSpacing = 10, 
   tractorAccessRequirement = false,
-  totalPlantCount = 0,
+  crops = [],
   cropAge = 'sapling',
   peakWaterDemand = 0,
   irrigationMethod = 'drip',
   requiredDischarge = 0,
   numberOfZones = 1,
+  filtrationRequired = false,
   filtrationRequirement = 'screen',
   slurryFertigationUsage = false
 }) {
   // Tree size based on age
   const treeScale = cropAge === 'mature' ? 1 : cropAge === 'young' ? 0.65 : 0.35;
-  const primaryCropColor = cropColors[primaryCropType] || cropColors.mango;
-  const secondaryCropColor = secondaryCropType ? (cropColors[secondaryCropType] || cropColors.vegetables) : null;
-  const isPolyculture = croppingPattern === 'polyculture' && secondaryCropColor;
   
-  // Grid size based on spacing (inverse relationship)
-  const gridSize = Math.max(3, Math.min(6, Math.floor(30 / plantSpacing)));
+  // Get primary crop color from first crop, or default to mango
+  const firstCrop = crops?.[0]?.cropType || 'mango';
+  const primaryCropColor = cropColors[firstCrop] || cropColors.mango;
+  
+  // Calculate total estimated count from all crops
+  const totalEstimatedCount = crops?.reduce((sum, crop) => sum + (parseInt(crop.estimatedCount) || 0), 0) || 0;
+  
+  // Determine grid size based on estimated count
+  // More crops = larger grid to visualize the density
+  let gridSize;
+  if (totalEstimatedCount === 0) {
+    gridSize = Math.max(3, Math.min(6, Math.floor(30 / plantSpacing)));
+  } else if (totalEstimatedCount < 50) {
+    gridSize = 3;
+  } else if (totalEstimatedCount < 100) {
+    gridSize = 4;
+  } else if (totalEstimatedCount < 200) {
+    gridSize = 5;
+  } else {
+    gridSize = 6;
+  }
+  
   const hasMultipleZones = numberOfZones > 1;
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
       {/* Top-down Field View */}
       <motion.div
-        className="relative w-80 h-80"
+        className="relative w-96 h-96"
         style={{ perspective: '1000px' }}
       >
         <motion.div
@@ -75,9 +90,8 @@ export default function CropGridAnimation({
             }}
           >
             {Array.from({ length: gridSize * gridSize }).map((_, i) => {
-              // Alternate crops for polyculture
-              const useSecondaryCrop = isPolyculture && i % 2 === 1;
-              const currentColor = useSecondaryCrop ? secondaryCropColor : primaryCropColor;
+              // Use primary crop color for all plants
+              const currentColor = primaryCropColor;
               
               return (
                 <motion.div
@@ -163,29 +177,13 @@ export default function CropGridAnimation({
           <TreeDeciduous size={24} color={primaryCropColor} />
           <div>
             <p className="text-xs font-semibold" style={{ color: THEME.accent }}>PRIMARY CROP</p>
-            <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{primaryCropType}</p>
+            <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{firstCrop}</p>
+            {totalEstimatedCount > 0 && (
+              <p className="text-xs" style={{ color: THEME.textLight }}>Est: {totalEstimatedCount}</p>
+            )}
           </div>
         </div>
       </motion.div>
-
-      {/* Secondary Crop Badge */}
-      {secondaryCropType && (
-        <motion.div
-          className="absolute bottom-32 left-8 p-3 backdrop-blur-sm rounded-xl"
-          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div className="flex items-center gap-2">
-            <GitBranch size={18} color={secondaryCropColor} />
-            <div>
-              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>SECONDARY</p>
-              <p className="text-xs font-bold capitalize" style={{ color: THEME.text }}>{secondaryCropType}</p>
-            </div>
-          </div>
-        </motion.div>
-      )}
 
       {/* Crop Age Card */}
       <motion.div
@@ -202,25 +200,6 @@ export default function CropGridAnimation({
           </div>
         </div>
       </motion.div>
-
-      {/* Plant Count */}
-      {totalPlantCount > 0 && (
-        <motion.div
-          className="absolute top-32 right-8 p-3 backdrop-blur-sm rounded-xl"
-          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <div className="flex items-center gap-2">
-            <Grid2x2 size={18} color={THEME.accent} />
-            <div>
-              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>PLANT COUNT</p>
-              <p className="text-sm font-bold" style={{ color: THEME.text }}>{totalPlantCount}</p>
-            </div>
-          </div>
-        </motion.div>
-      )}
 
       {/* Spacing Card */}
       <motion.div

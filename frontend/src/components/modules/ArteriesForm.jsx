@@ -66,7 +66,7 @@ export default function ArteriesForm() {
       </div>
 
       {/* Delivery Target - Multi-Select */}
-      <div className="space-y-3">
+      <div className="space-y-3" id="field-arteries-deliveryTarget">
         <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Where Does Water Go? (Select All That Apply)</label>
         <p className="text-xs" style={{ color: '#558B2F' }}>Each borewell/source can deliver to different destinations</p>
         <div className="space-y-2">
@@ -271,34 +271,19 @@ export default function ArteriesForm() {
         </div>
       </div>
 
-      {/* Flowmeter Size with Icon */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Flow Meter Size</label>
-        <div className="grid grid-cols-4 gap-2">
-          {PIPE_DIAMETERS.map((diameter) => (
-            <motion.button
-              key={`flowmeter-${diameter.value}`}
-              onClick={() => handleChange({ target: { name: 'flowmeterSize', value: diameter.value } })}
-              className="p-3 rounded-lg border-2 transition-all text-center"
-              style={{
-                borderColor: data.flowmeterSize === diameter.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-                backgroundColor: data.flowmeterSize === diameter.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-              }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="text-xs font-bold whitespace-pre-line" style={{ color: '#33691E' }}>
-                {diameter.label}
-              </div>
-            </motion.button>
-          ))}
-        </div>
-      </div>
+      {/* Flowmeter Requirement - Yes/No Toggle */}
+      <FormToggle
+        label="Is a Flow Meter Required?"
+        name="flowmeterRequirement"
+        checked={data.flowmeterRequirement}
+        onChange={handleChange}
+      />
 
       {/* Total Pipe Length - Slider instead of text input */}
       <FormSlider
         label="Total Mainline Length"
         name="totalPipeLength"
+        id="field-arteries-totalPipeLength"
         value={data.totalPipeLength || 0}
         onChange={handleSliderChange}
         min={10}

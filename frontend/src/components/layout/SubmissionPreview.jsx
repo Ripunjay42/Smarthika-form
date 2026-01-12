@@ -1,4 +1,4 @@
-import { MODULES, MONTHS } from '../../constants/formConstants';
+import { MODULES, MONTHS, CROP_TYPES } from '../../constants/formConstants';
 
 const THEME = {
   bg: '#FAF0BF',
@@ -11,6 +11,17 @@ const THEME = {
 };
 
 function toTitleCase(text) {
+  // Special field name mappings
+  const specialMappings = {
+    'burnoutfrequency': 'Controller Replacement/Repair Frequency',
+    'burnout frequency': 'Controller Replacement/Repair Frequency',
+  };
+  
+  const normalized = text.toLowerCase().replace(/\s+/g, ' ').trim();
+  if (specialMappings[normalized]) {
+    return specialMappings[normalized];
+  }
+  
   return text
     .replace(/([a-z])([A-Z])/g, '$1 $2')
     .replace(/[_.-]+/g, ' ')
@@ -42,10 +53,13 @@ function formatValue(value, keyPath) {
     return selected.length ? selected.join(', ') : '';
   }
 
-  // Handle primaryEnergySource as array
-  if (keyPath === 'pulse.primaryEnergySource' && Array.isArray(value)) {
+  // Handle crops array
+  if (keyPath === 'biology.crops' && Array.isArray(value)) {
     return value.length ? value
-      .map(v => v.charAt(0).toUpperCase() + v.slice(1))
+      .map(crop => {
+        const cropLabel = CROP_TYPES.find(c => c.value === crop.cropType)?.label || crop.cropType;
+        return `${cropLabel} (${crop.estimatedCount || 0})`;
+      })
       .join(', ') : '';
   }
 
@@ -103,9 +117,33 @@ function shouldExcludeField(keyPath) {
     'soilTestReport',
     'pumpHousePictureType',
     'pumpHousePicture',
+    'primaryCropType', // Removed field
+    'secondaryCropType', // Removed field
+    'rowCount', // Removed field
+    'totalPlantCount', // Removed field
+    'croppingPattern', // Removed field
+    'irrigationEfficiency', // Technical field
+    'pipeReuseStatus', // Removed field
+    'footValveCondition', // Removed field
+    'efficiencyGap', // Removed field
   ];
   
   return excludedFields.some(field => keyPath.includes(field));
+}
+
+function shouldExcludeForProjectType(keyPath, projectType) {
+  // For greenfield (new install), exclude retrofit-specific fields
+  if (projectType === 'greenfield') {
+    const retrofitFields = [
+      'baseline.oldPumpType',
+      'baseline.oldPumpAge',
+      'baseline.burnoutFrequency',
+    ];
+    return retrofitFields.includes(keyPath);
+  }
+  
+  // For retrofit, exclude greenfield-specific fields (none currently)
+  return false;
 }
 
 export default function SubmissionPreview({ formData }) {
@@ -137,6 +175,7 @@ export default function SubmissionPreview({ formData }) {
             }))
             .filter((e) => 
               !shouldExcludeField(e.keyPath) &&
+              !shouldExcludeForProjectType(e.keyPath, formData?.baseline?.projectType) &&
               e.value !== '' && 
               e.value !== '[]' && 
               e.value !== '{}' && 

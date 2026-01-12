@@ -13,6 +13,7 @@ export function FormInput({
   error,
   helper,
   className = '',
+  id,
   ...props
 }) {
   return (
@@ -33,7 +34,8 @@ export function FormInput({
           whileFocus={{ scale: 1.01 }}
           type={type}
           name={name}
-          value={value}
+          id={id}
+          value={value ?? ''}
           onChange={onChange}
           placeholder={placeholder}
           className={`w-full px-4 py-3 rounded-xl backdrop-blur-sm transition-all duration-200 outline-none focus:outline-none ${Icon ? 'pl-11' : ''}`}
@@ -79,6 +81,7 @@ export function FormSelect({
   required = false,
   error,
   className = '',
+  id,
   ...props
 }) {
   return (
@@ -98,7 +101,8 @@ export function FormSelect({
         <motion.select
           whileFocus={{ scale: 1.01 }}
           name={name}
-          value={value}
+          id={id}
+          value={value ?? ''}
           onChange={onChange}
           className={`w-full px-4 py-3 rounded-xl transition-all duration-200 outline-none focus:outline-none appearance-none cursor-pointer ${Icon ? 'pl-11' : ''}`}
           style={{
@@ -155,8 +159,10 @@ export function FormSlider({
   error,
   helper,
   className = '',
+  id,
 }) {
-  const percentage = ((value - min) / (max - min)) * 100;
+  const safeValue = value ?? min;
+  const percentage = ((safeValue - min) / (max - min)) * 100;
 
   return (
     <div className={`space-y-2 ${className}`}>
@@ -168,7 +174,7 @@ export function FormSlider({
           </label>
           {showValue && (
             <span className="text-sm font-bold" style={{ color: error ? '#EF4444' : '#689F38' }}>
-              {value}{unit}
+              {safeValue}{unit}
             </span>
           )}
         </div>
@@ -186,7 +192,8 @@ export function FormSlider({
         <input
           type="range"
           name={name}
-          value={value}
+          id={id}
+          value={safeValue}
           onChange={onChange}
           min={min}
           max={max}
@@ -284,10 +291,10 @@ export function FormButtonGroup({
             onClick={() => onChange({ target: { name, value: option.value } })}
             className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
             style={{
-              backgroundColor: value === option.value ? '#689F38' : '#EDEDE7',
-              color: value === option.value ? '#FAF0BF' : '#33691E',
-              border: value === option.value ? '2px solid #689F38' : '2px solid rgba(104, 159, 56, 0.25)',
-              boxShadow: value === option.value ? '0 4px 14px rgba(104, 159, 56, 0.25)' : 'none'
+              backgroundColor: (value ?? '') === option.value ? '#689F38' : '#EDEDE7',
+              color: (value ?? '') === option.value ? '#FAF0BF' : '#33691E',
+              border: (value ?? '') === option.value ? '2px solid #689F38' : '2px solid rgba(104, 159, 56, 0.25)',
+              boxShadow: (value ?? '') === option.value ? '0 4px 14px rgba(104, 159, 56, 0.25)' : 'none'
             }}
           >
             {option.label}
@@ -324,14 +331,14 @@ export function FormColorPicker({
             className="w-12 h-12 rounded-xl shadow-md transition-all duration-200"
             style={{ 
               backgroundColor: option.color,
-              ring: value === option.value ? '4px solid #689F38' : 'none',
-              boxShadow: value === option.value ? '0 0 0 4px rgba(104, 159, 56, 0.4)' : '0 2px 8px rgba(0,0,0,0.1)'
+              ring: (value ?? '') === option.value ? '4px solid #689F38' : 'none',
+              boxShadow: (value ?? '') === option.value ? '0 0 0 4px rgba(104, 159, 56, 0.4)' : '0 2px 8px rgba(0,0,0,0.1)'
             }}
             title={option.label}
           />
         ))}
       </div>
-      <p className="text-xs capitalize" style={{ color: '#558B2F' }}>{options.find(o => o.value === value)?.label}</p>
+      <p className="text-xs capitalize" style={{ color: '#558B2F' }}>{options.find(o => o.value === (value ?? ''))?.label}</p>
     </div>
   );
 }

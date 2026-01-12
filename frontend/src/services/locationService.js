@@ -16,23 +16,10 @@ const CACHE = {
 export const fetchStates = async () => {
   if (CACHE.states) return CACHE.states;
 
-  try {
-    // Using public India API for states
-    const response = await fetch('https://raw.githubusercontent.com/sab99r/Indian-States-Districts/master/states.json');
-    const data = await response.json();
-    
-    const states = data.map(state => ({
-      value: state.toLowerCase().replace(/\s+/g, '-'),
-      label: state
-    }));
-    
-    CACHE.states = states;
-    return states;
-  } catch (error) {
-    console.warn('Failed to fetch states from API:', error);
-    // Fallback to default states
-    return getDefaultStates();
-  }
+  // Use default states directly (API is unreliable)
+  const states = getDefaultStates();
+  CACHE.states = states;
+  return states;
 };
 
 /**
@@ -43,32 +30,9 @@ export const fetchDistricts = async (state) => {
   if (!state) return [];
   if (CACHE.districts[state]) return CACHE.districts[state];
 
-  try {
-    // Using public India API for districts
-    const response = await fetch('https://raw.githubusercontent.com/sab99r/Indian-States-Districts/master/states_districts.json');
-    const data = await response.json();
-    
-    // Find the state in the data and get its districts
-    const stateData = data.find(s => 
-      s.state.toLowerCase().replace(/\s+/g, '-') === state ||
-      s.state.toLowerCase() === state.replace(/-/g, ' ')
-    );
-    
-    if (stateData && stateData.districts) {
-      const districts = stateData.districts.map(district => ({
-        value: district.toLowerCase().replace(/\s+/g, '-'),
-        label: district
-      }));
-      
-      CACHE.districts[state] = districts;
-      return districts;
-    }
-    
-    return [];
-  } catch (error) {
-    console.warn('Failed to fetch districts from API:', error);
-    return [];
-  }
+  // Return empty array - let users type their district
+  // (API is unreliable, better to use free-text input)
+  return [];
 };
 
 /**

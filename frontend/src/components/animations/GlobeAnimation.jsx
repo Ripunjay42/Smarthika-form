@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
-import { MapPin, WifiHigh, User, Users, Calendar, Navigation } from 'lucide-react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { User, Users, Calendar, Navigation, MapPin, Loader2 } from 'lucide-react';
+import * as d3 from 'd3';
 
 const THEME = {
   accent: '#689F38',
@@ -12,6 +14,25 @@ const THEME = {
   cardBorder: 'rgba(104, 159, 56, 0.3)',
 };
 
+// Inject CSS for state-selected class for better performance
+const styleSheet = typeof document !== 'undefined' ? (() => {
+  const style = document.createElement('style');
+  style.textContent = `
+    .state-path.state-selected {
+      fill: #689F38 !important;
+      filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.1)) !important;
+    }
+  `;
+  document.head.appendChild(style);
+  return style;
+})() : null;
+
+// Normalize state name for comparison (outside component for no recreation)
+const normalizeStateName = (name) => {
+  if (!name) return '';
+  return name.toLowerCase().replace(/\s+/g, '').replace(/&/g, '').replace(/-/g, '');
+};
+
 export default function GlobeAnimation({ 
   farmerName = '', 
   whatsappNumber = '', 
@@ -22,83 +43,192 @@ export default function GlobeAnimation({
   village = '',
   farmSameLocation = ''
 }) {
-  const hasData = farmerName || whatsappNumber;
-  
+  const svgRef = useRef(null);
+  const containerRef = useRef(null);
+  const pathsRef = useRef(null); // Cache D3 selection
+  const markerRef = useRef(null); // Cache marker group
+  const [geoData, setGeoData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  // Memoize normalized state to avoid recalculation
+  const selectedStateNormalized = useMemo(() => normalizeStateName(state), [state]);
+
+  // Fetch GeoJSON on mount (only once)
+  useEffect(() => {
+    const fetchMapData = async () => {
+      try {
+        const response = await fetch('https://raw.githubusercontent.com/geohacker/india/master/state/india_telengana.geojson');
+        if (!response.ok) throw new Error("Failed to load map data");
+        const data = await response.json();
+        setGeoData(data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Map loading error:", err);
+        setError(true);
+        setLoading(false);
+      }
+    };
+
+    fetchMapData();
+  }, []);
+
+  // Initial map render (only when geoData loads) - ONCE
+  useEffect(() => {
+    if (!geoData || !svgRef.current || !containerRef.current) return;
+
+    const svg = d3.select(svgRef.current);
+    const { width, height } = containerRef.current.getBoundingClientRect();
+    
+    // Clear only once
+    svg.selectAll("*").remove();
+
+    // Responsive scale - smaller on large screens
+    let scale = Math.min(width * 1.5, height * 1.5);
+    if (width > 1400) scale *= 0.65;
+    else if (width > 1000) scale *= 0.75;
+    else if (width > 768) scale *= 0.85;
+
+    // Define Projection
+    const projection = d3.geoMercator()
+      .center([82, 23]) 
+      .scale(scale) 
+      .translate([width / 2, height / 2]);
+
+    const pathGenerator = d3.geoPath().projection(projection);
+
+    // Render states ONCE and cache selection - use SVG rendering mode for performance
+    const mapGroup = svg.append("g").attr("class", "map-group").attr("vector-effect", "non-scaling-stroke");
+
+    pathsRef.current = mapGroup.selectAll("path")
+      .data(geoData.features, (d) => d.properties.NAME_1 || d.properties.name)
+      .enter()
+      .append("path")
+      .attr("d", (d) => pathGenerator(d))
+      .attr("stroke", "#ffffff")
+      .attr("stroke-width", 0.8)
+      .attr("fill", 'rgba(250, 240, 191, 0.6)')
+      .attr("class", "state-path")
+      .attr("data-state", (d) => normalizeStateName(d.properties.NAME_1 || d.properties.name || ''))
+      .attr("will-change", "fill")
+      .style("transition", "fill 0.15s ease"); // Hardware accelerated
+
+    // Create marker group once
+    markerRef.current = svg.append("g").attr("class", "state-marker").style("display", "none").attr("will-change", "transform");
+
+  }, [geoData]);
+
+  // Ultra-optimized state update using requestAnimationFrame
+  useEffect(() => {
+    if (!geoData || !pathsRef.current || !selectedStateNormalized) return;
+
+    // Batch DOM updates in single frame
+    const frameId = requestAnimationFrame(() => {
+      // Update fills using cached selection with CSS class instead of inline
+      pathsRef.current.classed("state-selected", function() {
+        const stateName = this.getAttribute('data-state');
+        return stateName === selectedStateNormalized;
+      });
+
+      // Update marker
+      if (markerRef.current) {
+        const marker = d3.select(markerRef.current.node());
+        marker.selectAll("*").remove();
+
+        if (selectedStateNormalized) {
+          const selectedFeature = geoData.features.find(f => {
+            const stateName = f.properties.NAME_1 || f.properties.name || '';
+            return normalizeStateName(stateName) === selectedStateNormalized;
+          });
+
+          if (selectedFeature) {
+            const { width, height } = containerRef.current.getBoundingClientRect();
+            
+            // Responsive scale - smaller on large screens
+            let scale = Math.min(width * 1.5, height * 1.5);
+            if (width > 1400) scale *= 0.65;
+            else if (width > 1000) scale *= 0.75;
+            else if (width > 768) scale *= 0.85;
+
+            const projection = d3.geoMercator()
+              .center([82, 23]) 
+              .scale(scale) 
+              .translate([width / 2, height / 2]);
+            const pathGenerator = d3.geoPath().projection(projection);
+            const centroid = pathGenerator.centroid(selectedFeature);
+            
+            if (!isNaN(centroid[0])) {
+              marker.attr("transform", `translate(${centroid[0]}, ${centroid[1]})`).style("display", "block");
+
+              marker.append("circle")
+                .attr("r", 3)
+                .attr("fill", THEME.text)
+                .attr("will-change", "transform");
+              
+              marker.append("circle")
+                .attr("r", 3)
+                .attr("fill", "none")
+                .attr("stroke", THEME.accent)
+                .attr("stroke-width", 1.5)
+                .attr("will-change", "r")
+                .append("animate")
+                .attr("attributeName", "r")
+                .attr("from", "3")
+                .attr("to", "14")
+                .attr("dur", "1.2s")
+                .attr("repeatCount", "indefinite");
+            }
+          }
+        } else {
+          marker.style("display", "none");
+        }
+      }
+    });
+
+    return () => cancelAnimationFrame(frameId);
+  }, [geoData, selectedStateNormalized]);
+
+  if (loading) {
+    return (
+      <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
+        <div className="flex items-center gap-2" style={{ color: THEME.accent }}>
+          <Loader2 className="animate-spin" size={24} />
+          <span className="text-sm font-medium">Loading Map...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="relative w-full h-full flex items-center justify-center overflow-hidden p-8 text-center" style={{ backgroundColor: THEME.background }}>
+        <div style={{ color: THEME.textLight }}>
+          <p className="font-bold">Map Visualization Unavailable</p>
+          <p className="text-xs mt-2">Could not load map data.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
-
-      {/* Simplified Globe - Lightweight version */}
-      <motion.div
-        className="relative"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
-      >
-        <div className="w-64 h-64 relative">
-          {/* Simple Earth Circle */}
-          <div
-            className="absolute inset-0 rounded-full"
-            style={{
-              background: `linear-gradient(135deg, #FAF0BF 0%, #EDEDE7 100%)`,
-              boxShadow: `
-                inset -10px -10px 20px rgba(104, 159, 56, 0.1),
-                inset 5px 5px 15px rgba(255, 255, 255, 0.6),
-                0 10px 30px rgba(104, 159, 56, 0.15)
-              `,
-              border: `2px solid ${THEME.cardBorder}`
-            }}
-          />
-
-          {/* Single decorative circle line */}
-          <motion.div
-            className="absolute left-1/2 top-1/2 rounded-full border"
-            style={{
-              width: '85%',
-              height: '85%',
-              transform: 'translate(-50%, -50%)',
-              borderColor: THEME.accent,
-              borderWidth: '1px',
-              opacity: 0.25,
-            }}
-            animate={{ opacity: [0.15, 0.3, 0.15] }}
-            transition={{ duration: 4, repeat: Infinity }}
-          />
-
-          {/* Location Marker - Single dot */}
-          {hasData && (
-            <motion.div
-              className="absolute"
-              style={{ top: '35%', left: '60%' }}
-              initial={{ scale: 0 }}
-              animate={{ 
-                scale: [1, 1.15, 1],
-              }}
-              transition={{ duration: 2.5, repeat: Infinity }}
-            >
-              <div className="relative">
-                <div 
-                  className="w-4 h-4 rounded-full shadow-lg" 
-                  style={{ 
-                    backgroundColor: THEME.accent, 
-                    boxShadow: `0 0 10px ${THEME.accent}` 
-                  }} 
-                />
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </motion.div>
+      
+      {/* India Map SVG */}
+      <div ref={containerRef} className="absolute inset-0 w-full h-full">
+        <svg ref={svgRef} className="w-full h-full" />
+      </div>
 
       {/* Farmer Name Card */}
       {farmerName && (
         <motion.div
           className="absolute top-16 left-8 px-4 py-3 rounded-lg"
-          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
+          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)', willChange: 'transform' }}
           initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0, y: [0, -6, 0] }}
-          transition={{ y: { duration: 3, repeat: Infinity } }}
+          animate={{ opacity: 1, x: 0, y: [0, -4, 0] }}
+          transition={{ y: { duration: 4, repeat: Infinity } }}
         >
           <div className="flex items-center gap-2">
-            <User size={18} color={THEME.accent} />
+            <User size={16} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>FARMER</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{farmerName}</p>
@@ -111,13 +241,13 @@ export default function GlobeAnimation({
       {age > 0 && (
         <motion.div
           className="absolute top-40 right-8 px-4 py-3 rounded-lg"
-          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
+          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)', willChange: 'transform' }}
           initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0, y: [0, -6, 0] }}
-          transition={{ y: { duration: 3, repeat: Infinity, delay: 0.2 } }}
+          animate={{ opacity: 1, x: 0, y: [0, -4, 0] }}
+          transition={{ y: { duration: 4, repeat: Infinity, delay: 0.3 } }}
         >
           <div className="flex items-center gap-2">
-            <Calendar size={18} color={THEME.accent} />
+            <Calendar size={16} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>AGE</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{age} yrs</p>
@@ -130,13 +260,13 @@ export default function GlobeAnimation({
       {whatsappNumber && (
         <motion.div
           className="absolute top-16 right-8 px-4 py-3 rounded-lg"
-          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
+          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)', willChange: 'transform' }}
           initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0, y: [0, -6, 0] }}
-          transition={{ y: { duration: 3, repeat: Infinity, delay: 0.4 } }}
+          animate={{ opacity: 1, x: 0, y: [0, -4, 0] }}
+          transition={{ y: { duration: 4, repeat: Infinity, delay: 0.6 } }}
         >
           <div className="flex items-center gap-2">
-            <WifiHigh size={18} color={THEME.accent} />
+            <Navigation size={16} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>CONTACT</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>+91 {whatsappNumber}</p>
@@ -152,14 +282,14 @@ export default function GlobeAnimation({
           style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.2 }}
         >
           <div className="flex items-center gap-2">
-            <Navigation size={18} color={THEME.accent} />
+            <Navigation size={16} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>LOCATION</p>
               <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{village}</p>
-              {state && <p className="text-xs capitalize" style={{ color: THEME.textLight }}>{state}</p>}
+              {state && <p className="text-xs capitalize" style={{ color: THEME.textLight }}>{state.replace(/-/g, ' ')}</p>}
             </div>
           </div>
         </motion.div>
@@ -169,13 +299,13 @@ export default function GlobeAnimation({
       {laborCount > 0 && (
         <motion.div
           className="absolute bottom-16 left-1/2 -translate-x-1/2 px-4 py-3 rounded-lg"
-          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
+          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)', willChange: 'transform' }}
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: [20, 12, 20] }}
-          transition={{ duration: 4, repeat: Infinity }}
+          animate={{ opacity: 1, y: [20, 14, 20] }}
+          transition={{ duration: 5, repeat: Infinity }}
         >
           <div className="flex items-center gap-2">
-            <Users size={20} color={THEME.accent} />
+            <Users size={18} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>WORKFORCE</p>
               <p className="text-base font-bold" style={{ color: THEME.text }}>{laborCount}</p>
@@ -191,10 +321,10 @@ export default function GlobeAnimation({
           style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.1 }}
         >
           <div className="flex items-center gap-2">
-            <MapPin size={18} color={THEME.accent} />
+            <MapPin size={16} color={THEME.accent} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>FARM</p>
               <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>
@@ -204,20 +334,6 @@ export default function GlobeAnimation({
           </div>
         </motion.div>
       )}
-
-      {/* Network Status */}
-      {/* {!hasData && (
-        <motion.div
-          className="absolute bottom-16 left-1/2 -translate-x-1/2 px-5 py-3 rounded-lg text-center"
-          style={{ backgroundColor: THEME.cardBg, border: `1px solid ${THEME.cardBorder}`, backdropFilter: 'blur(4px)' }}
-          animate={{ opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 2.5, repeat: Infinity }}
-        >
-          <WifiHigh size={28} color={THEME.accent} className="mx-auto mb-1" />
-          <p className="text-sm font-medium" style={{ color: THEME.text }}>Fill the form</p>
-          <p className="text-xs mt-0.5" style={{ color: THEME.textLight }}>to see details</p>
-        </motion.div>
-      )} */}
     </div>
   );
 }

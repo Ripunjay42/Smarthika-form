@@ -6,8 +6,14 @@ const initialFormData = {
   // Module 1: Profile (Identity)
   profile: {
     customerName: '',
+    age: '',
     whatsappNumber: '',
     emailAddress: '',
+    country: 'india',
+    state: '',
+    district: '',
+    village: '',
+    farmSameLocation: '',
     laborCount: 0,
   },
   // Module 2: Canvas (Land & Topography)
@@ -81,8 +87,6 @@ const initialFormData = {
     wiringHealth: 'good',
     cableUpgradeRequired: false,
     distanceMeterToBorewell: '',
-    generatorOwnership: false,
-    evChargingNeed: false,
   },
   // Module 6: Shelter (Logistics & Safety)
   shelter: {
@@ -102,19 +106,17 @@ const initialFormData = {
   },
   // Module 7: Biology (Crops & Demand)
   biology: {
-    primaryCropType: '',
-    secondaryCropType: '',
     croppingPattern: 'monoculture',
-    rowCount: 0,
     plantSpacing: '',
     tractorAccessRequirement: false,
-    totalPlantCount: 0,
     cropAge: 'sapling',
+    crops: [],
     peakWaterDemand: '',
     irrigationMethod: 'drip',
     irrigationEfficiency: 90,
     requiredDischarge: '',
     numberOfZones: 1,
+    filtrationRequired: false,
     filtrationRequirement: 'screen',
     slurryFertigationUsage: false,
   },
@@ -124,9 +126,6 @@ const initialFormData = {
     oldPumpType: 'submersible',
     oldPumpAge: 0,
     burnoutFrequency: 0,
-    efficiencyGap: 0,
-    pipeReuseStatus: false,
-    footValveCondition: 'good',
   },
   // Module 9: Shed (Inventory)
   shed: {

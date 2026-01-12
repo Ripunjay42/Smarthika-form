@@ -62,7 +62,7 @@ export default function HeartForm() {
 
   const handleSourceCountChange = (sourceValue, increment) => {
     const countKey = `${sourceValue}Count`;
-    const currentCount = data[countKey] || 0;
+    const currentCount = data[countKey] || 1;
     const newCount = Math.max(1, currentCount + (increment ? 1 : -1));
     updateModuleData('heart', { [countKey]: newCount });
   };
@@ -110,13 +110,13 @@ export default function HeartForm() {
       </div>
 
       {/* Multi-Select Water Sources */}
-      <div className="space-y-3">
+      <div className="space-y-3" id="field-heart-sourceType">
         <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Available Water Sources</label>
         <div className="space-y-2">
           {WATER_SOURCES.map((source) => {
             const isSelected = (data.sourceType || []).includes(source.value);
             const countKey = `${source.value}Count`;
-            const count = data[countKey] || 0;
+            const count = data[countKey] || 1;
             
             return (
               <motion.div
@@ -203,6 +203,7 @@ export default function HeartForm() {
           onChange={handleChange}
           placeholder="Total depth in feet"
           icon={Droplet}
+          min="0"
         />
 
         <div className="grid grid-cols-2 gap-4 mt-4">
@@ -214,6 +215,7 @@ export default function HeartForm() {
             onChange={handleChange}
             placeholder="Resting level (ft)"
             helper="When pump is OFF"
+            min="0"
           />
           <FormInput
             label="Dynamic Water Level"
@@ -223,11 +225,12 @@ export default function HeartForm() {
             onChange={handleChange}
             placeholder="Pumping level (ft)"
             helper="When pump is ON"
+            min="0"
           />
         </div>
 
         {/* Drawdown & Recharge Assessment */}
-        {drawdown > 0 && (
+        {/* {drawdown > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -257,7 +260,7 @@ export default function HeartForm() {
               </div>
             </div>
           </motion.div>
-        )}
+        )} */}
       </div>
 
       {/* Water Quality - Keep but with description */}
@@ -399,6 +402,7 @@ export default function HeartForm() {
               onChange={handleChange}
               placeholder="Volume in liters per day"
               helper="Estimated daily supply"
+              min="0"
             />
           </motion.div>
         )}
