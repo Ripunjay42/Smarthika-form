@@ -25,24 +25,25 @@ export default function BorewellAnimation({
   totalDepth = 150,
   casingDiameter = 6,
   sourceType = [],
-  seasonalVariance = 'low',
-  dryRunRisk = 'low',
+  seasonalVariance = 0,
   numberOfBorewells = 1,
   suctionHead = 0,
   footValveCondition = 'good',
-  municipalWaterAvailable = 'no',
-  municipalWaterVolume = 0,
   pumpSize = ''
 }) {
-  const drawdown = dynamicWaterLevel && staticWaterLevel 
-    ? Math.abs(parseFloat(dynamicWaterLevel) - parseFloat(staticWaterLevel))
+  // Seasonal variance as numeric value (feet) - declare first
+  const seasonalVarianceValue = parseFloat(seasonalVariance) || 0;
+  
+  // Adjust static water level based on seasonal variance
+  const adjustedStaticWaterLevel = parseFloat(staticWaterLevel) + seasonalVarianceValue;
+  
+  const drawdown = dynamicWaterLevel && adjustedStaticWaterLevel 
+    ? Math.abs(parseFloat(dynamicWaterLevel) - adjustedStaticWaterLevel)
     : 0;
   const waterColor = waterColors[waterQuality] || waterColors.clear;
-  const staticPercent = totalDepth ? Math.min(staticWaterLevel / totalDepth * 100, 90) : 0;
-  const dynamicPercent = totalDepth ? Math.min(dynamicWaterLevel / totalDepth * 100, 95) : 0;
   
-  // High dry run risk is now RED
-  const hasHighDryRunRisk = dryRunRisk === 'high';
+  const staticPercent = totalDepth ? Math.min(adjustedStaticWaterLevel / totalDepth * 100, 90) : 0;
+  const dynamicPercent = totalDepth ? Math.min(dynamicWaterLevel / totalDepth * 100, 95) : 0;
   
   // Drawdown assessment
   const getDrawdownStatus = () => {
@@ -54,7 +55,6 @@ export default function BorewellAnimation({
   
   // Check if open well selected
   const isOpenWell = sourceType && sourceType.includes('open-well');
-  const hasMunicipalWater = municipalWaterAvailable === 'yes';
   const hasFootValveIssue = footValveCondition === 'leaking';
 
   return (
@@ -92,7 +92,7 @@ export default function BorewellAnimation({
                 >
                   <ArrowDown size={14} color="#3B82F6" />
                   <span className="text-xs font-bold whitespace-nowrap" style={{ color: '#3B82F6' }}>
-                    SWL: {staticWaterLevel}ft
+                    SWL: {adjustedStaticWaterLevel}ft
                   </span>
                 </motion.div>
               </motion.div>
@@ -122,7 +122,7 @@ export default function BorewellAnimation({
             <motion.div
               className="absolute left-0 right-0 bottom-0"
               animate={{ 
-                height: `${dynamicWaterLevel && dynamicWaterLevel > 0 ? 100 - dynamicPercent : 50}%`,
+                height: `${dynamicWaterLevel && dynamicWaterLevel > 0 ? 100 - dynamicPercent : (adjustedStaticWaterLevel > 0 ? 100 - staticPercent : 50)}%`,
                 backgroundColor: waterColor,
               }}
               transition={{ duration: 0.6 }}
@@ -149,29 +149,6 @@ export default function BorewellAnimation({
           </div>
         )}
       </div>
-
-      {/* Drawdown Card with Status */}
-      {drawdown > 0 && (
-        <motion.div
-          className="absolute top-4 sm:top-8 left-4 sm:left-8 p-3 sm:p-4 backdrop-blur-sm rounded-xl"
-          style={{ 
-            backgroundColor: `${drawdownStatus.color}15`,
-            border: `2px solid ${drawdownStatus.color}40` 
-          }}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div className="flex items-center gap-3">
-            <Gauge size={20} color={drawdownStatus.color} />
-            <div>
-              <p className="text-xs font-semibold" style={{ color: drawdownStatus.color }}>RECHARGE RATE</p>
-              <p className="text-xl font-bold" style={{ color: drawdownStatus.color }}>{drawdown} ft</p>
-              <p className="text-xs" style={{ color: drawdownStatus.color }}>{drawdownStatus.desc}</p>
-            </div>
-          </div>
-        </motion.div>
-      )}
 
       {/* Water Quality Card */}
       <motion.div
@@ -267,61 +244,24 @@ export default function BorewellAnimation({
         </motion.div>
       )}
 
-      {/* High Dry Run Risk - RED COLOR */}
-      {hasHighDryRunRisk && (
-        <motion.div
-          className="absolute top-24 sm:top-32 left-4 sm:left-8 p-3 backdrop-blur-sm rounded-xl"
-          style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', border: '2px solid rgba(239, 68, 68, 0.4)' }}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <div className="flex items-center gap-2">
-            <TriangleAlert size={20} color="#EF4444" />
-            <div>
-              <p className="text-xs font-bold text-red-600">HIGH DRY RUN RISK</p>
-              <p className="text-xs text-red-500 mt-0.5">Water may run dry seasonally</p>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Seasonal Variance Indicator */}
-      {seasonalVariance && seasonalVariance !== 'low' && (
+      {/* Seasonal Variance Indicator - Shows numeric value */}
+      {seasonalVarianceValue > 0 && (
         <motion.div
           className="absolute top-40 sm:top-48 left-4 sm:left-8 px-3 py-2 backdrop-blur-sm rounded-lg"
           style={{ 
-            backgroundColor: seasonalVariance === 'high' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-            border: `2px solid ${seasonalVariance === 'high' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`
+            backgroundColor: seasonalVarianceValue > 30 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+            border: `2px solid ${seasonalVarianceValue > 30 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`
           }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <p className="text-xs font-semibold" style={{ color: seasonalVariance === 'high' ? '#EF4444' : '#F59E0B' }}>
-            {seasonalVariance === 'high' ? 'HIGH' : 'MEDIUM'} SEASONAL VAR.
+          <p className="text-xs font-semibold" style={{ color: seasonalVarianceValue > 30 ? '#EF4444' : '#F59E0B' }}>
+            SEASONAL VAR: {seasonalVarianceValue} ft
           </p>
-        </motion.div>
-      )}
-
-      {/* Municipal Water Supply Indicator */}
-      {hasMunicipalWater && (
-        <motion.div
-          className="absolute top-56 sm:top-64 left-4 sm:left-8 px-3 py-2 backdrop-blur-sm rounded-lg"
-          style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)', border: '2px solid rgba(59, 130, 246, 0.3)' }}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="flex items-center gap-2">
-            <Droplets size={16} color="#3B82F6" />
-            <div>
-              <p className="text-xs font-semibold text-blue-600">MUNICIPAL WATER</p>
-              {municipalWaterVolume > 0 && (
-                <p className="text-xs text-blue-500">{municipalWaterVolume} L/day</p>
-              )}
-            </div>
-          </div>
+          <p className="text-xs mt-0.5" style={{ color: seasonalVarianceValue > 30 ? '#EF4444' : '#F59E0B' }}>
+            {seasonalVarianceValue > 30 ? 'High variation' : seasonalVarianceValue > 10 ? 'Medium variation' : 'Low variation'}
+          </p>
         </motion.div>
       )}
 

@@ -70,12 +70,8 @@ export default function HeartForm() {
   // Calculate adjusted static water level based on seasonal variance
   const getAdjustedStaticLevel = () => {
     let base = parseFloat(data.staticWaterLevel) || 50;
-    if (data.seasonalVariance === 'high') {
-      return base + 30; // Water level drops more during dry season
-    } else if (data.seasonalVariance === 'medium') {
-      return base + 15; // Moderate seasonal variation
-    }
-    return base; // Low variation
+    const variance = parseFloat(data.seasonalVariance) || 0;
+    return base + variance;
   };
   const adjustedStaticLevel = getAdjustedStaticLevel();
 
@@ -92,7 +88,6 @@ export default function HeartForm() {
   };
   
   const rechargeStatus = getRechargeAssessment();
-  const hasHighDryRunRisk = data.dryRunRisk === 'high';
   const isOpenWell = data.sourceType && data.sourceType.includes('open-well');
   const hasMunicipalWater = data.municipalWaterAvailable === 'yes';
 
@@ -277,46 +272,16 @@ export default function HeartForm() {
       </div>
 
       {/* Seasonal Variance */}
-      <FormButtonGroup
-        label="Seasonal Variance in Water Level"
+      <FormInput
+        label="Seasonal Variance in Water Level (feet)"
         name="seasonalVariance"
+        type="number"
         value={data.seasonalVariance}
         onChange={handleChange}
-        options={[
-          { value: 'low', label: 'Low (< 10ft drop)' },
-          { value: 'medium', label: 'Medium (10-30ft drop)' },
-          { value: 'high', label: 'High (> 30ft drop)' },
-        ]}
+        placeholder="Water level drop in feet"
+        helper="Expected drop in water level during dry season (feet)"
+        min="0"
       />
-
-      {/* Dry Run Risk with Color Coding */}
-      <FormButtonGroup
-        label="Dry Run Risk Assessment"
-        name="dryRunRisk"
-        value={data.dryRunRisk}
-        onChange={handleChange}
-        options={[
-          { value: 'low', label: '✓ Low Risk' },
-          { value: 'high', label: '⚠ High Risk' },
-        ]}
-      />
-
-      {hasHighDryRunRisk && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          className="p-4 rounded-xl flex items-start gap-3"
-          style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '2px solid rgba(239, 68, 68, 0.3)' }}
-        >
-          <AlertCircle size={20} color="#EF4444" className="shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-semibold text-red-600">High Dry Run Risk Detected</p>
-            <p className="text-xs text-red-500 mt-1">
-              Your water source may dry up during peak season. Consider water conservation strategies or multiple sources.
-            </p>
-          </div>
-        </motion.div>
-      )}
 
       {/* Casing Diameter */}
       <FormButtonGroup
@@ -326,87 +291,6 @@ export default function HeartForm() {
         onChange={handleChange}
         options={CASING_DIAMETERS}
       />
-
-      {/* Open Well Specific - Sump & Tank Storage */}
-      {isOpenWell && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          className="space-y-4 border-t pt-4"
-        >
-          <h3 className="font-semibold" style={{ color: '#33691E' }}>Water Storage Options</h3>
-          <div className="flex gap-3 flex-wrap">
-            {WATER_STORAGE_OPTIONS.map((option) => {
-              const isSelected = Array.isArray(data.waterStorageType) 
-                ? data.waterStorageType.includes(option.value)
-                : data.waterStorageType === option.value;
-              return (
-                <motion.button
-                  key={option.value}
-                  onClick={() => handleWaterStorageSelect(option.value)}
-                  className="flex-1 min-w-[140px] p-3 rounded-lg border-2 transition-all text-left flex items-center gap-2"
-                  style={{
-                    borderColor: isSelected ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-                    backgroundColor: isSelected ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-                  }}
-                  whileHover={{ scale: 1.01 }}
-                >
-                  <div className="flex-1">
-                    <span className="font-medium" style={{ color: '#33691E' }}>{option.label}</span>
-                  </div>
-                  {isSelected && (
-                    <CheckCircle size={20} color="#689F38" strokeWidth={2.5} />
-                  )}
-                </motion.button>
-              );
-            })}
-          </div>
-
-          <FormButtonGroup
-            label="Foot Valve Condition"
-            name="footValveCondition"
-            value={data.footValveCondition}
-            onChange={handleChange}
-            options={[
-              { value: 'good', label: 'Good - No Leaks' },
-              { value: 'leaking', label: 'Leaking - Needs Replacement' },
-            ]}
-          />
-        </motion.div>
-      )}
-
-      {/* Municipal Water Supply */}
-      <div className="border-t pt-5">
-        <FormButtonGroup
-          label="Water from Municipality Available?"
-          name="municipalWaterAvailable"
-          value={data.municipalWaterAvailable}
-          onChange={handleChange}
-          options={[
-            { value: 'yes', label: 'Yes' },
-            { value: 'no', label: 'No' },
-          ]}
-        />
-
-        {hasMunicipalWater && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            className="mt-4"
-          >
-            <FormInput
-              label="Estimated Municipal Water Volume"
-              name="municipalWaterVolume"
-              type="number"
-              value={data.municipalWaterVolume}
-              onChange={handleChange}
-              placeholder="Volume in liters per day"
-              helper="Estimated daily supply"
-              min="0"
-            />
-          </motion.div>
-        )}
-      </div>
     </motion.div>
   );
 }

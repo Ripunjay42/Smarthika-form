@@ -126,6 +126,9 @@ function shouldExcludeField(keyPath) {
     'pipeReuseStatus', // Removed field
     'footValveCondition', // Removed field
     'efficiencyGap', // Removed field
+    'dryRunRisk', // Removed field - dry run assessment not required
+    'municipalWaterAvailable', // Removed field - municipal water not required
+    'municipalWaterVolume', // Removed field - municipal water not required
   ];
   
   return excludedFields.some(field => keyPath.includes(field));

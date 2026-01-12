@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
-import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { User, Users, Calendar, Navigation, MapPin, Loader2 } from 'lucide-react';
 import * as d3 from 'd3';
+import { feature as topojsonFeature } from 'topojson-client';
 
 const THEME = {
   accent: '#689F38',
@@ -57,13 +58,45 @@ export default function GlobeAnimation({
   // Fetch GeoJSON on mount (only once)
   useEffect(() => {
     const fetchMapData = async () => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      
       try {
-        const response = await fetch('https://raw.githubusercontent.com/geohacker/india/master/state/india_telengana.geojson');
+        // Load bundled map from same origin (reliable after deploy)
+        const response = await fetch('/maps/ind.topo.json', { signal: controller.signal });
+        clearTimeout(timeoutId);
+        
         if (!response.ok) throw new Error("Failed to load map data");
-        const data = await response.json();
+        let data = await response.json();
+
+        // If it's TopoJSON, convert to GeoJSON FeatureCollection
+        if (data && data.type === 'Topology' && data.objects) {
+          const objectKey = data.objects.ind ? 'ind' : Object.keys(data.objects)[0];
+          const geo = topojsonFeature(data, data.objects[objectKey]);
+          data = geo.type === 'Feature'
+            ? { type: 'FeatureCollection', features: [geo] }
+            : geo;
+        }
+        
+        // Normalize property names for consistent access
+        if (data.features) {
+          data.features = data.features.map(feature => {
+            const name = feature.properties?.NAME_1 || feature.properties?.NAME || feature.properties?.name || feature.properties?.ST_NM || 'Unknown';
+            return {
+              ...feature,
+              properties: {
+                NAME_1: name,
+                name: name,
+                ...feature.properties
+              }
+            };
+          });
+        }
+        
         setGeoData(data);
         setLoading(false);
       } catch (err) {
+        clearTimeout(timeoutId);
         console.error("Map loading error:", err);
         setError(true);
         setLoading(false);
