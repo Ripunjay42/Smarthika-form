@@ -13,6 +13,8 @@ const initialFormData = {
     state: '',
     district: '',
     village: '',
+    // Whether the farmer lives on this farm: 'yes' | 'no'
+    livesOnFarm: 'yes',
     laborCount: 0,
   },
   // Module 2: Canvas (Land & Topography)
@@ -26,14 +28,17 @@ const initialFormData = {
     sideDimensions: { length: '', width: '' },
     topographyType: 'flat',
     slopePercentage: 0,
+    inferredSlopePercentage: 0, // Automatically inferred from topographyType
     slopeDirection: '',
-    soilTextureTop: 'clay',
+    soilTextureTop: 'black-clay',
     soilTextureSub: '',
+    inferredSoilDepth: 'normal', // Automatically inferred from soil type (shallow|normal|deep)
     drainageClass: 'good',
     exclusionZones: 0,
     cultivableArea: '',
     roadAccessDistance: '',
-    soilTestStatus: 'needs-kit',
+    roadAccessible: 'direct',
+    soilTestStatus: 'no',
     soilTestReport: null, // File upload
     soilPH: 7,
     soilEC: 0,
@@ -46,6 +51,7 @@ const initialFormData = {
     totalDepth: '',
     staticWaterLevel: '',
     dynamicWaterLevel: '',
+    unknownDetails: false, // User clicked 'I don't know' option
     casingDiameter: '4',
     pumpSettingDepth: '',
     seasonalVariance: 0,
@@ -71,11 +77,13 @@ const initialFormData = {
     flowmeterRequirement: false,
     auxiliaryOutletNeed: false,
   },
-  // Module 5: Pulse (Power Infrastructure)
+  // Module 5: Pulse (Power Connection)
   pulse: {
+    hasExistingPower: true, // "Do you have an existing power connection?" - Yes/No
     primaryEnergySource: 'grid',
     gridPhase: '1-phase',
     solarSystemVoltage: '240',
+    solarSystemVoltageToggle: '240', // Toggle for Solar: 240V or 415V
     averageGridVoltage: 400,
     voltageStability: 'stable',
     lowVoltageCutoff: false,
@@ -83,61 +91,68 @@ const initialFormData = {
     dailyAvailability: 12,
     powerSchedule: 'day',
     solarOpportunityScore: 0,
-    wiringHealth: 'good',
+    currentWiringCondition: 'good', // Renamed from wiringHealth
     cableUpgradeRequired: false,
     distanceMeterToBorewell: '',
+    gensetCapacity: '', // Generator capacity in KVA
+    frequentPhaseCuts: false, // "Frequent Phase Cuts?" Yes/No
   },
   // Module 6: Shelter (Logistics & Safety)
   shelter: {
     shelterStructure: 'concrete',
     ipRatingRequirement: 'IP54',
     heatBuildupRisk: 'low',
-    wallSpaceAvailable: 'standard',
+    wallSpaceAvailable: 'standard', // 'tight' | 'standard' | 'spacious'
     mobileSignalStrength: '4g',
     gsmIotCompatibility: true,
     theftRiskLevel: 'safe',
     antiTheftHardwareNeed: false,
     lightningArrestor: 'present',
     earthingPit: 'present',
+    distanceToMainSwitch: '', // Distance from main meter/switch to pump house
     installationPreference: 'expert',
     liftingGearAvailability: 'chain-pulley',
+    electricalSupport: 'expert', // 'local-electrician' | 'expert'
+    mechanicalSupport: 'expert', // 'local-team' | 'expert'
+    pumpHousePicture: null, // File upload
+    pumpHousePictureFile: '',
+    pumpHousePictureType: '',
     siteAccessibility: 'truck',
   },
   // Module 7: Biology (Crops & Demand)
   biology: {
     croppingPattern: 'monoculture',
     plantSpacing: '',
+    plantSpacingUnit: 'feet', // 'feet' | 'meters'
     tractorAccessRequirement: false,
     cropAge: 'sapling',
     crops: [],
     peakWaterDemand: '',
     irrigationMethod: 'drip',
     irrigationEfficiency: 90,
-    requiredDischarge: '',
     numberOfZones: 1,
     filtrationRequired: false,
-    filtrationRequirement: 'screen',
-    slurryFertigationUsage: false,
+    liquidFertilizerUsage: false, // Renamed from slurryFertigationUsage
   },
   // Module 8: Baseline (Retrofit)
   baseline: {
     projectType: 'greenfield',
-    oldPumpType: 'submersible',
+    oldPumpTypes: [], // Array for multi-select (e.g., ['monoblock', 'submersible'])
     oldPumpAge: 0,
-    burnoutFrequency: 0,
+    starterCoilRepairs: 0, // "Starter Coil/Capacitor Repairs (Last Year)"
+    motorBurnouts: 0, // "Motor Burnouts (Rewinding)"
+    pipeReuseStatus: 'new', // 'new' | 'reuse'
   },
   // Module 9: Shed (Inventory)
   shed: {
-    tractorOwnership: false,
-    droneOwnership: false,
-    sprayerOwnership: false,
+    equipment: [], // Array of selected equipment values
     harvestMonths: [],
-    evStatus: false,
   },
   // Module 10: Vision (Economics)
   vision: {
     laborPainScore: 0,
     targetLER: 1,
+    cash_flow_type: 'seasonal',
     polyhouseStatus: 'none',
     aquacultureStatus: 'none',
     organicFarmingInterest: false,

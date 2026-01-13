@@ -28,9 +28,13 @@ export default function ShelterAnimation({
   shelterType = 'concrete', 
   cellularSignalStrength = '4g',
   heatBuildupRisk = 'low',
+  wallSpaceAvailable = 'standard',
   theftRiskLevel = 'safe',
   lightningArrestor = 'present',
   earthingPit = 'present',
+  distanceToMainSwitch = 0,
+  electricalSupport = 'expert',
+  mechanicalSupport = 'expert',
   installationPreference = 'expert',
   liftingGearAvailability = 'manual',
   pumpHousePictureFile = ''

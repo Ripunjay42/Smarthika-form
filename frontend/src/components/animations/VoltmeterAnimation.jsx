@@ -20,8 +20,11 @@ export default function VoltmeterAnimation({
   dailyAvailability = 24,
   powerSchedule = 'day',
   wiringHealth = 'good',
+  currentWiringCondition = 'good', // New field - renamed from wiringHealth
   cableUpgradeRequired = false,
   distanceMeterToBorewell = 0,
+  hasExistingPower = true, // New field - determines visibility
+  frequentPhaseCuts = false, // New field - for phase protection
   generatorOwnership = false,
   evChargingNeed = false
 }) {
@@ -39,8 +42,38 @@ export default function VoltmeterAnimation({
   const hasGrid = energySources.includes('grid');
   const hasSolar = energySources.includes('solar');
   const hasGenerator = energySources.includes('generator');
-  const hasWiringIssues = wiringHealth !== 'good';
+  const hasWiringIssues = currentWiringCondition !== 'good'; // Use new field name
   const lowAvailability = dailyAvailability < 12;
+
+  // If it's a new site (no existing power), show a different message
+  if (!hasExistingPower) {
+    return (
+      <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center max-w-md space-y-4"
+        >
+          <div className="flex justify-center mb-4">
+            <Zap size={64} color={THEME.accent} strokeWidth={1.5} />
+          </div>
+          <h2 className="text-3xl font-bold" style={{ color: THEME.text }}>New Connection / Greenfield</h2>
+          <p style={{ color: THEME.textLight }} className="text-sm leading-relaxed">
+            No existing power connection detected. Our team will design a complete power solution tailored to your irrigation requirements and location.
+          </p>
+          <div className="pt-4 space-y-2 text-left">
+            <p className="text-xs font-semibold" style={{ color: THEME.text }}>We'll consider:</p>
+            <ul className="text-xs space-y-1" style={{ color: THEME.textLight }}>
+              <li>✓ Grid connection availability & feasibility</li>
+              <li>✓ Solar potential for your region</li>
+              <li>✓ Backup power requirements</li>
+              <li>✓ Long-term power stability</li>
+            </ul>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
@@ -280,7 +313,7 @@ export default function VoltmeterAnimation({
         </motion.div>
       )}
 
-      {/* Wiring Health */}
+      {/* Current Wiring Condition */}
       <motion.div
         className="absolute top-56 right-8 p-3 backdrop-blur-sm rounded-xl"
         style={{ 

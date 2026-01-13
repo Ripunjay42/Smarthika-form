@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
-import { Info, Sun, Plug2, CircleCheck, CircleAlert, CheckCircle } from 'lucide-react';
+import { Info, Sun, Plug2, CircleCheck, CircleAlert, CheckCircle, AlertTriangle } from 'lucide-react';
 import { FormInput, FormSlider, FormButtonGroup, FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
-import { POWER_SOURCES } from '../../constants/formConstants';
+import { POWER_SOURCES, SYSTEM_VOLTAGES, GENSET_CAPACITIES } from '../../constants/formConstants';
 import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 export default function PulseForm() {
@@ -60,10 +60,45 @@ export default function PulseForm() {
       <div className="mb-8">
         <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
         <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE PULSE</h2>
-        <p className="text-gray-500">Power infrastructure for controller selection.</p>
+        <p className="text-gray-500">Power connection for controller selection.</p>
       </div>
 
-      {/* Primary Energy Source - Multi Select */}
+      {/* STATUS ZERO: Existing Power Connection Toggle */}
+      <div className="space-y-3 p-4 rounded-xl border-2" style={{ backgroundColor: 'rgba(104, 159, 56, 0.08)', borderColor: 'rgba(104, 159, 56, 0.2)' }}>
+        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Do You Have an Existing Power Connection?</label>
+        <div className="flex gap-3">
+          <motion.button
+            onClick={() => updateModuleData('pulse', { hasExistingPower: true })}
+            className="flex-1 p-3 rounded-lg border-2 transition-all font-medium"
+            style={{
+              borderColor: data.hasExistingPower ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+              backgroundColor: data.hasExistingPower ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
+              color: '#33691E',
+            }}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+          >
+            Yes - Existing
+          </motion.button>
+          <motion.button
+            onClick={() => updateModuleData('pulse', { hasExistingPower: false })}
+            className="flex-1 p-3 rounded-lg border-2 transition-all font-medium"
+            style={{
+              borderColor: !data.hasExistingPower ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+              backgroundColor: !data.hasExistingPower ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
+              color: '#33691E',
+            }}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+          >
+            No - New Site
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Show content only if there's an existing power connection */}
+      {data.hasExistingPower && (
+        <>
       <div className="space-y-3">
         <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Primary Energy Source (Select All That Apply)</label>
         <div className="space-y-2">
@@ -98,8 +133,8 @@ export default function PulseForm() {
         </div>
       </div>
 
-      {/* Grid Specific Settings */}
-      {hasGrid && (
+      {/* Grid Specific Settings - Hide if Solar is selected */}
+      {hasGrid && !hasSolar && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
@@ -111,8 +146,8 @@ export default function PulseForm() {
             value={data.gridPhase}
             onChange={handleChange}
             options={[
-              { value: '1-phase', label: '1-Phase' },
-              { value: '3-phase', label: '3-Phase' },
+              { value: '1-phase', label: 'Domestic (1-Phase)' },
+              { value: '3-phase', label: 'Agri Grid (3-Phase)' },
             ]}
           />
 
@@ -158,14 +193,33 @@ export default function PulseForm() {
           </div>
           <FormButtonGroup
             label="Solar System Voltage"
-            name="solarSystemVoltage"
-            value={data.solarSystemVoltage}
+            name="solarSystemVoltageToggle"
+            value={data.solarSystemVoltageToggle}
             onChange={handleChange}
-            options={[
-              { value: '240', label: '240V' },
-              { value: '415', label: '415V' },
-            ]}
+            options={SYSTEM_VOLTAGES}
           />
+        </motion.div>
+      )}
+
+      {/* Frequent Phase Cuts - Only show if Grid is selected */}
+      {hasGrid && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="p-3 rounded-lg border-2" style={{ backgroundColor: 'rgba(104, 159, 56, 0.08)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
+        >
+          <FormToggle
+            label="Frequent Phase Cuts?"
+            name="frequentPhaseCuts"
+            checked={data.frequentPhaseCuts}
+            onChange={handleChange}
+          />
+          {data.frequentPhaseCuts && (
+            <p className="text-xs mt-2" style={{ color: '#DC2626' }}>
+              <AlertTriangle size={14} className="inline mr-1" />
+              Single-phasing risk detected. Consider backup power options.
+            </p>
+          )}
         </motion.div>
       )}
 
@@ -206,11 +260,11 @@ export default function PulseForm() {
         ]}
       />
 
-      {/* Wiring Condition */}
+      {/* Wiring Condition - Renamed from Wiring Health */}
       <FormButtonGroup
-        label="Wiring Health"
-        name="wiringHealth"
-        value={data.wiringHealth}
+        label="Current Wiring Condition"
+        name="currentWiringCondition"
+        value={data.currentWiringCondition}
         onChange={handleChange}
         options={[
           { value: 'good', label: 'Good' },
@@ -219,7 +273,7 @@ export default function PulseForm() {
       />
 
       {/* Cable Upgrade */}
-      {data.wiringHealth === 'bad' && (
+      {data.currentWiringCondition === 'bad' && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -231,6 +285,36 @@ export default function PulseForm() {
             checked={data.cableUpgradeRequired}
             onChange={handleChange}
           />
+        </motion.div>
+      )}
+
+      {/* Generator Capacity - Conditional on Generator selection */}
+      {Array.isArray(data.primaryEnergySource) && data.primaryEnergySource.includes('generator') && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="space-y-3 p-4 rounded-xl border-2" style={{ backgroundColor: 'rgba(104, 159, 56, 0.08)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
+        >
+          <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Genset Capacity</label>
+          <p className="text-xs" style={{ color: '#558B2F' }}>Required to size the changeover switch</p>
+          <select
+            name="gensetCapacity"
+            value={data.gensetCapacity}
+            onChange={handleChange}
+            className="w-full p-2 rounded-lg border-2 transition-all"
+            style={{
+              borderColor: 'rgba(104, 159, 56, 0.3)',
+              backgroundColor: '#FFFFFF',
+              color: '#33691E',
+            }}
+          >
+            <option value="">Select Genset Capacity...</option>
+            {GENSET_CAPACITIES.map((capacity) => (
+              <option key={capacity.value} value={capacity.value}>
+                {capacity.label}
+              </option>
+            ))}
+          </select>
         </motion.div>
       )}
 
@@ -250,7 +334,7 @@ export default function PulseForm() {
       />
 
       {/* Solar Opportunity Score */}
-      {data.dailyAvailability < 12 && (
+      {/* {data.dailyAvailability < 12 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -263,6 +347,27 @@ export default function PulseForm() {
               <p className="text-xs text-yellow-600">
                 With {24 - data.dailyAvailability} hours of power unavailability, 
                 solar backup could significantly improve irrigation reliability.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )} */}
+      </>
+      )}
+
+      {/* New Site Notice */}
+      {!data.hasExistingPower && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 bg-blue-50 rounded-xl border border-blue-200"
+        >
+          <div className="flex items-center gap-3">
+            <Info size={20} className="text-blue-600" />
+            <div>
+              <p className="text-sm font-semibold text-blue-900">New Site Configuration</p>
+              <p className="text-xs text-blue-700">
+                Since you're starting fresh, our team will help design the optimal power solution based on your irrigation requirements and location.
               </p>
             </div>
           </div>

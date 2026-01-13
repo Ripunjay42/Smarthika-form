@@ -1,5 +1,22 @@
 import { motion } from 'framer-motion';
-import { Tractor, Drone, Fan, Check, Lightbulb, Target, Calendar, TrendingUp } from 'lucide-react';
+import { Calendar, Check, Lightbulb } from 'lucide-react';
+import { EQUIPMENT_LIST } from '../../constants/formConstants';
+import { ICON_STROKE_WIDTH } from '../../constants/iconTheme';
+
+// Icon mapping for equipment
+const ICON_MAP = {
+  'Tractor': () => import('lucide-react').then(m => m.Tractor),
+  'RotateCw': () => import('lucide-react').then(m => m.RotateCw),
+  'Truck': () => import('lucide-react').then(m => m.Truck),
+  'Wind': () => import('lucide-react').then(m => m.Wind),
+  'CloudRain': () => import('lucide-react').then(m => m.CloudRain),
+  'Zap': () => import('lucide-react').then(m => m.Zap),
+  'Sun': () => import('lucide-react').then(m => m.Sun),
+  'Scissors': () => import('lucide-react').then(m => m.Scissors),
+  'Droplet': () => import('lucide-react').then(m => m.Droplet),
+  'Shovel': () => import('lucide-react').then(m => m.Shovel),
+  'Combine': () => import('lucide-react').then(m => m.Combine),
+};
 
 const THEME = {
   accent: '#689F38',
@@ -11,157 +28,138 @@ const THEME = {
   cardBorder: 'rgba(104, 159, 56, 0.3)',
 };
 
-const EQUIPMENT_DATA = [
-  { id: 'tractor', name: 'Tractor', key: 'tractorOwnership', icon: Tractor, opportunity: 'PTO Pump' },
-  { id: 'drone', name: 'Drone', key: 'droneOwnership', icon: Drone, opportunity: 'Tech Savvy' },
-  { id: 'sprayer', name: 'Sprayer', key: 'sprayerOwnership', icon: Fan, opportunity: 'Automation' },
-  { id: 'ev', name: 'EV Status', key: 'evStatus', icon: Lightbulb, opportunity: 'Solar+EV' },
-];
-
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export default function EquipmentAnimation({ 
-  tractorOwnership = false,
-  droneOwnership = false,
-  sprayerOwnership = false,
-  evStatus = false,
+  equipment = [],
   harvestMonths = []
 }) {
-  const equipmentMap = {
-    tractorOwnership,
-    droneOwnership,
-    sprayerOwnership,
-    evStatus
-  };
-  
-  const selectedCount = Object.values(equipmentMap).filter(Boolean).length;
-  const maxEquipment = EQUIPMENT_DATA.length;
-  const fillPercentage = (selectedCount / maxEquipment) * 100;
+  // Group equipment by category
+  const equipmentByCategory = EQUIPMENT_LIST.reduce((acc, item) => {
+    if (!acc[item.category]) {
+      acc[item.category] = [];
+    }
+    acc[item.category].push(item);
+    return acc;
+  }, {});
+
+  const selectedCount = equipment?.length || 0;
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
-      {/* Equipment Grid */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-6">
-        {EQUIPMENT_DATA.map((equipment, index) => {
-          const Icon = equipment.icon;
-          const isSelected = equipmentMap[equipment.key];
-          
-          return (
-            <motion.div
-              key={equipment.id}
-              className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-2xl flex flex-col items-center justify-center overflow-hidden"
-              style={{ 
-                backgroundColor: isSelected ? THEME.cardBg : 'rgba(0,0,0,0.03)',
-                border: `3px solid ${isSelected ? THEME.accent : 'rgba(0,0,0,0.1)'}`,
-              }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                y: isSelected ? [0, -5, 0] : 0
-              }}
-              transition={{ 
-                delay: index * 0.1,
-                y: { duration: 2, repeat: Infinity, repeatDelay: 1 }
-              }}
-            >
-              {/* Glow Effect for Selected */}
-              {isSelected && (
-                <motion.div
-                  className="absolute inset-0"
-                  style={{ 
-                    background: `radial-gradient(circle at center, ${THEME.accentLight} 0%, transparent 70%)` 
-                  }}
-                  animate={{ opacity: [0.4, 0.7, 0.4] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              )}
-              
-              {/* Icon */}
-              <motion.div
-                animate={isSelected ? { rotate: [0, 5, -5, 0] } : {}}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                <Icon 
-                  size={28} 
-                  color={isSelected ? THEME.accent : '#9CA3AF'} 
-                />
-              </motion.div>
-              
-              {/* Equipment Name */}
-              <span 
-                className="text-[10px] sm:text-xs font-medium mt-1 sm:mt-2"
-                style={{ color: isSelected ? THEME.text : '#6B7280' }}
-              >
-                {equipment.name}
-              </span>
-
-              {/* Check Mark for Selected */}
-              {isSelected && (
-                <motion.div
-                  className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: THEME.accent }}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                >
-                  <Check size={10} color="white" />
-                </motion.div>
-              )}
-            </motion.div>
-          );
-        })}
-      </div>
-
-      {/* Progress Header */}
+    <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden p-4 sm:p-8" style={{ backgroundColor: THEME.background }}>
+      {/* Header Title */}
       <motion.div
-        className="absolute top-4 sm:top-8 left-1/2 -translate-x-1/2 px-4 sm:px-6 py-2 sm:py-3 backdrop-blur-sm rounded-full flex items-center gap-3 sm:gap-4"
-        style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-6 sm:mb-8"
       >
-        <Target size={18} color={THEME.accent} />
-        <p className="text-xs sm:text-sm font-semibold" style={{ color: THEME.text }}>
-          Equipment: {selectedCount}/{maxEquipment}
-        </p>
-        
-        {/* Mini Progress Bar */}
-        <div className="w-16 sm:w-20 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.1)' }}>
-          <motion.div 
-            className="h-full rounded-full"
-            style={{ backgroundColor: THEME.accent }}
-            initial={{ width: 0 }}
-            animate={{ width: `${fillPercentage}%` }}
-            transition={{ duration: 0.5 }}
-          />
-        </div>
+        <h3 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: THEME.text }}>
+          Your Equipment
+        </h3>
+        {selectedCount > 0 && (
+          <p className="text-sm" style={{ color: THEME.textLight }}>
+            {selectedCount} item{selectedCount !== 1 ? 's' : ''} selected
+          </p>
+        )}
       </motion.div>
 
-      {/* Harvest Calendar */}
+      {/* Equipment Display - Organized by Category */}
+      <div className="w-full max-w-4xl flex-1 overflow-y-auto">
+        {selectedCount > 0 ? (
+          <div className="space-y-6">
+            {Object.entries(equipmentByCategory).map(([category, items], categoryIndex) => {
+              const selectedInCategory = items.filter(item => equipment.includes(item.value));
+              if (selectedInCategory.length === 0) return null;
+
+              return (
+                <motion.div
+                  key={category}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: categoryIndex * 0.1 }}
+                >
+                  {/* Category Header */}
+                  <div className="mb-3">
+                    <p className="text-xs font-bold uppercase tracking-wider" style={{ color: THEME.accent }}>
+                      {category}
+                    </p>
+                    <div className="w-6 h-0.5 rounded-full mt-1" style={{ backgroundColor: THEME.accent }} />
+                  </div>
+
+                  {/* Selected Items in this Category */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                    {selectedInCategory.map((item, itemIndex) => (
+                      <motion.div
+                        key={item.value}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: itemIndex * 0.05 }}
+                        className="p-3 rounded-lg border-2"
+                        style={{
+                          backgroundColor: THEME.cardBg,
+                          borderColor: THEME.accent,
+                        }}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-8 h-8 rounded flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}
+                          >
+                            <Check size={16} color={THEME.accent} strokeWidth={3} />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold" style={{ color: THEME.text }}>
+                              {item.label}
+                            </p>
+                            <p className="text-[10px]" style={{ color: THEME.textLight }}>
+                              {item.description}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        ) : (
+          /* Empty State */
+          <motion.div
+            className="flex flex-col items-center justify-center h-32 sm:h-40"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Lightbulb size={32} color={THEME.accent} className="mb-3 opacity-50" />
+          </motion.div>
+        )}
+      </div>
+
+      {/* Harvest Calendar - Fixed at Bottom */}
       {harvestMonths.length > 0 && (
         <motion.div
-          className="absolute bottom-4 sm:bottom-8 left-4 sm:left-8 right-4 sm:right-8 p-3 sm:p-4 backdrop-blur-sm rounded-xl"
+          className="w-full max-w-3xl mt-6 sm:mt-8 p-3 sm:p-4 rounded-xl backdrop-blur-sm"
           style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <Calendar size={18} color={THEME.accent} />
-            <p className="text-xs font-semibold" style={{ color: THEME.accent }}>HARVEST MONTHS</p>
+            <Calendar size={16} color={THEME.accent} strokeWidth={ICON_STROKE_WIDTH} />
+            <p className="text-xs font-bold" style={{ color: THEME.accent }}>
+              HARVEST MONTHS
+            </p>
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-1 h-8 items-end">
             {MONTH_NAMES.map((month, index) => {
               const isHarvest = harvestMonths.includes(index);
               return (
                 <motion.div
                   key={month}
-                  className="flex-1 rounded"
-                  style={{ 
-                    backgroundColor: isHarvest ? THEME.accent : 'rgba(0,0,0,0.1)',
-                    height: isHarvest ? '24px' : '12px'
-                  }}
+                  className="flex-1 rounded-t"
+                  style={{ backgroundColor: isHarvest ? THEME.accent : 'rgba(0,0,0,0.1)' }}
                   initial={{ height: 0 }}
-                  animate={{ height: isHarvest ? 24 : 12 }}
+                  animate={{ height: isHarvest ? '100%' : '30%' }}
                   transition={{ delay: index * 0.03 }}
                   title={month}
                 />
@@ -170,47 +168,9 @@ export default function EquipmentAnimation({
           </div>
           <div className="flex justify-between mt-2 text-xs" style={{ color: THEME.textLight }}>
             <span>Jan</span>
-            <span>Jun</span>
+            <span>Jul</span>
             <span>Dec</span>
           </div>
-        </motion.div>
-      )}
-
-      {/* Cross-Sell Opportunities */}
-      {selectedCount > 0 && (
-        <motion.div
-          className="absolute top-24 sm:top-32 left-4 sm:left-8 p-3 backdrop-blur-sm rounded-xl"
-          style={{ backgroundColor: 'rgba(147, 51, 234, 0.1)', border: '2px solid rgba(147, 51, 234, 0.3)' }}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp size={16} color="#9333EA" />
-            <p className="text-xs font-semibold text-purple-700">OPPORTUNITIES</p>
-          </div>
-          <div className="space-y-1">
-            {EQUIPMENT_DATA.filter(e => equipmentMap[e.key]).map((item) => (
-              <div key={item.key} className="text-xs text-purple-600">
-                • {item.opportunity}
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {/* Empty State Message */}
-      {selectedCount === 0 && (
-        <motion.div
-          className="absolute bottom-20 sm:bottom-24 left-1/2 -translate-x-1/2 text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <Lightbulb size={24} color={THEME.accent} className="mx-auto mb-2" />
-          <p className="text-sm" style={{ color: THEME.textLight }}>
-            Select equipment from the form
-          </p>
         </motion.div>
       )}
     </div>

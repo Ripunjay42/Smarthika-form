@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { User, Phone, Mail, Users, MapPin, Calendar } from 'lucide-react';
+import { User, Phone, Mail, Users, MapPin, Calendar, Home, Smartphone } from 'lucide-react';
 import { FormInput, FormSlider, FormSelect, FormButtonGroup } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
@@ -19,6 +19,7 @@ export default function ProfileForm() {
   const [districts, setDistricts] = useState([]);
   const [loadingStates, setLoadingStates] = useState(false);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
+  const [showLaborDetails, setShowLaborDetails] = useState(false);
 
   // Load states on component mount
   useEffect(() => {
@@ -221,16 +222,46 @@ export default function ProfileForm() {
           )}
         </div>
 
-        <FormSlider
-          label="Farm Labor Count (optional)"
-          name="laborCount"
-          value={data.laborCount}
-          onChange={handleSliderChange}
-          min={0}
-          max={50}
-          step={1}
-          unit=" workers"
-        />
+        {/* Do you live on this farm? - Large toggle card */}
+        <div className="mt-6 p-4 rounded-xl" style={{ backgroundColor: 'rgba(229,231,235,0.9)', border: '1px solid rgba(104,159,56,0.12)' }}>
+          <div className="mb-3 text-sm font-semibold" style={{ color: '#33691E' }}>Do you live on this farm?</div>
+          <FormButtonGroup
+            label=""
+            name="livesOnFarm"
+            value={data.livesOnFarm}
+            onChange={handleChange}
+            options={[
+              { value: 'yes', label: (<div className="flex items-center gap-2"><Home size={16} color="#33691E" />Yes, I stay here</div>) },
+              { value: 'no', label: (<div className="flex items-center gap-2"><Smartphone size={16} color="#33691E" />No, I manage remotely</div>) },
+            ]}
+          />
+        </div>
+
+        {/* Optional collapsed labor details to reduce friction */}
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={() => setShowLaborDetails((s) => !s)}
+            className="text-sm font-medium text-green-700"
+          >
+            {showLaborDetails ? '− Remove Labor Info' : '+ Add Labor Info (Optional)'}
+          </button>
+
+          {showLaborDetails && (
+            <div className="mt-3">
+              <FormSlider
+                label="Farm Labor Count (optional)"
+                name="laborCount"
+                value={data.laborCount}
+                onChange={handleSliderChange}
+                min={0}
+                max={50}
+                step={1}
+                unit=" workers"
+              />
+            </div>
+          )}
+        </div>
 
         {/* Info Card */}
         {/* <motion.div

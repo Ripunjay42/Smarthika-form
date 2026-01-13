@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { MapPin, Ruler, Mountain, Info, Upload, Navigation2, Droplets, TrendingDown, Layers, TrendingUp, AlertCircle, CheckCircle2, Beaker } from 'lucide-react';
+import { MapPin, Ruler, Mountain, Info, Upload, Navigation2, Droplets, TrendingDown, Layers, TrendingUp, AlertCircle, CheckCircle2, Beaker, Truck, Footprints } from 'lucide-react';
 import { FormInput, FormSelect, FormSlider, FormButtonGroup, FormColorPicker } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { SOIL_TYPES, TOPOGRAPHY_TYPES, FIELD_GEOMETRIES } from '../../constants/formConstants';
@@ -294,7 +294,7 @@ export default function CanvasForm() {
 
       {/* Unused Land */}
       <FormSlider
-        label="Approximately how much of your land is unused?"
+        label="How much of this land is currently unused?"
         name="exclusionZones"
         value={data.exclusionZones}
         onChange={handleSliderChange}
@@ -304,14 +304,14 @@ export default function CanvasForm() {
         unit="%"
       />
 
-      {/* Soil Testing Status with Icon - Compact */}
+      {/* Soil Test Report - Yes/No Toggle */}
       <div className="border-t pt-5">
         <div className="space-y-3">
-          <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Has Your Soil Been Tested?</label>
+          <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Do you have a Soil Test Report?</label>
           <div className="grid grid-cols-2 gap-4">
             {[
-              { value: 'done', label: 'Yes, I have the Report !!', icon: CheckCircle2 },
-              { value: 'required', label: 'Nope, a test needs to be done.', icon: Beaker },
+              { value: 'no', label: 'No', icon: AlertCircle },
+              { value: 'yes', label: 'Yes', icon: CheckCircle2 },
             ].map((test) => {
               const TestIcon = test.icon;
               return (
@@ -335,8 +335,8 @@ export default function CanvasForm() {
         </div>
       </div>
 
-      {/* Conditional: If testing done - upload report */}
-      {data.soilTestStatus === 'done' && (
+      {/* Conditional: If Yes - upload report */}
+      {data.soilTestStatus === 'yes' && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
@@ -358,29 +358,46 @@ export default function CanvasForm() {
         </motion.div>
       )}
 
-      {/* Road Access */}
+      {/* Distance to Nearest Road */}
       <div className="border-t pt-5">
-        <FormButtonGroup
-          label="Farm Road Accessibility"
-          name="roadAccessible"
-          value={data.roadAccessible}
-          onChange={handleChange}
-          options={[
-            { value: 'yes', label: 'Yes' },
-            { value: 'no', label: 'No, not accessible from the main road' },
-          ]}
-        />
+        <div className="space-y-3">
+          <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Distance to nearest road?</label>
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              { value: 'direct', label: 'Direct Access', icon: Truck },
+              { value: 'remote', label: 'Remote / No Road', icon: Footprints },
+            ].map((access) => {
+              const AccessIcon = access.icon;
+              return (
+                <motion.button
+                  key={access.value}
+                  onClick={() => handleChange({ target: { name: 'roadAccessible', value: access.value } })}
+                  className="py-4 px-2 rounded-lg border-2 transition-all flex items-center justify-center gap-2"
+                  style={{
+                    borderColor: data.roadAccessible === access.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                    backgroundColor: data.roadAccessible === access.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <AccessIcon size={20} color={data.roadAccessible === access.value ? '#689F38' : '#558B2F'} />
+                  <span className="text-sm font-medium text-center" style={{ color: '#33691E' }}>{access.label}</span>
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
-      {/* Conditional: If not accessible - ask distance */}
-      {data.roadAccessible === 'no' && (
+      {/* Conditional: If Remote - ask distance */}
+      {data.roadAccessible === 'remote' && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           className="space-y-3"
         >
           <FormSlider
-            label="Distance from Main Road (Approx.)"
+            label="Distance to Nearest Road"
             name="roadAccessDistance"
             value={data.roadAccessDistance}
             onChange={handleSliderChange}

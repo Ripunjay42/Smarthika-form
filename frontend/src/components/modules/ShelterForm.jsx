@@ -37,17 +37,17 @@ export default function ShelterForm() {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      {/* Header */}
+      {/* Header 1: Shelter & Verification */}
       <div className="mb-8">
         <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
         <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE SHELTER</h2>
-        <p className="text-gray-500">Installation logistics and safety planning.</p>
+        <p className="text-gray-500">Define the environment and prove it with a photo.</p>
       </div>
 
       {/* Shelter Type */}
       <div>
         <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
-          Shelter Structure
+          Where will we mount the box?
         </label>
         <div className="grid grid-cols-3 gap-3">
           {SHELTER_TYPES.map((type) => (
@@ -108,7 +108,7 @@ export default function ShelterForm() {
       {/* Signal Strength */}
       <div>
         <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
-          Mobile Signal Strength
+          Mobile Signal at Pump
         </label>
         <div className="grid grid-cols-4 gap-3">
           {[
@@ -159,6 +159,19 @@ export default function ShelterForm() {
         )}
       </div>
 
+      {/* Wall Space Available */}
+      <FormButtonGroup
+        label="Wall Space Check"
+        name="wallSpaceAvailable"
+        value={data.wallSpaceAvailable}
+        onChange={handleChange}
+        options={[
+          { value: 'tight', label: 'Tight (Slimline Cabinet)' },
+          { value: 'standard', label: 'Standard' },
+          { value: 'spacious', label: 'Spacious' },
+        ]}
+      />
+
       {/* Security Section */}
       <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-4">
         <div className="flex items-center gap-2 text-gray-700">
@@ -178,24 +191,24 @@ export default function ShelterForm() {
         />
 
         <FormButtonGroup
-          label="Lightning Arrestor"
+          label="Lightning Rod on Roof?"
           name="lightningArrestor"
           value={data.lightningArrestor}
           onChange={handleChange}
           options={[
-            { value: 'present', label: 'Present' },
-            { value: 'absent', label: 'Absent' },
+            { value: 'present', label: 'Yes - Present' },
+            { value: 'absent', label: 'No - Absent' },
           ]}
         />
 
         <FormButtonGroup
-          label="Earthing Pit"
+          label="Is there Earthing / Grounding?"
           name="earthingPit"
           value={data.earthingPit}
           onChange={handleChange}
           options={[
-            { value: 'present', label: 'Present' },
-            { value: 'absent', label: 'Absent' },
+            { value: 'present', label: 'Yes - Chemical Pit Present' },
+            { value: 'absent', label: 'No - Need to Install' },
           ]}
         />
       </div>
@@ -224,9 +237,62 @@ export default function ShelterForm() {
         ]}
       />
 
-      {/* Pump House Picture Upload */}
+      {/* Distance to Main Switch */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Pump House Picture</label>
+        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Distance to Main Switch</label>
+        <p className="text-xs" style={{ color: '#558B2F' }}>Distance from main meter/switch to pump house (in meters)</p>
+        <input
+          type="number"
+          name="distanceToMainSwitch"
+          value={data.distanceToMainSwitch}
+          onChange={handleChange}
+          placeholder="Distance in meters"
+          className="w-full p-3 rounded-lg border-2 transition-all"
+          style={{
+            borderColor: 'rgba(104, 159, 56, 0.3)',
+            backgroundColor: '#FFFFFF',
+            color: '#33691E',
+          }}
+          min="0"
+        />
+      </div>
+
+      {/* Header 3: Electrical Support */}
+      <div className="mt-8 pt-6 border-t-2" style={{ borderColor: 'rgba(104, 159, 56, 0.2)' }}>
+        <div className="mb-6">
+          <h3 className="text-lg font-bold mb-1" style={{ color: '#33691E' }}>Electrical & Mechanical Support</h3>
+          <p className="text-xs" style={{ color: '#558B2F' }}>Help with installation and commissioning</p>
+        </div>
+
+        <FormButtonGroup
+          label="Electrical Support"
+          name="electricalSupport"
+          value={data.electricalSupport}
+          onChange={handleChange}
+          options={[
+            { value: 'local-electrician', label: 'Local Electrician Available' },
+            { value: 'expert', label: 'Need Expert Support' },
+          ]}
+        />
+      </div>
+
+      {/* Mechanical Support */}
+      <div>
+        <FormButtonGroup
+          label="Mechanical Support"
+          name="mechanicalSupport"
+          value={data.mechanicalSupport}
+          onChange={handleChange}
+          options={[
+            { value: 'local-team', label: 'Local Team Available' },
+            { value: 'expert', label: 'Need Expert Support' },
+          ]}
+        />
+      </div>
+
+      {/* Pump House Picture Upload */}
+      <div className="space-y-3 mt-8">
+        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Take photo of the location</label>
         <motion.div
           className="p-4 rounded-lg border-2 border-dashed" 
           style={{ borderColor: 'rgba(104, 159, 56, 0.5)', backgroundColor: 'rgba(104, 159, 56, 0.05)' }}
@@ -234,7 +300,7 @@ export default function ShelterForm() {
           <label className="flex items-center justify-center gap-2 cursor-pointer">
             <Upload size={18} color="#689F38" />
             <span className="text-sm font-medium" style={{ color: '#33691E' }}>
-              {data.pumpHousePictureFile ? `✓ ${data.pumpHousePictureFile}` : 'Upload Pump House Picture (JPG/PNG)'}
+              {data.pumpHousePictureFile ? `✓ ${data.pumpHousePictureFile}` : 'Upload Photo (JPG/PNG)'}
             </span>
             <input 
               type="file" 

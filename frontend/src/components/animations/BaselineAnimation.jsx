@@ -13,18 +13,19 @@ const THEME = {
 
 export default function BaselineAnimation({ 
   projectType = 'greenfield', 
-  oldPumpType = 'monoblock',
+  oldPumpTypes = [],
   oldPumpAge = 0,
-  burnoutFrequency = 0,
-  efficiencyGap = 0,
-  pipeReuseStatus = false,
+  starterCoilRepairs = 0,
+  motorBurnouts = 0,
+  pipeReuseStatus = 'new',
   footValveCondition = 'good'
 }) {
   const isRetrofit = projectType === 'retrofit';
   const agePercentage = Math.min((oldPumpAge / 15) * 100, 100);
   const rustIntensity = Math.min(oldPumpAge * 0.05, 0.5);
-  const hasPipeIssues = pipeReuseStatus || footValveCondition !== 'good';
-  const hasHighBurnout = burnoutFrequency >= 3;
+  const hasPipeIssues = pipeReuseStatus === 'reuse' || footValveCondition !== 'good';
+  const hasHighControllerFailure = starterCoilRepairs >= 3;
+  const hasHighMotorFailure = motorBurnouts >= 3;
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
@@ -60,7 +61,9 @@ export default function BaselineAnimation({
               >
                 {/* OLD Label */}
                 <span className="text-xs font-bold text-red-400 mb-1">OLD PUMP</span>
-                <span className="text-xs text-gray-400 mb-2 capitalize">{oldPumpType}</span>
+                <span className="text-xs text-gray-400 mb-2 capitalize">
+                  {Array.isArray(oldPumpTypes) && oldPumpTypes.length > 0 ? oldPumpTypes[0] : 'Multiple'}
+                </span>
                 
                 {/* Wrench Icon */}
                 <Wrench size={32} color="#9CA3AF" />
@@ -83,7 +86,7 @@ export default function BaselineAnimation({
               </motion.div>
 
               {/* Damage Indicators */}
-              {burnoutFrequency > 0 && (
+              {(starterCoilRepairs > 0 || motorBurnouts > 0) && (
                 <motion.div
                   className="absolute top-2 right-2 w-4 h-4 rounded-full bg-red-500"
                   animate={{ scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }}
@@ -189,52 +192,81 @@ export default function BaselineAnimation({
           {projectType} Project
         </p>
       </motion.div>
-
       {/* Retrofit Stats */}
       {isRetrofit && (
         <>
-          {/* Efficiency Gap Card */}
-          {efficiencyGap > 0 && (
-            <motion.div
-              className="absolute bottom-8 left-8 p-4 backdrop-blur-sm rounded-xl"
-              style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>POTENTIAL SAVINGS</p>
-              <p className="text-lg font-bold" style={{ color: THEME.text }}>{efficiencyGap}% power</p>
-            </motion.div>
-          )}
 
-          {/* Burnout Frequency Card */}
-          {burnoutFrequency > 0 && (
+          {/* Controller Repairs Card */}
+          {starterCoilRepairs > 0 && (
             <motion.div
               className="absolute bottom-8 right-8 p-4 backdrop-blur-sm rounded-xl"
               style={{ 
-                backgroundColor: hasHighBurnout ? 'rgba(239, 68, 68, 0.1)' : THEME.cardBg, 
-                border: `2px solid ${hasHighBurnout ? 'rgba(239, 68, 68, 0.3)' : THEME.cardBorder}` 
+                backgroundColor: hasHighControllerFailure ? 'rgba(239, 68, 68, 0.1)' : THEME.cardBg, 
+                border: `2px solid ${hasHighControllerFailure ? 'rgba(239, 68, 68, 0.3)' : THEME.cardBorder}` 
               }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <p className="text-xs font-semibold" style={{ color: hasHighBurnout ? '#EF4444' : THEME.accent }}>
-                BURNOUT ISSUES
+              <p className="text-xs font-semibold" style={{ color: hasHighControllerFailure ? '#EF4444' : THEME.accent }}>
+                CONTROLLER REPAIRS
               </p>
-              <p className="text-lg font-bold" style={{ color: hasHighBurnout ? '#EF4444' : THEME.text }}>
-                {burnoutFrequency}x / 5yrs
+              <p className="text-lg font-bold" style={{ color: hasHighControllerFailure ? '#EF4444' : THEME.text }}>
+                {starterCoilRepairs}x / year
               </p>
             </motion.div>
           )}
 
+          {/* Motor Burnouts Card */}
+          {motorBurnouts > 0 && (
+            <motion.div
+              className="absolute bottom-20 right-8 p-4 backdrop-blur-sm rounded-xl"
+              style={{ 
+                backgroundColor: hasHighMotorFailure ? 'rgba(239, 68, 68, 0.1)' : THEME.cardBg, 
+                border: `2px solid ${hasHighMotorFailure ? 'rgba(239, 68, 68, 0.3)' : THEME.cardBorder}` 
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              <p className="text-xs font-semibold" style={{ color: hasHighMotorFailure ? '#EF4444' : THEME.accent }}>
+                MOTOR BURNOUTS
+              </p>
+              <p className="text-lg font-bold" style={{ color: hasHighMotorFailure ? '#EF4444' : THEME.text }}>
+                {motorBurnouts}x / year
+              </p>
+            </motion.div>
+          )}
+
+          {/* Pump Types Info */}
+          {oldPumpTypes.length > 0 && (
+            <motion.div
+              className="absolute top-8 left-8 p-4 backdrop-blur-sm rounded-xl"
+              style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>PUMP TYPES</p>
+              <div className="flex flex-wrap gap-1 mt-2">
+                {oldPumpTypes.map((type, idx) => (
+                  <span key={idx} className="text-xs px-2 py-1 rounded-full font-medium capitalize" 
+                    style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)', color: THEME.text }}>
+                    {type}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
           {/* Pipe Reuse Status */}
-          {pipeReuseStatus && (
+          {pipeReuseStatus === 'reuse' && (
             <motion.div
               className="absolute top-32 left-8 p-3 backdrop-blur-sm rounded-xl"
               style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', border: '2px solid rgba(245, 158, 11, 0.3)' }}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.3 }}
             >
               <div className="flex items-center gap-2">
                 <Route size={18} color="#F59E0B" />
@@ -256,7 +288,7 @@ export default function BaselineAnimation({
               }}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.4 }}
             >
               <div className="flex items-center gap-2">
                 <Droplet size={18} color={footValveCondition === 'replace' ? '#EF4444' : '#F59E0B'} />
@@ -276,48 +308,31 @@ export default function BaselineAnimation({
           <motion.div
             className="absolute top-32 right-8 p-3 backdrop-blur-sm rounded-xl"
             style={{ 
-              backgroundColor: (hasHighBurnout || hasPipeIssues) ? 'rgba(239, 68, 68, 0.1)' : THEME.cardBg,
-              border: `2px solid ${(hasHighBurnout || hasPipeIssues) ? 'rgba(239, 68, 68, 0.3)' : THEME.cardBorder}` 
+              backgroundColor: (hasHighControllerFailure || hasHighMotorFailure || hasPipeIssues) ? 'rgba(239, 68, 68, 0.1)' : THEME.cardBg,
+              border: `2px solid ${(hasHighControllerFailure || hasHighMotorFailure || hasPipeIssues) ? 'rgba(239, 68, 68, 0.3)' : THEME.cardBorder}` 
             }}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.5 }}
           >
             <div className="flex items-center gap-2">
-              {(hasHighBurnout || hasPipeIssues) ? (
+              {(hasHighControllerFailure || hasHighMotorFailure || hasPipeIssues) ? (
                 <TriangleAlert size={20} color="#EF4444" />
               ) : (
                 <CircleCheck size={20} color={THEME.accent} />
               )}
               <div>
-                <p className="text-xs font-semibold" style={{ color: (hasHighBurnout || hasPipeIssues) ? '#EF4444' : THEME.accent }}>
+                <p className="text-xs font-semibold" style={{ color: (hasHighControllerFailure || hasHighMotorFailure || hasPipeIssues) ? '#EF4444' : THEME.accent }}>
                   SYSTEM HEALTH
                 </p>
-                <p className="text-xs" style={{ color: (hasHighBurnout || hasPipeIssues) ? '#EF4444' : THEME.text }}>
-                  {(hasHighBurnout || hasPipeIssues) ? 'Needs Attention' : 'Good'}
+                <p className="text-xs" style={{ color: (hasHighControllerFailure || hasHighMotorFailure || hasPipeIssues) ? '#EF4444' : THEME.text }}>
+                  {(hasHighControllerFailure || hasHighMotorFailure || hasPipeIssues) ? 'Needs Attention' : 'Good'}
                 </p>
               </div>
             </div>
           </motion.div>
 
-          {/* ROI Projection */}
-          {efficiencyGap >= 20 && (
-            <motion.div
-              className="absolute bottom-32 left-1/2 -translate-x-1/2 p-3 backdrop-blur-sm rounded-xl"
-              style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              <div className="text-center">
-                <p className="text-xs font-semibold" style={{ color: THEME.accent }}>HIGH ROI POTENTIAL</p>
-                <div className="mt-1 flex items-center justify-center gap-2" style={{ color: THEME.text }}>
-                  <Coins size={18} className="shrink-0" />
-                  <p className="text-lg font-bold">{Math.round(efficiencyGap * 1.5)}% savings</p>
-                </div>
-              </div>
-            </motion.div>
-          )}
+
         </>
       )}
 

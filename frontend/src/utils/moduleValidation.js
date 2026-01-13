@@ -73,24 +73,15 @@ export const MODULE_VALIDATION_RULES = {
     },
   ],
   pulse: [
-    {
-      field: 'distanceMeterToBorewell',
-      message: 'Distance from meter to borewell is required',
-      validate: (data) => isPositiveNumber(data?.distanceMeterToBorewell),
-    },
+    // {
+    //   field: 'distanceMeterToBorewell',
+    //   message: 'Distance from meter to borewell is required',
+    //   validate: (data) => isPositiveNumber(data?.distanceMeterToBorewell),
+    // },
   ],
   shelter: [],
   biology: [
-    {
-      field: 'crops',
-      message: 'At least one crop must be added',
-      validate: (data) => !isBlank(data?.crops),
-    },
-    {
-      field: 'peakWaterDemand',
-      message: 'Peak water demand is required',
-      validate: (data) => isPositiveNumber(data?.peakWaterDemand),
-    },
+    // Crops and water demand validation removed - farms can proceed without crop details
   ],
   baseline: [],
   shed: [],

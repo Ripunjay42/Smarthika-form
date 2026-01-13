@@ -244,6 +244,7 @@ function doPost(e) {
         'State',
         'District',
         'Village',
+        'Lives On Farm',
         'Labor Count',
         // Canvas Section
         'Unit System',
@@ -258,6 +259,7 @@ function doPost(e) {
         'Soil Test Status',
         'Topography Map Link',
         'Soil Test Report Link',
+        'Has Existing Power',
         'Road Accessible',
         'Road Access Distance (km)',
         // Heart Section (Borewell/Water Source)
@@ -297,48 +299,56 @@ function doPost(e) {
         'High Voltage Surge',
         'Daily Availability (hrs)',
         'Power Schedule',
-        'Wiring Health',
+        'Current Wiring Condition',
         'Cable Upgrade Required',
         'Distance Meter to Borewell (m)',
+        'Has Existing Power',
+        'Frequent Phase Cuts',
+        'Genset Capacity (KVA)',
+        'Solar System Voltage Toggle (V)',
         // Shelter Section
-        'Shelter Structure',
-        'Mobile Signal Strength',
+        'Where will we mount the box?',
+        'Wall Space Check',
+        'Mobile Signal at Pump',
         'Heat Buildup Risk',
         'Theft Risk Level',
-        'Lightning Arrestor',
-        'Earthing Pit',
+        'Lightning Rod on Roof?',
+        'Is there Earthing / Grounding?',
+        'Distance to Main Switch (m)',
+        'Electrical Support',
+        'Mechanical Support',
         'Installation Preference',
         'Lifting Gear Availability',
         'Pump House Picture Link',
         // Biology Section
-        'Crops & Estimate Count',
-        'Plant Spacing (ft)',
+        'Distance Between Plants',
+        'Plant Spacing Unit',
         'Tractor Access Requirement',
         'Crop Age',
+        'Crops & Plant Count',
         'Peak Water Demand (L/day)',
         'Irrigation Method',
-        'Required Discharge (LPM)',
+        'Irrigation Efficiency (%)',
         'Number of Zones',
-        'Filtration Required',
-        'Filtration Requirement',
-        'Slurry Fertigation Usage',
+        'Filter Needed?',
+        'Do you add liquid fertilizer?',
         // Baseline Section
         'Project Type',
-        'Old Pump Type',
+        'Current Pump Types',
         'Old Pump Age (years)',
-        'Controller Replacement/Repair Frequency',
+        'Starter Coil/Capacitor Repairs (Last Year)',
+        'Motor Burnouts/Rewinding',
+        'Piping Approach (New vs Reuse)',
         // Shed Section
-        'Tractor Ownership',
-        'Drone Ownership',
-        'Sprayer Ownership',
-        'EV Status',
+        'Equipment Inventory',
         'Harvest Months',
         // Vision Section
-        'Labor Pain Score',
-        'Target LER',
-        'Organic Farming Interest',
+        'Income Cycle Type',
+        'Target LER (Yield Multiplier)',
+        'Labor Availability Score',
         'Polyhouse Status',
         'Aquaculture Status',
+        'Organic Farming Interest',
         'Submission Metadata'
       ];
       
@@ -367,6 +377,10 @@ function doPost(e) {
     const harvestMonths = data.shed?.harvestMonths 
       ? data.shed.harvestMonths.map((active, index) => active ? index + 1 : null)
           .filter(m => m !== null)
+          .map(m => {
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return monthNames[m - 1];
+          })
           .join(', ')
       : '';
     
@@ -389,6 +403,12 @@ function doPost(e) {
       get(data, 'profile.state'),
       get(data, 'profile.district'),
       get(data, 'profile.village'),
+      (() => {
+        const livesOnFarm = get(data, 'profile.livesOnFarm', 'yes');
+        if (livesOnFarm === 'yes') return 'Yes — I stay here';
+        if (livesOnFarm === 'no') return 'No — I manage remotely';
+        return String(livesOnFarm);
+      })(),
       get(data, 'profile.laborCount', 0),
       // Canvas Section
       get(data, 'canvas.unitSystem', 'feet'),
@@ -400,7 +420,12 @@ function doPost(e) {
       Array.isArray(data.canvas?.soilTextureTop) ? data.canvas.soilTextureTop.join(', ') : get(data, 'canvas.soilTextureTop'),
       get(data, 'canvas.drainageClass'),
       get(data, 'canvas.exclusionZones', 0),
-      get(data, 'canvas.soilTestStatus'),
+      (() => {
+        const status = get(data, 'canvas.soilTestStatus', 'no');
+        if (status === 'yes') return 'Yes';
+        if (status === 'no') return 'No';
+        return String(status);
+      })(),
       // Handle file upload for Canvas/Topography map (Module 2)
       (() => {
         const uploadedFiles = data.uploadedFiles || [];
@@ -426,7 +451,13 @@ function doPost(e) {
         }
         return '';
       })(),
-      get(data, 'canvas.roadAccessible'),
+      get(data, 'pulse.hasExistingPower') ? 'Yes' : 'No',
+      (() => {
+        const access = get(data, 'canvas.roadAccessible', 'direct');
+        if (access === 'direct') return 'Direct Access';
+        if (access === 'remote') return 'Remote / No Road';
+        return String(access);
+      })(),
       get(data, 'canvas.roadAccessDistance', 0),
       // Heart Section (Borewell/Water Source)
       Array.isArray(data.heart?.sourceType) ? data.heart.sourceType.join(', ') : get(data, 'heart.sourceType'),
@@ -466,17 +497,60 @@ function doPost(e) {
       get(data, 'pulse.highVoltageSurge') ? 'Yes' : 'No',
       get(data, 'pulse.dailyAvailability', 0),
       get(data, 'pulse.powerSchedule'),
-      get(data, 'pulse.wiringHealth'),
+      get(data, 'pulse.currentWiringCondition'),
       get(data, 'pulse.cableUpgradeRequired') ? 'Yes' : 'No',
       get(data, 'pulse.distanceMeterToBorewell', 0),
-      get(data, 'shelter.shelterStructure'),
-      get(data, 'shelter.mobileSignalStrength'),
+      get(data, 'pulse.hasExistingPower') ? 'Yes' : 'No',
+      get(data, 'pulse.frequentPhaseCuts') ? 'Yes' : 'No',
+      get(data, 'pulse.gensetCapacity', ''),
+      get(data, 'pulse.solarSystemVoltageToggle', ''),
+      // Shelter Section - Updated Labels
+      (() => {
+        const structure = get(data, 'shelter.shelterStructure', 'concrete');
+        const structureMap = { 'concrete': 'Concrete Room', 'tin': 'Tin Shed', 'open': 'Open Air' };
+        return structureMap[structure] || String(structure);
+      })(),
+      (() => {
+        const space = get(data, 'shelter.wallSpaceAvailable', 'standard');
+        const spaceMap = { 'tight': 'Tight (Slimline)', 'standard': 'Standard', 'spacious': 'Spacious' };
+        return spaceMap[space] || String(space);
+      })(),
+      (() => {
+        const signal = get(data, 'shelter.mobileSignalStrength', '4g');
+        const signalMap = { '4g': '4G LTE', '3g': '3G', '2g': '2G', 'none': 'None' };
+        return signalMap[signal] || String(signal);
+      })(),
       get(data, 'shelter.heatBuildupRisk'),
-      get(data, 'shelter.theftRiskLevel'),
-      get(data, 'shelter.lightningArrestor'),
-      get(data, 'shelter.earthingPit'),
-      get(data, 'shelter.installationPreference'),
-      get(data, 'shelter.liftingGearAvailability'),
+      (() => {
+        const risk = get(data, 'shelter.theftRiskLevel', 'safe');
+        return risk === 'safe' ? 'Safe Area' : 'High Risk';
+      })(),
+      (() => {
+        const arrestor = get(data, 'shelter.lightningArrestor', 'present');
+        return arrestor === 'present' ? 'Yes - Present' : 'No - Absent';
+      })(),
+      (() => {
+        const earthing = get(data, 'shelter.earthingPit', 'present');
+        return earthing === 'present' ? 'Yes - Chemical Pit Present' : 'No - Need to Install';
+      })(),
+      get(data, 'shelter.distanceToMainSwitch', ''),
+      (() => {
+        const elec = get(data, 'shelter.electricalSupport', 'expert');
+        return elec === 'local-electrician' ? 'Local Electrician Available' : 'Need Expert Support';
+      })(),
+      (() => {
+        const mech = get(data, 'shelter.mechanicalSupport', 'expert');
+        return mech === 'local-team' ? 'Local Team Available' : 'Need Expert Support';
+      })(),
+      (() => {
+        const pref = get(data, 'shelter.installationPreference', 'expert');
+        return pref === 'self' ? 'Self Installation' : 'Expert Team';
+      })(),
+      (() => {
+        const gear = get(data, 'shelter.liftingGearAvailability', 'manual');
+        const gearMap = { 'chain-pulley': 'Chain Pulley Available', 'manual': 'Manual Lift Only' };
+        return gearMap[gear] || String(gear);
+      })(),
       // Handle pump house picture upload (Module 6)
       (() => {
         const uploadedFiles = data.uploadedFiles || [];
@@ -487,34 +561,91 @@ function doPost(e) {
         }
         return '';
       })(),
-      (() => {
-        const crops = get(data, 'biology.crops', []);
-        return crops.map(c => `${c.cropType}(${c.estimatedCount})`).join('; ') || '';
-      })(),
       get(data, 'biology.plantSpacing', 0),
+      get(data, 'biology.plantSpacingUnit', 'feet'),
       get(data, 'biology.tractorAccessRequirement') ? 'Yes' : 'No',
       get(data, 'biology.cropAge'),
+      (() => {
+        const crops = get(data, 'biology.crops', []);
+        return crops.map(c => `${c.cropType}: ${c.estimatedCount} plants`).join('; ') || '';
+      })(),
       get(data, 'biology.peakWaterDemand', 0),
       get(data, 'biology.irrigationMethod'),
-      get(data, 'biology.requiredDischarge', 0),
+      get(data, 'biology.irrigationEfficiency', 90),
       get(data, 'biology.numberOfZones', 0),
       get(data, 'biology.filtrationRequired') ? 'Yes' : 'No',
-      get(data, 'biology.filtrationRequirement'),
-      get(data, 'biology.slurryFertigationUsage') ? 'Yes' : 'No',
+      get(data, 'biology.liquidFertilizerUsage') ? 'Yes' : 'No',
       get(data, 'baseline.projectType'),
-      get(data, 'baseline.oldPumpType'),
+      (() => {
+        const oldPumpTypes = get(data, 'baseline.oldPumpTypes', []);
+        return Array.isArray(oldPumpTypes) ? oldPumpTypes.join(', ') : String(oldPumpTypes || '');
+      })(),
       get(data, 'baseline.oldPumpAge', 0),
-      get(data, 'baseline.burnoutFrequency', 0),
-      get(data, 'shed.tractorOwnership') ? 'Yes' : 'No',
-      get(data, 'shed.droneOwnership') ? 'Yes' : 'No',
-      get(data, 'shed.sprayerOwnership') ? 'Yes' : 'No',
-      get(data, 'shed.evStatus'),
+      get(data, 'baseline.starterCoilRepairs', 0),
+      get(data, 'baseline.motorBurnouts', 0),
+      (() => {
+        const pipeStatus = get(data, 'baseline.pipeReuseStatus', 'new');
+        return pipeStatus === 'reuse' ? 'Reuse Old Pipes' : 'New Pipes';
+      })(),
+      // Shed Section - New Equipment Array Format
+      (() => {
+        const equipment = get(data, 'shed.equipment', []);
+        if (!equipment || equipment.length === 0) return '';
+        // Get friendly equipment names from the equipment array
+        const equipmentNames = {
+          'tractor-heavy': 'Tractor (Heavy)',
+          'mini-tractor': 'Mini Tractor',
+          'power-tiller': 'Power Tiller',
+          'combine-harvester': 'Combine Harvester',
+          'jcb-excavator': 'JCB / Excavator',
+          'rotavator': 'Rotavator',
+          'cultivator-plough': 'Cultivator / Plough',
+          'seed-drill': 'Seed Drill',
+          'laser-leveler': 'Laser Leveler',
+          'trolley-trailer': 'Trolley / Trailer',
+          'knapsack-sprayer': 'Knapsack Sprayer',
+          'power-sprayer': 'Power Sprayer',
+          'boom-sprayer': 'Boom Sprayer',
+          'rain-gun': 'Rain Gun',
+          'drip-filter-unit': 'Drip/Filter Unit',
+          'diesel-generator': 'Diesel Generator',
+          'solar-panels': 'Solar Panels',
+          'chaff-cutter': 'Chaff Cutter',
+          'milking-machine': 'Milking Machine',
+          'agri-drone': 'Agri Drone'
+        };
+        return equipment.map(eq => equipmentNames[eq] || eq).join(', ');
+      })(),
       harvestMonths,
-      get(data, 'vision.laborPainScore', 0),
+      (() => {
+        const cashFlowType = get(data, 'vision.cash_flow_type', 'seasonal');
+        const flowMap = {
+          'seasonal': 'Seasonal (Harvest-based)',
+          'year-round': 'Year-Round (Dairy/Vegetables)'
+        };
+        return flowMap[cashFlowType] || cashFlowType;
+      })(),
       get(data, 'vision.targetLER', 1.0),
+      get(data, 'vision.laborPainScore', 0),
+      (() => {
+        const status = get(data, 'vision.polyhouseStatus', 'none');
+        const statusMap = {
+          'none': 'No Plans',
+          'own': 'Already Own',
+          'planned': 'Planning Soon'
+        };
+        return statusMap[status] || status;
+      })(),
+      (() => {
+        const status = get(data, 'vision.aquacultureStatus', 'none');
+        const statusMap = {
+          'none': 'No Plans',
+          'own': 'Already Own',
+          'planned': 'Planning Soon'
+        };
+        return statusMap[status] || status;
+      })(),
       get(data, 'vision.organicFarmingInterest') ? 'Yes' : 'No',
-      get(data, 'vision.polyhouseStatus'),
-      get(data, 'vision.aquacultureStatus'),
       // File upload link
       JSON.stringify({submitTime: new Date().toISOString(), submittedBy: get(data, 'profile.customerName')})
     ];
@@ -629,12 +760,18 @@ Filtration Required: ${data.biology?.filtrationRequired ? 'Yes' : 'No'}
 
 PROJECT TYPE
 Type: ${data.baseline?.projectType || 'N/A'}
+Pump Types: ${Array.isArray(data.baseline?.oldPumpTypes) ? data.baseline.oldPumpTypes.join(', ') : 'N/A'}
 Old Pump Age: ${data.baseline?.oldPumpAge || 0} years
-Controller Issues: ${data.baseline?.burnoutFrequency || 0} repairs/replacements
+Starter Coil/Capacitor Repairs: ${data.baseline?.starterCoilRepairs || 0} repairs/replacements
+Motor Burnouts: ${data.baseline?.motorBurnouts || 0} rewinding(s)
+Piping Approach: ${data.baseline?.pipeReuseStatus === 'reuse' ? 'Reuse Old Pipes' : 'New Pipes'}
 
 VISION
-Labor Availability Score: ${data.vision?.laborPainScore || 0}/10 (0=easy to find, 10=very hard)
-Target LER: ${data.vision?.targetLER || 1.0}
+Income Cycle: ${data.vision?.cash_flow_type === 'seasonal' ? 'Seasonal (Harvest-based)' : 'Year-Round (Dairy/Vegetables)'}
+Target LER: ${data.vision?.targetLER || 1.0}x
+Labor Availability Score: ${data.vision?.laborPainScore || 0}/10 (0=easy, 10=very hard)
+Polyhouse/Greenhouse: ${data.vision?.polyhouseStatus === 'own' ? 'Already Own' : data.vision?.polyhouseStatus === 'planned' ? 'Planning Soon' : 'No Plans'}
+Fish Pond/Aquaculture: ${data.vision?.aquacultureStatus === 'own' ? 'Already Own' : data.vision?.aquacultureStatus === 'planned' ? 'Planning Soon' : 'No Plans'}
 Organic Interest: ${data.vision?.organicFarmingInterest ? 'Yes' : 'No'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

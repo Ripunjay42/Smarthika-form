@@ -96,7 +96,7 @@ export default function BorewellAnimation({
                 >
                   <ArrowDown size={14} color="#3B82F6" />
                   <span className="text-xs font-bold whitespace-nowrap" style={{ color: '#3B82F6' }}>
-                    SWL: {adjustedStaticWaterLevel}{unitLabel}
+                    Morning: {adjustedStaticWaterLevel}{unitLabel}
                   </span>
                 </motion.div>
               </motion.div>
@@ -116,7 +116,7 @@ export default function BorewellAnimation({
                   animate={{ opacity: 1, x: 0 }}
                 >
                   <span className="text-xs font-bold whitespace-nowrap" style={{ color: THEME.accent }}>
-                    DWL: {dynamicWaterLevel}{unitLabel}
+                    Pumping: {dynamicWaterLevel}{unitLabel}
                   </span>
                 </motion.div>
               </motion.div>
@@ -197,7 +197,7 @@ export default function BorewellAnimation({
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <p className="text-xs font-semibold" style={{ color: THEME.accent }}>CASING DIAMETER</p>
+          <p className="text-xs font-semibold" style={{ color: THEME.accent }}>BORE WIDTH</p>
           <p className="text-lg font-bold" style={{ color: THEME.text }}>
             {unitSystem === 'meters' ? (casingDiameter * 25.4).toFixed(0) : casingDiameter}
             {unitSystem === 'meters' ? ' mm' : '"'}

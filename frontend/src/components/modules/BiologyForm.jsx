@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Leaf, Droplet, Info, CloudRain, Waves, Plus, Trash2 } from 'lucide-react';
+import { Leaf, Droplet, Info, Sprout, Waves, Plus, Trash2 } from 'lucide-react';
 import { FormInput, FormSelect, FormSlider, FormButtonGroup, FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { CROP_TYPES, IRRIGATION_METHODS } from '../../constants/formConstants';
@@ -115,15 +115,33 @@ export default function BiologyForm() {
           <p className="text-xs text-gray-500 p-3">No crops added yet. Click "Add Crop" to get started.</p>
         )}
       </div>
-      <FormInput
-        label="Plant Spacing"
-        name="plantSpacing"
-        type="number"
-        value={data.plantSpacing}
-        onChange={handleChange}
-        placeholder="Spacing in feet"
-        min="0"
-      />
+      <div className="space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex-1">
+            <FormInput
+              label="Distance Between Plants"
+              name="plantSpacing"
+              type="number"
+              value={data.plantSpacing}
+              onChange={handleChange}
+              placeholder={`Spacing in ${data.plantSpacingUnit}`}
+              min="0"
+            />
+          </div>
+          <div className="pt-6">
+            <FormButtonGroup
+              label="Unit"
+              name="plantSpacingUnit"
+              value={data.plantSpacingUnit}
+              onChange={handleChange}
+              options={[
+                { value: 'feet', label: 'Feet' },
+                { value: 'meters', label: 'Meters' },
+              ]}
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Tractor Access */}
       <FormToggle
@@ -190,7 +208,7 @@ export default function BiologyForm() {
                 {method.value === 'drip' ? (
                   <Droplet size={24} strokeWidth={ICON_STROKE_WIDTH} color={data.irrigationMethod === method.value ? 'white' : ICON_COLOR} />
                 ) : method.value === 'sprinkler' ? (
-                  <CloudRain size={24} strokeWidth={ICON_STROKE_WIDTH} color={data.irrigationMethod === method.value ? 'white' : ICON_COLOR} />
+                  <Sprout size={24} strokeWidth={ICON_STROKE_WIDTH} color={data.irrigationMethod === method.value ? 'white' : ICON_COLOR} />
                 ) : (
                   <Waves size={24} strokeWidth={ICON_STROKE_WIDTH} color={data.irrigationMethod === method.value ? 'white' : ICON_COLOR} />
                 )}
@@ -226,18 +244,6 @@ export default function BiologyForm() {
         </div>
       </motion.div>
 
-      {/* Discharge Requirement */}
-      <FormInput
-        label="Required Discharge"
-        name="requiredDischarge"
-        type="number"
-        value={data.requiredDischarge}
-        onChange={handleChange}
-        placeholder="LPM (Liters Per Minute)"
-        helper="Calculated: Demand / Power Hours"
-        min="0"
-      />
-
       {/* Zones */}
       <FormSlider
         label="Number of Irrigation Zones"
@@ -252,62 +258,29 @@ export default function BiologyForm() {
 
       {/* Filtration Need */}
       <FormToggle
-        label="Do You Need Filtration?"
+        label="Filter Needed?"
         name="filtrationRequired"
         checked={data.filtrationRequired}
         onChange={handleChange}
       />
 
-      {/* Filtration Type - Conditional */}
-      {data.filtrationRequired && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-        >
-          <FormButtonGroup
-            label="Filtration Type"
-            name="filtrationRequirement"
-            value={data.filtrationRequirement}
-            onChange={handleChange}
-            options={[
-              { value: 'screen', label: 'Screen Filter' },
-              { value: 'disc', label: 'Disc Filter' },
-              { value: 'hydrocyclone', label: 'Hydrocyclone' },
-              { value: 'sand', label: 'Sand Filter' },
-              { value: 'other', label: 'Other' },
-            ]}
-          />
-        </motion.div>
-      )}
-
-      {/* Fertigation */}
+      {/* Liquid Fertilizer / Slurry */}
       <FormToggle
-        label="Slurry/Fertigation Usage (Vortex Impeller Need)"
-        name="slurryFertigationUsage"
-        checked={data.slurryFertigationUsage}
+        label="Do you add liquid fertilizer?"
+        name="liquidFertilizerUsage"
+        checked={data.liquidFertilizerUsage}
         onChange={handleChange}
       />
-
-      {/* Zone Calculator Card */}
-      {data.numberOfZones > 1 && (
+      {data.liquidFertilizerUsage && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-blue-50 rounded-xl border border-blue-200"
+          className="p-4 bg-yellow-50 rounded-xl border border-yellow-200"
         >
-          <h4 className="text-sm font-semibold text-blue-800 mb-2">Zone Information</h4>
-          <div className="grid grid-cols-2 gap-4 text-center">
-            <div className="p-3 bg-white rounded-lg">
-              <p className="text-xs text-gray-500">Valves Required</p>
-              <p className="text-lg font-bold text-blue-600">{data.numberOfZones}</p>
-            </div>
-            <div className="p-3 bg-white rounded-lg">
-              <p className="text-xs text-gray-500">Per Zone Flow</p>
-              <p className="text-lg font-bold text-blue-600">
-                {data.requiredDischarge ? Math.round(data.requiredDischarge / data.numberOfZones) : '--'} LPM
-              </p>
-            </div>
-          </div>
+          <p className="text-xs font-semibold text-yellow-800 mb-2">⚠️ Important</p>
+          <p className="text-xs text-yellow-700">
+            Liquid fertilizer or slurry requires a vortex impeller or hydrocyclone to prevent clogging. This will be included in your system design.
+          </p>
         </motion.div>
       )}
     </motion.div>

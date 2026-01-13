@@ -13,16 +13,15 @@ const THEME = {
 };
 
 const soilColors = {
-  clay: '#8B4513',
-  red: '#CD5C5C',
+  'black-clay': '#4A4A4A',
+  'red-loam': '#CD5C5C',
   sandy: '#F4A460',
-  black: '#2F2F2F',
-  loamy: '#654321',
+  'rocky-mixed': '#A9A9A9',
 };
 
 export default function TopographyAnimation({ 
   topographyType = 'flat', 
-  soilType = 'clay',
+  soilType = 'black-clay',
   totalArea = 0,
   fieldGeometry = 'rectangular',
   sideLength = 0,
@@ -33,22 +32,32 @@ export default function TopographyAnimation({
   const terrainRotation = topographyType === 'flat' ? 50 : topographyType === 'sloped' ? 55 : 60;
   
   // Handle soilType as array or string for multiple selection
-  const soilArray = Array.isArray(soilType) ? soilType : (soilType ? [soilType] : ['clay']);
+  const soilArray = Array.isArray(soilType) ? soilType : (soilType ? [soilType] : ['black-clay']);
   
   // Ensure we always have at least one soil type to display and filter out any empty/null values
   const validSoilArray = (soilArray && soilArray.length > 0 && soilArray.filter(Boolean).length > 0) 
     ? soilArray.filter(Boolean) 
-    : ['clay'];
+    : ['black-clay'];
   
-  // Get array of soil colors for multiple selections
-  const soilColorArray = validSoilArray.map((soil) => soilColors[soil] || soilColors.clay);
+  // Get primary soil color for display
+  const soilColor = soilColors[validSoilArray[0]] || soilColors['black-clay'];
   
-  const soilColor = soilColors[validSoilArray[0]] || soilColors.clay;
+  // Get array of soil colors for multiple selections (for grid fill) - ensure it's always an array with at least one color
+  const soilColorArray = (validSoilArray && validSoilArray.length > 0)
+    ? validSoilArray.map((soil) => soilColors[soil] || soilColors['black-clay'])
+    : [soilColors['black-clay']];
   
   // Format soil label with safe handling
   const formatSoilName = (soil) => {
-    if (!soil) return 'Clay';
-    return soil.charAt(0).toUpperCase() + soil.slice(1);
+    if (!soil) return 'Black Cotton/Clay';
+    // Map soil type to friendly label
+    const labels = {
+      'black-clay': 'Black Cotton/Clay',
+      'red-loam': 'Red Loam/Loam',
+      'sandy': 'Sandy Soil/Sand',
+      'rocky-mixed': 'Rocky/Mixed/Gravel'
+    };
+    return labels[soil] || soil.charAt(0).toUpperCase() + soil.slice(1);
   };
   
   const soilLabel = validSoilArray.length > 1 
@@ -136,9 +145,10 @@ export default function TopographyAnimation({
               const isUsed = i < usedBlocksCount;
               
               // Cycle through soil colors for multiple selections
-              const blockSoilColor = isUsed && soilColorArray.length > 0
-                ? soilColorArray[i % soilColorArray.length]
-                : '#1a300b';
+              let blockSoilColor = '#1a300b'; // Default background (unused)
+              if (isUsed && soilColorArray && soilColorArray.length > 0) {
+                blockSoilColor = soilColorArray[i % soilColorArray.length];
+              }
               
               return (
                 <motion.div

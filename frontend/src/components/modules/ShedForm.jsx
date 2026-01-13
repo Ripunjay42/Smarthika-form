@@ -1,17 +1,38 @@
 import { motion } from 'framer-motion';
-import { Warehouse, Info, Tractor, Drone, Fan, Check, Lightbulb, Target } from 'lucide-react';
-import { FormToggle } from '../ui/FormElements';
+import { 
+  Warehouse, Check, Calendar, AlertCircle,
+  Tractor, RotateCw, Truck, Wind, CloudRain, 
+  Zap, Sun, Scissors, Droplet, Shovel, Combine
+} from 'lucide-react';
 import { useFormContext } from '../../context/FormContext';
-import { MONTHS } from '../../constants/formConstants';
+import { EQUIPMENT_LIST, MONTHS } from '../../constants/formConstants';
 import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
+
+// Icon mapping for equipment
+const ICON_MAP = {
+  'Tractor': Tractor,
+  'RotateCw': RotateCw,
+  'Truck': Truck,
+  'Wind': Wind,
+  'CloudRain': CloudRain,
+  'Zap': Zap,
+  'Sun': Sun,
+  'Scissors': Scissors,
+  'Droplet': Droplet,
+  'Shovel': Shovel,
+  'Combine': Combine,
+};
 
 export default function ShedForm() {
   const { formData, updateModuleData } = useFormContext();
   const data = formData.shed;
 
-  const handleChange = (e) => {
-    const { name, checked } = e.target;
-    updateModuleData('shed', { [name]: checked });
+  const handleEquipmentToggle = (equipmentValue) => {
+    const currentEquipment = data.equipment || [];
+    const newEquipment = currentEquipment.includes(equipmentValue)
+      ? currentEquipment.filter(e => e !== equipmentValue)
+      : [...currentEquipment, equipmentValue];
+    updateModuleData('shed', { equipment: newEquipment });
   };
 
   const toggleHarvestMonth = (monthIndex) => {
@@ -22,188 +43,190 @@ export default function ShedForm() {
     updateModuleData('shed', { harvestMonths: newMonths });
   };
 
-  const equipment = [
-    { 
-      key: 'tractorOwnership', 
-      icon: Tractor, 
-      label: 'Tractor',
-      opportunity: 'PTO Pump Lead',
-      description: 'Can use tractor-powered pumps as backup'
-    },
-    { 
-      key: 'droneOwnership', 
-      icon: Drone, 
-      label: 'Drone',
-      opportunity: 'Tech Savvy Lead',
-      description: 'Open to smart farming solutions'
-    },
-    { 
-      key: 'sprayerOwnership', 
-      icon: Fan, 
-      label: 'Sprayer',
-      opportunity: 'Automation Lead',
-      description: 'Interested in automation upgrades'
-    },
-  ];
+  // Group equipment by category
+  const equipmentByCategory = EQUIPMENT_LIST.reduce((acc, item) => {
+    if (!acc[item.category]) {
+      acc[item.category] = [];
+    }
+    acc[item.category].push(item);
+    return acc;
+  }, {});
 
-  const ownedCount = equipment.filter(e => data[e.key]).length;
+  const selectedCount = (data.equipment || []).length;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
+      className="space-y-8"
     >
       {/* Header */}
       <div className="mb-8">
         <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
         <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE SHED</h2>
-        <p className="text-gray-500">Equipment inventory for cross-selling opportunities.</p>
+        <p className="text-gray-500">Farm equipment inventory - Select all machinery you own or have access to.</p>
       </div>
 
-      {/* Equipment Grid */}
-      <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
-          Equipment Inventory
-        </label>
-        <div className="grid grid-cols-1 gap-4">
-          {equipment.map((item, index) => (
-            <motion.div
-              key={item.key}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className={`
-                p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
-                ${data[item.key]
-                  ? 'shadow-lg'
-                  : 'bg-white hover:border-[#689F38]/30'
-                }
-              `}
-              style={data[item.key]
-                ? { backgroundColor: 'rgba(104, 159, 56, 0.1)', borderColor: '#689F38' }
-                : { borderColor: '#E5E5E5' }
-              }
-              onClick={() => handleChange({ target: { name: item.key, checked: !data[item.key] } })}
-            >
-              <div className="flex items-center gap-4">
-                <motion.div
-                  className="w-14 h-14 rounded-xl flex items-center justify-center"
-                  style={data[item.key] 
-                    ? { backgroundColor: 'rgba(104, 159, 56, 0.2)' } 
-                    : { backgroundColor: '#F3F4F6' }
-                  }
-                  animate={data[item.key] ? { scale: [1, 1.1, 1] } : {}}
-                  transition={{ duration: 0.5 }}
-                >
-                  <item.icon 
-                    size={28} 
-                    strokeWidth={ICON_STROKE_WIDTH}
-                    color={data[item.key] ? ICON_COLOR : '#9CA3AF'} 
-                  />
-                </motion.div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-semibold text-gray-800">{item.label}</span>
-                    <div
-                      className="w-6 h-6 rounded-full flex items-center justify-center"
-                      style={data[item.key] ? { backgroundColor: '#689F38', color: 'white' } : { backgroundColor: '#E5E5E5' }}
-                    >
-                      {data[item.key] && <Check size={14} strokeWidth={ICON_STROKE_WIDTH} color="white" />}
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-500 mt-1">{item.description}</p>
-                  {data[item.key] && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="inline-block mt-2 px-2 py-1 text-xs rounded-full"
-                      style={{ backgroundColor: 'rgba(104, 159, 56, 0.15)', color: '#558B2F' }}
-                    >
-                      {item.opportunity}
-                    </motion.span>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-            <Warehouse className="w-5 h-5" strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
-      <motion.div
-        className="p-4 rounded-xl border"
-        style={{ backgroundColor: 'rgba(104, 159, 56, 0.08)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
-        animate={{ scale: ownedCount > 0 ? [1, 1.01, 1] : 1 }}
-        transition={{ duration: 1, repeat: Infinity }}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.2)' }}>
-              <Warehouse className="w-5 h-5" style={{ color: '#689F38' }} />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-gray-800">Equipment Score</p>
-              <p className="text-xs text-gray-500">Based on inventory</p>
-            </div>
-          </div>
-          <div className="text-right">
-            <span className="text-3xl font-bold" style={{ color: '#689F38' }}>{ownedCount}</span>
-            <span className="text-gray-400">/{equipment.length}</span>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* EV Status */}
-      <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
-        <FormToggle
-          label="Electric Vehicle/Equipment Ownership"
-          name="evStatus"
-          checked={data.evStatus}
-          onChange={handleChange}
-        />
-        {data.evStatus && (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-xs text-blue-600 mt-2 flex items-center gap-2"
+      {/* Equipment Grid by Category */}
+      <div className="space-y-8">
+        {Object.entries(equipmentByCategory).map(([ category, items ], categoryIndex) => (
+          <motion.div
+            key={category}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: categoryIndex * 0.1 }}
           >
-            <Lightbulb size={14} strokeWidth={ICON_STROKE_WIDTH} color="#2563EB" />
-            Consider EV charging point integration with solar pump
-          </motion.p>
-        )}
+            {/* Category Header */}
+            <div className="mb-4">
+              <h3 className="text-lg font-bold mb-1" style={{ color: '#33691E' }}>
+                {category}
+              </h3>
+              <div className="w-8 h-1 rounded-full" style={{ backgroundColor: '#689F38' }} />
+            </div>
+
+            {/* Equipment Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {items.map((item, itemIndex) => {
+                const isSelected = (data.equipment || []).includes(item.value);
+                const IconComponent = ICON_MAP[item.icon] || Warehouse;
+                
+                return (
+                  <motion.button
+                    key={item.value}
+                    type="button"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: itemIndex * 0.05 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleEquipmentToggle(item.value)}
+                    className="p-4 rounded-xl border-2 transition-all duration-200 text-left"
+                    style={isSelected
+                      ? { 
+                          backgroundColor: 'rgba(104, 159, 56, 0.1)', 
+                          borderColor: '#689F38',
+                          boxShadow: '0 4px 12px rgba(104, 159, 56, 0.15)'
+                        }
+                      : { 
+                          backgroundColor: '#FFFFFF',
+                          borderColor: '#E5E5E5'
+                        }
+                    }
+                  >
+                    <div className="flex items-start gap-3">
+                      {/* Icon Container */}
+                      <motion.div
+                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
+                        style={isSelected 
+                          ? { backgroundColor: 'rgba(104, 159, 56, 0.2)' } 
+                          : { backgroundColor: '#F3F4F6' }
+                        }
+                        animate={isSelected ? { scale: [1, 1.1, 1] } : {}}
+                        transition={{ duration: 0.4 }}
+                      >
+                        <IconComponent 
+                          size={24} 
+                          strokeWidth={ICON_STROKE_WIDTH}
+                          color={isSelected ? '#689F38' : '#9CA3AF'} 
+                        />
+                      </motion.div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="font-bold text-gray-800" style={{ color: isSelected ? '#33691E' : '#1F2937' }}>
+                              {item.label}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              {item.description}
+                            </p>
+                          </div>
+                          
+                          {/* Checkmark */}
+                          {isSelected && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: '#689F38' }}
+                            >
+                              <Check size={14} strokeWidth={3} color="white" />
+                            </motion.div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.div>
+        ))}
       </div>
+
+      {/* Equipment Count Summary */}
+      {selectedCount > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 rounded-xl border-2"
+          style={{ 
+            backgroundColor: 'rgba(104, 159, 56, 0.05)',
+            borderColor: '#689F38'
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <Warehouse size={20} color="#689F38" strokeWidth={ICON_STROKE_WIDTH} />
+            <div>
+              <p className="font-semibold text-gray-800">
+                {selectedCount} equipment item{selectedCount !== 1 ? 's' : ''} selected
+              </p>
+              <p className="text-xs text-gray-600">
+                This helps us recommend appropriate pump and power solutions
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Harvest Months Calendar */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
+        <label className="block text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#689F38' }}>
           Harvest Months (Cash Flow Cycle)
         </label>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
           {MONTHS.map((month, index) => {
             const isSelected = (data.harvestMonths || []).includes(index);
             return (
               <motion.button
                 key={month}
                 type="button"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
                 onClick={() => toggleHarvestMonth(index)}
-                className={`
-                  p-3 rounded-xl text-center transition-all duration-200
-                  ${isSelected
-                    ? 'text-white shadow-lg'
-                    : 'bg-white text-gray-600 border-2 border-gray-200'
-                  }
-                `}
-                style={isSelected ? { backgroundColor: '#689F38' } : {}}
+                className="p-2 sm:p-3 rounded-lg text-center transition-all duration-200 border-2"
+                style={isSelected
+                  ? {
+                      backgroundColor: '#689F38',
+                      color: 'white',
+                      borderColor: '#689F38',
+                      boxShadow: '0 4px 12px rgba(104, 159, 56, 0.3)'
+                    }
+                  : {
+                      backgroundColor: '#FFFFFF',
+                      color: '#6B7280',
+                      borderColor: '#E5E5E5'
+                    }
+                }
               >
-                <span className="text-sm font-medium">{month.slice(0, 3)}</span>
+                <span className="text-xs sm:text-sm font-semibold">{month.slice(0, 3)}</span>
               </motion.button>
             );
           })}
         </div>
-        <p className="text-xs text-gray-500 mt-2">
+        <p className="text-xs text-gray-500 mt-3 flex items-center gap-2">
+          <Calendar size={14} />
           Select months when you typically receive harvest income
         </p>
       </div>
@@ -213,53 +236,35 @@ export default function ShedForm() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-gradient-to-r from-yellow-50 to-green-50 rounded-xl border border-yellow-200"
+          className="p-4 rounded-xl border-2"
+          style={{ 
+            backgroundColor: 'rgba(104, 159, 56, 0.08)',
+            borderColor: 'rgba(104, 159, 56, 0.3)'
+          }}
         >
-          <h4 className="text-sm font-semibold text-gray-800 mb-3">Cash Flow Preview</h4>
-          <div className="flex gap-1">
+          <h4 className="text-sm font-bold mb-3" style={{ color: '#33691E' }}>
+            Cash Flow Timeline
+          </h4>
+          <div className="flex gap-1 h-16 items-end">
             {MONTHS.map((month, index) => {
               const isHarvest = (data.harvestMonths || []).includes(index);
               return (
                 <motion.div
                   key={month}
-                  className={`flex-1 h-8 rounded ${isHarvest ? '' : 'bg-gray-200'}`}
-                  style={isHarvest ? { backgroundColor: '#689F38' } : {}}
+                  className="flex-1 rounded-t-lg transition-all"
+                  style={{ backgroundColor: isHarvest ? '#689F38' : '#E5E7EB' }}
                   initial={{ height: 0 }}
-                  animate={{ height: isHarvest ? 32 : 16 }}
-                  transition={{ delay: index * 0.05 }}
+                  animate={{ height: isHarvest ? '100%' : '30%' }}
+                  transition={{ delay: index * 0.03 }}
+                  title={`${month}: ${isHarvest ? 'Income month' : 'No harvest'}`}
                 />
               );
             })}
           </div>
-          <div className="flex justify-between mt-2 text-xs text-gray-500">
-            <span>Jan</span>
-            <span>Jun</span>
-            <span>Dec</span>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Cross-Sell Opportunities */}
-      {ownedCount > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-purple-50 rounded-xl border border-purple-200"
-        >
-          <h4 className="text-sm font-semibold text-purple-800 mb-3 flex items-center gap-2">
-            <Target size={16} strokeWidth={ICON_STROKE_WIDTH} className="text-purple-700" />
-            Opportunity Signals
-          </h4>
-          <div className="space-y-2">
-            {equipment.filter(e => data[e.key]).map((item) => {
-              const ItemIcon = item.icon;
-              return (
-                <div key={item.key} className="flex items-center gap-2 text-sm text-purple-700">
-                  <ItemIcon size={18} strokeWidth={ICON_STROKE_WIDTH} color="#7C3AED" />
-                  <span>{item.opportunity}</span>
-                </div>
-              );
-            })}
+          <div className="flex justify-between mt-2 text-xs text-gray-500 px-1">
+            <span>January</span>
+            <span>July</span>
+            <span>December</span>
           </div>
         </motion.div>
       )}

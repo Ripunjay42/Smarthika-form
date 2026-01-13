@@ -52,9 +52,11 @@ export const submitToGoogleSheets = async (formData) => {
       if (submissionData.baseline) {
         submissionData.baseline = {
           projectType: 'greenfield',
-          oldPumpType: null,
+          oldPumpTypes: [],
           oldPumpAge: null,
-          burnoutFrequency: null
+          starterCoilRepairs: null,
+          motorBurnouts: null,
+          pipeReuseStatus: 'new'
         };
       }
     }

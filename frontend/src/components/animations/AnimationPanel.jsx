@@ -135,9 +135,11 @@ export default function AnimationPanel() {
           highVoltageSurge: moduleData.highVoltageSurge || false,
           dailyAvailability: parseFloat(moduleData.dailyAvailability) || 24,
           powerSchedule: moduleData.powerSchedule,
-          wiringHealth: moduleData.wiringHealth,
+          currentWiringCondition: moduleData.currentWiringCondition || 'good', // Updated field name
           cableUpgradeRequired: moduleData.cableUpgradeRequired || false,
           distanceMeterToBorewell: parseFloat(moduleData.distanceMeterToBorewell) || 0,
+          hasExistingPower: moduleData.hasExistingPower !== false, // New field
+          frequentPhaseCuts: moduleData.frequentPhaseCuts || false, // New field
           generatorOwnership: moduleData.generatorOwnership || false,
           evChargingNeed: moduleData.evChargingNeed || false,
         };
@@ -147,9 +149,13 @@ export default function AnimationPanel() {
           shelterType: moduleData.shelterStructure,
           cellularSignalStrength: moduleData.mobileSignalStrength,
           heatBuildupRisk: moduleData.heatBuildupRisk,
+          wallSpaceAvailable: moduleData.wallSpaceAvailable,
           theftRiskLevel: moduleData.theftRiskLevel,
           lightningArrestor: moduleData.lightningArrestor,
           earthingPit: moduleData.earthingPit,
+          distanceToMainSwitch: moduleData.distanceToMainSwitch,
+          electricalSupport: moduleData.electricalSupport,
+          mechanicalSupport: moduleData.mechanicalSupport,
           installationPreference: moduleData.installationPreference,
           liftingGearAvailability: moduleData.liftingGearAvailability,
           pumpHousePictureFile: moduleData.pumpHousePictureFile || '',
@@ -157,39 +163,34 @@ export default function AnimationPanel() {
       
       case 'biology':
         return {
-          primaryCropType: moduleData.primaryCropType,
-          secondaryCropType: moduleData.secondaryCropType,
           croppingPattern: moduleData.croppingPattern,
-          rowCount: parseFloat(moduleData.rowCount) || 0,
+          crops: moduleData.crops || [],
           plantSpacing: parseFloat(moduleData.plantSpacing) || 10,
+          plantSpacingUnit: moduleData.plantSpacingUnit || 'feet',
           tractorAccessRequirement: moduleData.tractorAccessRequirement || false,
-          totalPlantCount: parseFloat(moduleData.totalPlantCount) || 0,
           cropAge: moduleData.cropAge,
           peakWaterDemand: parseFloat(moduleData.peakWaterDemand) || 0,
           irrigationMethod: moduleData.irrigationMethod,
-          requiredDischarge: parseFloat(moduleData.requiredDischarge) || 0,
+          irrigationEfficiency: parseFloat(moduleData.irrigationEfficiency) || 90,
           numberOfZones: parseFloat(moduleData.numberOfZones) || 1,
-          filtrationRequirement: moduleData.filtrationRequirement,
-          slurryFertigationUsage: moduleData.slurryFertigationUsage || false,
+          filtrationRequired: moduleData.filtrationRequired || false,
+          liquidFertilizerUsage: moduleData.liquidFertilizerUsage || false,
         };
       
       case 'baseline':
         return {
           projectType: moduleData.projectType,
-          oldPumpType: moduleData.oldPumpType,
+          oldPumpTypes: Array.isArray(moduleData.oldPumpTypes) ? moduleData.oldPumpTypes : [],
           oldPumpAge: parseFloat(moduleData.oldPumpAge) || 0,
-          burnoutFrequency: parseFloat(moduleData.burnoutFrequency) || 0,
-          efficiencyGap: parseFloat(moduleData.efficiencyGap) || 0,
-          pipeReuseStatus: moduleData.pipeReuseStatus || false,
+          starterCoilRepairs: parseFloat(moduleData.starterCoilRepairs) || 0,
+          motorBurnouts: parseFloat(moduleData.motorBurnouts) || 0,
+          pipeReuseStatus: moduleData.pipeReuseStatus || 'new',
           footValveCondition: moduleData.footValveCondition,
         };
       
       case 'shed':
         return {
-          tractorOwnership: moduleData.tractorOwnership || false,
-          droneOwnership: moduleData.droneOwnership || false,
-          sprayerOwnership: moduleData.sprayerOwnership || false,
-          evStatus: moduleData.evStatus || false,
+          equipment: moduleData.equipment || [],
           harvestMonths: moduleData.harvestMonths || [],
         };
       
@@ -197,7 +198,7 @@ export default function AnimationPanel() {
         return {
           laborPainScore: parseFloat(moduleData.laborPainScore) || 0,
           targetLER: parseFloat(moduleData.targetLER) || 1.0,
-          organicFarmingInterest: moduleData.organicFarmingInterest || false,
+          cash_flow_type: moduleData.cash_flow_type || 'seasonal',
           polyhouseStatus: moduleData.polyhouseStatus || 'none',
           aquacultureStatus: moduleData.aquacultureStatus || 'none',
         };

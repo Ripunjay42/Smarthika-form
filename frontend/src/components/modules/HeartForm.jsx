@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Droplet, Info, AlertCircle, CheckCircle, TrendingDown, Plus, Minus } from 'lucide-react';
+import { Droplet, Info, AlertCircle, CheckCircle, TrendingDown, Plus, Minus, HelpCircle } from 'lucide-react';
 import { FormInput, FormSelect, FormSlider, FormButtonGroup, FormColorPicker } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { WATER_SOURCES, CASING_DIAMETERS, WATER_QUALITIES } from '../../constants/formConstants';
@@ -231,6 +231,58 @@ export default function HeartForm() {
         <h3 className="font-semibold mb-4" style={{ color: '#33691E' }}>Water Level Details (Optional)</h3>
         <p className="text-xs mb-4" style={{ color: '#558B2F' }}>Provide these if available for precise pump sizing</p>
 
+        {/* I don't know button */}
+        <motion.button
+          onClick={() => {
+            if (!data.unknownDetails) {
+              // When toggling ON: clear water level details
+              updateModuleData('heart', { 
+                unknownDetails: true,
+                totalDepth: '',
+                staticWaterLevel: '',
+                dynamicWaterLevel: '',
+                seasonalVariance: 0,
+              });
+            } else {
+              // When toggling OFF: just turn off the flag
+              updateModuleData('heart', { unknownDetails: false });
+            }
+          }}
+          className="w-full mb-4 py-3 px-4 rounded-lg border-2 transition-all flex items-center justify-center gap-2"
+          style={{
+            borderColor: data.unknownDetails ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+            backgroundColor: data.unknownDetails ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
+          }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <HelpCircle size={18} color={data.unknownDetails ? '#689F38' : '#558B2F'} />
+          <span className="font-medium" style={{ color: data.unknownDetails ? '#689F38' : '#33691E' }}>
+            I don't know my details
+          </span>
+        </motion.button>
+
+        {/* Service card shown when user clicks "I don't know" */}
+        {data.unknownDetails && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 rounded-lg mb-4"
+            style={{
+              backgroundColor: 'rgba(104, 159, 56, 0.1)',
+              border: '2px solid rgba(104, 159, 56, 0.3)',
+            }}
+          >
+            <div className="flex items-start gap-3">
+              <CheckCircle size={20} color="#689F38" className="mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-semibold text-sm" style={{ color: '#33691E' }}>We can test your borewell yield</p>
+                <p className="text-xs mt-1" style={{ color: '#558B2F' }}>Our team can visit and test your borewell to determine exact water levels and yield. Service fee: ₹500</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         <FormInput
           label={`Total Depth of Borewell/Source (${unitLabel})`}
           name="totalDepth"
@@ -240,30 +292,41 @@ export default function HeartForm() {
           placeholder={`Total depth in ${unitLabel.toLowerCase()}`}
           icon={Droplet}
           min="0"
+          disabled={data.unknownDetails}
         />
 
-        <div className="grid grid-cols-2 gap-4 mt-4">
-          <FormInput
-            label={`Static Water Level (${unitLabel})`}
-            name="staticWaterLevel"
-            type="number"
-            value={data.staticWaterLevel}
-            onChange={handleChange}
-            placeholder={`Resting level (${unitLabel.toLowerCase()})`}
-            helper="When pump is OFF"
-            min="0"
-          />
-          <FormInput
-            label={`Dynamic Water Level (${unitLabel})`}
-            name="dynamicWaterLevel"
-            type="number"
-            value={data.dynamicWaterLevel}
-            onChange={handleChange}
-            placeholder={`Pumping level (${unitLabel.toLowerCase()})`}
-            helper="When pump is ON"
-            min="0"
-          />
-        </div>
+        {/* Check if total depth is entered to enable sliders */}
+        {(() => {
+          const totalDepthValue = parseFloat(data.totalDepth);
+          const sliderDisabled = data.unknownDetails || !totalDepthValue || totalDepthValue === 0;
+
+          return (
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <FormInput
+                label={`Water Level (Morning) (${unitLabel})`}
+                name="staticWaterLevel"
+                type="number"
+                value={data.staticWaterLevel}
+                onChange={handleChange}
+                placeholder={`Resting level (${unitLabel.toLowerCase()})`}
+                helper="When pump is OFF"
+                min="0"
+                disabled={sliderDisabled}
+              />
+              <FormInput
+                label={`Water Level (Pumping) (${unitLabel})`}
+                name="dynamicWaterLevel"
+                type="number"
+                value={data.dynamicWaterLevel}
+                onChange={handleChange}
+                placeholder={`Pumping level (${unitLabel.toLowerCase()})`}
+                helper="When pump is ON"
+                min="0"
+                disabled={sliderDisabled}
+              />
+            </div>
+          );
+        })()}
 
         {/* Drawdown & Recharge Assessment */}
         {/* {drawdown > 0 && (
@@ -299,17 +362,34 @@ export default function HeartForm() {
         )} */}
       </div>
 
-      {/* Water Quality - Keep but with description */}
-      <div className="space-y-2">
+      {/* Water Quality with Color Labels - Accessible for Color-blind Users */}
+      <div className="space-y-3">
         <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Water Color/Quality</label>
-        <p className="text-xs" style={{ color: '#558B2F' }}>Visual indication of water quality</p>
-        <FormColorPicker
-          label=""
-          name="waterQuality"
-          value={data.waterQuality}
-          onChange={handleChange}
-          options={WATER_QUALITIES}
-        />
+        <p className="text-xs mb-3" style={{ color: '#558B2F' }}>Visual indication of water quality</p>
+        <div className="grid grid-cols-2 gap-3">
+          {WATER_QUALITIES.map((quality) => (
+            <motion.button
+              key={quality.value}
+              onClick={() => handleChange({ target: { name: 'waterQuality', value: quality.value } })}
+              className="p-3 rounded-lg border-2 transition-all flex items-center gap-2"
+              style={{
+                borderColor: data.waterQuality === quality.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                backgroundColor: data.waterQuality === quality.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
+              }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div
+                className="w-6 h-6 rounded flex-shrink-0 border"
+                style={{
+                  backgroundColor: quality.color,
+                  borderColor: data.waterQuality === quality.value ? '#689F38' : '#ccc',
+                }}
+              />
+              <span className="text-xs font-medium" style={{ color: '#33691E' }}>{quality.label}</span>
+            </motion.button>
+          ))}
+        </div>
       </div>
 
       {/* Seasonal Variance */}
@@ -326,7 +406,7 @@ export default function HeartForm() {
 
       {/* Casing Diameter */}
       <FormButtonGroup
-        label="Casing Pipe Diameter"
+        label="Bore Width"
         name="casingDiameter"
         value={data.casingDiameter}
         onChange={handleChange}

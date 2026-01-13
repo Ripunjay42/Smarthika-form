@@ -342,3 +342,76 @@ export function FormColorPicker({
     </div>
   );
 }
+export function FormCheckboxGroup({
+  label,
+  name,
+  value = [],
+  onChange,
+  options,
+  required = false,
+  error,
+  className = '',
+  icon: Icon,
+}) {
+  const selectedValues = Array.isArray(value) ? value : [];
+
+  const handleCheckboxChange = (optionValue) => {
+    let newValues;
+    if (selectedValues.includes(optionValue)) {
+      newValues = selectedValues.filter(v => v !== optionValue);
+    } else {
+      newValues = [...selectedValues, optionValue];
+    }
+    onChange({ target: { name, value: newValues } });
+  };
+
+  return (
+    <div className={`space-y-2 ${className}`}>
+      {label && (
+        <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>
+          {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {options.map((option) => (
+          <motion.div
+            key={option.value}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center p-3 rounded-lg border-2 transition-all duration-200 cursor-pointer"
+            style={{
+              backgroundColor: selectedValues.includes(option.value) ? 'rgba(104, 159, 56, 0.1)' : '#EDEDE7',
+              borderColor: selectedValues.includes(option.value) ? '#689F38' : 'rgba(104, 159, 56, 0.25)',
+            }}
+            onClick={() => handleCheckboxChange(option.value)}
+          >
+            <input
+              type="checkbox"
+              name={name}
+              value={option.value}
+              checked={selectedValues.includes(option.value)}
+              onChange={() => handleCheckboxChange(option.value)}
+              className="w-5 h-5 rounded cursor-pointer"
+              style={{
+                accentColor: '#689F38',
+              }}
+            />
+            <label className="ml-3 flex-1 cursor-pointer text-sm font-medium" style={{ color: '#33691E' }}>
+              {option.label}
+            </label>
+          </motion.div>
+        ))}
+      </div>
+      {error && (
+        <motion.p
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-xs text-red-500"
+        >
+          {error}
+        </motion.p>
+      )}
+    </div>
+  );
+}

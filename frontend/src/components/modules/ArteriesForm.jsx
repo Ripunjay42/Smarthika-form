@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Droplet, Info, Gauge, AlertCircle, CheckCircle, Zap } from 'lucide-react';
+import { Droplet, Info, Gauge, AlertCircle, CheckCircle, Zap, Cloud, Sprout } from 'lucide-react';
 import { FormInput, FormSlider, FormButtonGroup, FormToggle } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { PIPE_MATERIALS, DELIVERY_TARGETS } from '../../constants/formConstants';
@@ -111,34 +111,58 @@ export default function ArteriesForm() {
         <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Where Does Water Go? (Select All That Apply)</label>
         <p className="text-xs" style={{ color: '#558B2F' }}>Each borewell/source can deliver to different destinations</p>
         <div className="space-y-2">
-          {DELIVERY_TARGETS.map((target) => (
-            <motion.button
-              key={target.value}
-              onClick={() => handleMultiSelectTarget(target.value)}
-              className="w-full p-3 rounded-lg border-2 transition-all text-left"
-              style={{
-                borderColor: deliveryTargets.includes(target.value) ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-                backgroundColor: deliveryTargets.includes(target.value) ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-              }}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-5 h-5 rounded border-2 flex items-center justify-center"
-                  style={{
-                    borderColor: deliveryTargets.includes(target.value) ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-                    backgroundColor: deliveryTargets.includes(target.value) ? '#689F38' : 'transparent',
-                  }}
-                >
-                  {deliveryTargets.includes(target.value) && (
-                    <CheckCircle size={16} color="#E5E7EB" />
-                  )}
+          {DELIVERY_TARGETS.map((target) => {
+            // Map target values to icons
+            const getTargetIcon = () => {
+              switch (target.value) {
+                case 'tank':
+                  return Cloud;
+                case 'sump':
+                  return Droplet;
+                case 'direct':
+                  return Sprout;
+                default:
+                  return Droplet;
+              }
+            };
+            const TargetIcon = getTargetIcon();
+            
+            return (
+              <motion.button
+                key={target.value}
+                onClick={() => handleMultiSelectTarget(target.value)}
+                className="w-full p-3 rounded-lg border-2 transition-all text-left"
+                style={{
+                  borderColor: deliveryTargets.includes(target.value) ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                  backgroundColor: deliveryTargets.includes(target.value) ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
+                }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+              >
+                <div className="flex items-center gap-3">
+                  <TargetIcon 
+                    size={20} 
+                    color={deliveryTargets.includes(target.value) ? '#689F38' : '#558B2F'} 
+                    strokeWidth={1.5}
+                  />
+                  <div className="flex-1 flex items-center gap-2">
+                    <div
+                      className="w-5 h-5 rounded border-2 flex items-center justify-center"
+                      style={{
+                        borderColor: deliveryTargets.includes(target.value) ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                        backgroundColor: deliveryTargets.includes(target.value) ? '#689F38' : 'transparent',
+                      }}
+                    >
+                      {deliveryTargets.includes(target.value) && (
+                        <CheckCircle size={16} color="#E5E7EB" />
+                      )}
+                    </div>
+                    <span className="font-medium" style={{ color: '#33691E' }}>{target.label}</span>
+                  </div>
                 </div>
-                <span className="font-medium" style={{ color: '#33691E' }}>{target.label}</span>
-              </div>
-            </motion.button>
-          ))}
+              </motion.button>
+            );
+          })}
         </div>
         {errors.deliveryTarget && (
           <motion.div
@@ -163,7 +187,7 @@ export default function ArteriesForm() {
         >
           <h3 className="font-semibold" style={{ color: '#33691E' }}>Overhead Tank Settings</h3>
           <FormSlider
-            label={`Tank Height Above Ground (${unitLabel})`}
+            label={`Tank Height (from ground) (${unitLabel})`}
             name="overheadTankHeight"
             value={data.overheadTankHeight || 20}
             onChange={handleSliderChange}
@@ -217,9 +241,9 @@ export default function ArteriesForm() {
         </motion.div>
       )}
 
-      {/* Mainline Pipe Material with capitalized labels */}
+      {/* Pipe Type with capitalized labels */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Mainline Pipe Material</label>
+        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Pipe Type</label>
         <div className="grid grid-cols-3 gap-2">
           {PIPE_MATERIALS.map((material) => (
             <motion.button
