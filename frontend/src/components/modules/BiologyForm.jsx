@@ -64,81 +64,97 @@ export default function BiologyForm() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleAddCrop}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold"
             style={{ backgroundColor: '#689F38', color: 'white' }}
           >
-            <Plus size={16} />
-            Add Crop
+            <Plus size={14} />
+            Add
           </motion.button>
         </div>
 
         {data.crops && data.crops.length > 0 ? (
-          <div className="space-y-2">
+          <div className="grid gap-3">
+            {/* Column Headers */}
+            <div className="grid gap-3 items-center text-xs font-semibold px-3 text-gray-600" style={{ gridTemplateColumns: '1fr 100px 40px' }}>
+              <span>Crop Name</span>
+              <span className="text-center">Count</span>
+              <span></span>
+            </div>
+            {/* Crop Rows */}
             {data.crops.map((crop, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="grid gap-2 items-end p-3 rounded-lg"
-                style={{ gridTemplateColumns: '1fr 100px 40px', backgroundColor: 'rgba(104, 159, 56, 0.08)', border: '1px solid rgba(104, 159, 56, 0.2)' }}
+                className="grid gap-3 items-center p-3 rounded-lg border"
+                style={{ gridTemplateColumns: '1fr 100px 40px', backgroundColor: '#FAFAF9', borderColor: 'rgba(104, 159, 56, 0.2)' }}
               >
-                <FormInput
-                  label="Crop Name"
+                <input
                   type="text"
                   value={crop.cropType}
                   onChange={(e) => handleCropChange(index, 'cropType', e.target.value)}
-                  placeholder="Enter crop name"
+                  placeholder="Crop name"
+                  className="bg-transparent text-sm outline-none border-b border-gray-300 pb-1"
+                  style={{ color: '#33691E' }}
                 />
-                <FormInput
-                  label="Est. Count"
+                <input
                   type="number"
                   value={crop.estimatedCount}
                   onChange={(e) => handleCropChange(index, 'estimatedCount', e.target.value)}
-                  placeholder="Number"
+                  placeholder="0"
                   min="0"
+                  className="px-2 py-1.5 text-sm text-center outline-none rounded border"
+                  style={{ color: '#33691E', borderColor: 'rgba(104, 159, 56, 0.3)', backgroundColor: 'rgba(104, 159, 56, 0.05)' }}
                 />
                 <motion.button
                   type="button"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => handleRemoveCrop(index)}
-                  className="p-2 rounded-lg transition-colors"
+                  className="p-1.5 rounded transition-colors justify-self-center"
                   style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#EF4444' }}
                   title="Remove crop"
                 >
-                  <Trash2 size={18} />
+                  <Trash2 size={16} />
                 </motion.button>
               </motion.div>
             ))}
           </div>
         ) : (
-          <p className="text-xs text-gray-500 p-3">No crops added yet. Click "Add Crop" to get started.</p>
+          <p className="text-xs text-gray-500 p-3 text-center">No crops added</p>
         )}
       </div>
       <div className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
+        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Plant Spacing</label>
+        <div className="flex gap-2 items-end">
           <div className="flex-1">
-            <FormInput
-              label="Distance Between Plants"
-              name="plantSpacing"
+            <input
               type="number"
+              name="plantSpacing"
               value={data.plantSpacing}
               onChange={handleChange}
-              placeholder={`Spacing in ${data.plantSpacingUnit}`}
+              placeholder="0"
               min="0"
+              className="w-full px-3 py-2 rounded-lg border text-sm"
+              style={{ borderColor: 'rgba(104, 159, 56, 0.3)', backgroundColor: '#FAFAF9', color: '#33691E' }}
             />
           </div>
-          <div className="pt-6">
-            <FormButtonGroup
-              label="Unit"
-              name="plantSpacingUnit"
-              value={data.plantSpacingUnit}
-              onChange={handleChange}
-              options={[
-                { value: 'feet', label: 'Feet' },
-                { value: 'meters', label: 'Meters' },
-              ]}
-            />
+          <div className="flex gap-1 bg-white rounded-lg p-1 border" style={{ borderColor: 'rgba(104, 159, 56, 0.3)' }}>
+            {['feet', 'meters'].map((unit) => (
+              <button
+                key={unit}
+                type="button"
+                onClick={() => handleChange({ target: { name: 'plantSpacingUnit', value: unit } })}
+                className={`px-3 py-1.5 rounded text-xs font-semibold transition-all ${
+                  data.plantSpacingUnit === unit ? 'text-white' : 'text-gray-600'
+                }`}
+                style={{
+                  backgroundColor: data.plantSpacingUnit === unit ? '#689F38' : 'transparent',
+                }}
+              >
+                {unit === 'feet' ? 'ft' : 'm'}
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -271,18 +287,6 @@ export default function BiologyForm() {
         checked={data.liquidFertilizerUsage}
         onChange={handleChange}
       />
-      {data.liquidFertilizerUsage && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-yellow-50 rounded-xl border border-yellow-200"
-        >
-          <p className="text-xs font-semibold text-yellow-800 mb-2">⚠️ Important</p>
-          <p className="text-xs text-yellow-700">
-            Liquid fertilizer or slurry requires a vortex impeller or hydrocyclone to prevent clogging. This will be included in your system design.
-          </p>
-        </motion.div>
-      )}
     </motion.div>
   );
 }

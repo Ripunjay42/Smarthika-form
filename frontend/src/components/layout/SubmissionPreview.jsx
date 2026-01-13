@@ -63,8 +63,8 @@ function formatValue(value, keyPath, formData = {}) {
 
   // Friendly display for whether farmer lives on the farm
   if (keyPath === 'profile.livesOnFarm') {
-    if (value === 'yes') return '🏠 Yes — I stay here';
-    if (value === 'no') return '📱 No — I manage remotely';
+    if (value === 'yes') return 'Yes — I stay here';
+    if (value === 'no') return 'No — I manage remotely';
     return String(value);
   }
 

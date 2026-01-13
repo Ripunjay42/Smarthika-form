@@ -220,25 +220,27 @@ export default function VoltmeterAnimation({
         </div>
       </motion.div>
 
-      {/* Grid Phase Card */}
-      <motion.div
-        className="absolute bottom-8 right-8 p-4 backdrop-blur-sm rounded-xl"
-        style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        <div className="flex items-center gap-3">
-          <Gauge size={24} color={THEME.accent} />
-          <div>
-            <p className="text-xs font-semibold" style={{ color: THEME.accent }}>GRID PHASE</p>
-            <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{gridPhase.replace('-', ' ')}</p>
+      {/* Grid Phase Card - Only show when grid is selected */}
+      {hasGrid && (
+        <motion.div
+          className="absolute bottom-8 right-8 p-4 backdrop-blur-sm rounded-xl"
+          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <div className="flex items-center gap-3">
+            <Gauge size={24} color={THEME.accent} />
+            <div>
+              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>GRID PHASE</p>
+              <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{gridPhase.replace('-', ' ')}</p>
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      )}
 
-      {/* Status Message */}
-      {(isLow || isHigh) && (
+      {/* Status Message - Only show when grid is selected */}
+      {hasGrid && (isLow || isHigh) && (
         <motion.div
           className="absolute top-8 left-8 px-4 py-3 rounded-xl"
           style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '2px solid rgba(239, 68, 68, 0.3)' }}

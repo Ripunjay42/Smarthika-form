@@ -133,8 +133,8 @@ export default function PulseForm() {
         </div>
       </div>
 
-      {/* Grid Specific Settings - Hide if Solar is selected */}
-      {hasGrid && !hasSolar && (
+      {/* Grid Specific Settings */}
+      {hasGrid && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
