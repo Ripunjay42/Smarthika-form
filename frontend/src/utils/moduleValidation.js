@@ -39,11 +39,11 @@ export const MODULE_VALIDATION_RULES = {
       message: 'At least one water source type is required',
       validate: (data) => !isBlank(data?.sourceType),
     },
-    {
-      field: 'numberOfBorewells',
-      message: 'Number of water sources is required',
-      validate: (data) => isPositiveNumber(data?.numberOfBorewells),
-    },
+    // {
+    //   field: 'numberOfBorewells',
+    //   message: 'Number of water sources is required',
+    //   validate: (data) => isPositiveNumber(data?.numberOfBorewells),
+    // },
     // {
     //   field: 'totalDepth',
     //   message: 'Total depth of borewell/source is required',

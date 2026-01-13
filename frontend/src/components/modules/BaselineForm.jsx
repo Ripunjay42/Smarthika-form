@@ -13,9 +13,27 @@ export default function BaselineForm() {
     const { name, value, type, checked } = e.target;
     
     if (name === 'oldPumpTypes') {
-      // Handle array value for checkboxes
+      // FormCheckboxGroup passes array of values
+      const selectedTypes = Array.isArray(value) ? value : [];
+      const currentTypes = data.oldPumpTypes || [];
+      
+      // Build pumpDetails for selected types
+      const pumpDetails = {};
+      
+      // Keep existing pump details for types that are still selected
+      selectedTypes.forEach(pumpType => {
+        if (currentTypes.includes(pumpType) && data.pumpDetails?.[pumpType]) {
+          // Preserve existing data
+          pumpDetails[pumpType] = data.pumpDetails[pumpType];
+        } else {
+          // Initialize new pump type
+          pumpDetails[pumpType] = { age: 0, repairs: 0, burnouts: 0 };
+        }
+      });
+      
       updateModuleData('baseline', { 
-        [name]: value
+        oldPumpTypes: selectedTypes,
+        pumpDetails: pumpDetails
       });
     } else if (type === 'checkbox') {
       updateModuleData('baseline', { 
@@ -31,17 +49,19 @@ export default function BaselineForm() {
     if (name === 'projectType' && value === 'greenfield') {
       updateModuleData('baseline', { 
         oldPumpTypes: [],
-        oldPumpAge: 0,
-        starterCoilRepairs: 0,
-        motorBurnouts: 0,
+        pumpDetails: {},
         pipeReuseStatus: 'new'
       });
     }
   };
 
-  const handleSliderChange = (e) => {
-    const { name, value } = e.target;
-    updateModuleData('baseline', { [name]: parseFloat(value) });
+  const handlePumpDetailChange = (pumpType, field, value) => {
+    const pumpDetails = data.pumpDetails ? { ...data.pumpDetails } : {};
+    if (!pumpDetails[pumpType]) {
+      pumpDetails[pumpType] = { age: 0, repairs: 0, burnouts: 0 };
+    }
+    pumpDetails[pumpType][field] = parseFloat(value) || 0;
+    updateModuleData('baseline', { pumpDetails });
   };
 
   const isRetrofit = data.projectType === 'retrofit';
@@ -135,48 +155,119 @@ export default function BaselineForm() {
 
             {/* Multi-Select Pump Types */}
             <FormCheckboxGroup
-              label="What pumps do you currently use?"
+              label="Old Pump Type (Select all that apply)"
               name="oldPumpTypes"
               value={data.oldPumpTypes}
               onChange={handleChange}
               options={OLD_PUMP_TYPES}
             />
 
-            {/* Old Pump Age */}
-            <FormSlider
-              label="Old Pump Age"
-              name="oldPumpAge"
-              value={data.oldPumpAge}
-              onChange={handleSliderChange}
-              min={0}
-              max={20}
-              step={1}
-              unit=" years"
-            />
+            {/* Pump Details for each selected pump */}
+            {data.oldPumpTypes && data.oldPumpTypes.length > 0 && (
+              <div className="space-y-6 mt-6 pt-6 border-t border-orange-300">
+                {data.oldPumpTypes.map((pumpType) => {
+                  const pumpDetail = data.pumpDetails?.[pumpType] || { age: 0, repairs: 0, burnouts: 0 };
+                  const pumpLabel = OLD_PUMP_TYPES.find(p => p.value === pumpType)?.label || pumpType;
+                  
+                  return (
+                    <motion.div
+                      key={pumpType}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-4 bg-orange-100/50 rounded-lg border border-orange-200 space-y-4"
+                    >
+                      <h4 className="font-semibold text-orange-900">{pumpLabel}</h4>
+                      
+                      <div className="space-y-4">
+                        {/* Pump Age */}
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
+                            Pump Age
+                          </label>
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="range"
+                              min="0"
+                              max="20"
+                              step="1"
+                              value={pumpDetail.age || 0}
+                              onChange={(e) => handlePumpDetailChange(pumpType, 'age', e.target.value)}
+                              className="flex-1 h-2 rounded-lg"
+                              style={{ backgroundColor: '#E8F5E9' }}
+                            />
+                            <span className="font-medium text-lg w-20 text-center" style={{ color: '#33691E' }}>
+                              {pumpDetail.age || 0} yrs
+                            </span>
+                          </div>
+                        </div>
 
-            {/* Starter Coil/Capacitor Repairs */}
-            <FormSlider
-              label="Starter Coil/Capacitor Repairs (Last Year)"
-              name="starterCoilRepairs"
-              value={data.starterCoilRepairs}
-              onChange={handleSliderChange}
-              min={0}
-              max={20}
-              step={1}
-              unit=" times"
-            />
+                        {/* Starter Coil/Capacitor Repairs */}
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
+                            Starter Coil/Capacitor Repairs (Last Year)
+                          </label>
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="range"
+                              min="0"
+                              max="20"
+                              step="1"
+                              value={pumpDetail.repairs || 0}
+                              onChange={(e) => handlePumpDetailChange(pumpType, 'repairs', e.target.value)}
+                              className="flex-1 h-2 rounded-lg"
+                              style={{ backgroundColor: '#E8F5E9' }}
+                            />
+                            <span className="font-medium text-lg w-20 text-center" style={{ color: '#33691E' }}>
+                              {pumpDetail.repairs || 0}x
+                            </span>
+                          </div>
+                        </div>
 
-            {/* Motor Burnouts */}
-            <FormSlider
-              label="Motor Burnouts (Rewinding)"
-              name="motorBurnouts"
-              value={data.motorBurnouts}
-              onChange={handleSliderChange}
-              min={0}
-              max={20}
-              step={1}
-              unit=" times"
-            />
+                        {/* Motor Burnouts */}
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
+                            Motor Burnouts (Rewinding)
+                          </label>
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="range"
+                              min="0"
+                              max="20"
+                              step="1"
+                              value={pumpDetail.burnouts || 0}
+                              onChange={(e) => handlePumpDetailChange(pumpType, 'burnouts', e.target.value)}
+                              className="flex-1 h-2 rounded-lg"
+                              style={{ backgroundColor: '#E8F5E9' }}
+                            />
+                            <span className="font-medium text-lg w-20 text-center" style={{ color: '#33691E' }}>
+                              {pumpDetail.burnouts || 0}x
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Warn if issues detected for this pump */}
+                        {(pumpDetail.repairs >= 3 || pumpDetail.burnouts >= 3) && (
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="p-3 bg-red-100 rounded-lg flex items-center gap-2"
+                          >
+                            <TriangleAlert className="text-red-600" size={20} strokeWidth={ICON_STROKE_WIDTH} />
+                            <span className="text-sm text-red-700">
+                              {pumpDetail.repairs >= 3 && pumpDetail.burnouts >= 3 
+                                ? 'High failure frequency in both controller and motor - upgrade recommended'
+                                : pumpDetail.repairs >= 3
+                                ? 'High controller failure - reliability issues detected'
+                                : 'High motor burnout frequency - consider upgrading'}
+                            </span>
+                          </motion.div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Pipe Reuse Toggle */}
             <div>
@@ -208,67 +299,7 @@ export default function BaselineForm() {
                 ))}
               </div>
             </div>
-
-            {/* Pain Point Indicators */}
-            {(data.starterCoilRepairs >= 3 || data.motorBurnouts >= 3) && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="p-3 bg-red-100 rounded-lg flex items-center gap-2"
-              >
-                <TriangleAlert className="text-red-600" size={20} strokeWidth={ICON_STROKE_WIDTH} />
-                <span className="text-sm text-red-700">
-                  {data.starterCoilRepairs >= 3 && data.motorBurnouts >= 3 
-                    ? 'High failure frequency in both controllers and motor - immediate upgrade recommended'
-                    : data.starterCoilRepairs >= 3
-                    ? 'High controller failure frequency indicates reliability issues'
-                    : 'High motor burnout frequency - consider upgrading'}
-                </span>
-              </motion.div>
-            )}
           </div>
-
-          {/* Retrofit Summary */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-xl border"
-            style={{ backgroundColor: 'rgba(104, 159, 56, 0.15)', borderColor: 'rgba(104, 159, 56, 0.25)' }}
-          >
-            <h4 className="text-sm font-semibold mb-3" style={{ color: '#33691E' }}>Retrofit Summary</h4>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span style={{ color: '#558B2F' }}>Pump Types</span>
-                <span className="font-medium capitalize" style={{ color: '#33691E' }}>
-                  {data.oldPumpTypes.length > 0 ? data.oldPumpTypes.join(', ') : 'None selected'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span style={{ color: '#558B2F' }}>Age</span>
-                <span className="font-medium" style={{ color: '#33691E' }}>{data.oldPumpAge} years</span>
-              </div>
-              <div className="flex justify-between">
-                <span style={{ color: '#558B2F' }}>Controller Issues</span>
-                <span className={`font-medium ${data.starterCoilRepairs >= 3 ? 'text-red-600' : ''}`} 
-                  style={data.starterCoilRepairs < 3 ? { color: '#33691E' } : {}}>
-                  {data.starterCoilRepairs >= 3 ? 'Frequent' : 'Normal'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span style={{ color: '#558B2F' }}>Motor Issues</span>
-                <span className={`font-medium ${data.motorBurnouts >= 3 ? 'text-red-600' : ''}`} 
-                  style={data.motorBurnouts < 3 ? { color: '#33691E' } : {}}>
-                  {data.motorBurnouts >= 3 ? 'Frequent' : 'Normal'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span style={{ color: '#558B2F' }}>Piping Plan</span>
-                <span className="font-medium capitalize" style={{ color: '#33691E' }}>
-                  {PIPE_CONDITIONS.find(p => p.value === data.pipeReuseStatus)?.label}
-                </span>
-              </div>
-            </div>
-          </motion.div>
         </motion.div>
       )}
 

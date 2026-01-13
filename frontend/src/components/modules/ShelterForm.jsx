@@ -279,13 +279,13 @@ export default function ShelterForm() {
       {/* Mechanical Support */}
       <div>
         <FormButtonGroup
-          label="Mechanical Support"
+          label="Do you have a local pump installation team?"
           name="mechanicalSupport"
           value={data.mechanicalSupport}
           onChange={handleChange}
           options={[
-            { value: 'local-team', label: 'Local Team Available' },
-            { value: 'expert', label: 'Need Expert Support' },
+            { value: 'local-team', label: 'Yes - Available' },
+            { value: 'expert', label: 'No - Need Expert Support' },
           ]}
         />
       </div>

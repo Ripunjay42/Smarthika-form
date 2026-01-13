@@ -35,14 +35,6 @@ export default function ShedForm() {
     updateModuleData('shed', { equipment: newEquipment });
   };
 
-  const toggleHarvestMonth = (monthIndex) => {
-    const currentMonths = data.harvestMonths || [];
-    const newMonths = currentMonths.includes(monthIndex)
-      ? currentMonths.filter(m => m !== monthIndex)
-      : [...currentMonths, monthIndex];
-    updateModuleData('shed', { harvestMonths: newMonths });
-  };
-
   // Group equipment by category
   const equipmentByCategory = EQUIPMENT_LIST.reduce((acc, item) => {
     if (!acc[item.category]) {
@@ -190,84 +182,7 @@ export default function ShedForm() {
         </motion.div>
       )}
 
-      {/* Harvest Months Calendar */}
-      <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#689F38' }}>
-          Harvest Months (Cash Flow Cycle)
-        </label>
-        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-          {MONTHS.map((month, index) => {
-            const isSelected = (data.harvestMonths || []).includes(index);
-            return (
-              <motion.button
-                key={month}
-                type="button"
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.92 }}
-                onClick={() => toggleHarvestMonth(index)}
-                className="p-2 sm:p-3 rounded-lg text-center transition-all duration-200 border-2"
-                style={isSelected
-                  ? {
-                      backgroundColor: '#689F38',
-                      color: 'white',
-                      borderColor: '#689F38',
-                      boxShadow: '0 4px 12px rgba(104, 159, 56, 0.3)'
-                    }
-                  : {
-                      backgroundColor: '#FFFFFF',
-                      color: '#6B7280',
-                      borderColor: '#E5E5E5'
-                    }
-                }
-              >
-                <span className="text-xs sm:text-sm font-semibold">{month.slice(0, 3)}</span>
-              </motion.button>
-            );
-          })}
-        </div>
-        <p className="text-xs text-gray-500 mt-3 flex items-center gap-2">
-          <Calendar size={14} />
-          Select months when you typically receive harvest income
-        </p>
-      </div>
 
-      {/* Cash Flow Visual */}
-      {(data.harvestMonths || []).length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 rounded-xl border-2"
-          style={{ 
-            backgroundColor: 'rgba(104, 159, 56, 0.08)',
-            borderColor: 'rgba(104, 159, 56, 0.3)'
-          }}
-        >
-          <h4 className="text-sm font-bold mb-3" style={{ color: '#33691E' }}>
-            Cash Flow Timeline
-          </h4>
-          <div className="flex gap-1 h-16 items-end">
-            {MONTHS.map((month, index) => {
-              const isHarvest = (data.harvestMonths || []).includes(index);
-              return (
-                <motion.div
-                  key={month}
-                  className="flex-1 rounded-t-lg transition-all"
-                  style={{ backgroundColor: isHarvest ? '#689F38' : '#E5E7EB' }}
-                  initial={{ height: 0 }}
-                  animate={{ height: isHarvest ? '100%' : '30%' }}
-                  transition={{ delay: index * 0.03 }}
-                  title={`${month}: ${isHarvest ? 'Income month' : 'No harvest'}`}
-                />
-              );
-            })}
-          </div>
-          <div className="flex justify-between mt-2 text-xs text-gray-500 px-1">
-            <span>January</span>
-            <span>July</span>
-            <span>December</span>
-          </div>
-        </motion.div>
-      )}
     </motion.div>
   );
 }

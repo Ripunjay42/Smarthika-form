@@ -335,9 +335,7 @@ function doPost(e) {
         // Baseline Section
         'Project Type',
         'Current Pump Types',
-        'Old Pump Age (years)',
-        'Starter Coil/Capacitor Repairs (Last Year)',
-        'Motor Burnouts/Rewinding',
+        'Pump Details (Age, Repairs, Burnouts)',
         'Piping Approach (New vs Reuse)',
         // Shed Section
         'Equipment Inventory',
@@ -374,14 +372,12 @@ function doPost(e) {
       : 0;
     
     // Format harvest months as comma-separated list
-    const harvestMonths = data.shed?.harvestMonths 
-      ? data.shed.harvestMonths.map((active, index) => active ? index + 1 : null)
-          .filter(m => m !== null)
-          .map(m => {
-            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            return monthNames[m - 1];
-          })
-          .join(', ')
+    const harvestMonths = data.vision?.harvestMonths 
+      ? data.vision.harvestMonths.map((monthIndex) => {
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          return monthNames[monthIndex];
+        })
+        .join(', ')
       : '';
     
     // Helper function to safely get nested values
@@ -458,10 +454,19 @@ function doPost(e) {
         if (access === 'remote') return 'Remote / No Road';
         return String(access);
       })(),
-      get(data, 'canvas.roadAccessDistance', 0),
+      (() => {
+        const distance = get(data, 'canvas.roadAccessDistance', 0);
+        return distance ? `${distance} km` : '';
+      })(),
       // Heart Section (Borewell/Water Source)
       Array.isArray(data.heart?.sourceType) ? data.heart.sourceType.join(', ') : get(data, 'heart.sourceType'),
-      get(data, 'heart.numberOfBorewells', 1),
+      (() => {
+        const sourceType = Array.isArray(data.heart?.sourceType) ? data.heart.sourceType : [get(data, 'heart.sourceType')];
+        if (!sourceType.includes('borewell')) return '';
+        const num = get(data, 'heart.numberOfBorewells', '');
+        if (num === '' || Number(num) === 1) return '';
+        return num;
+      })(),
       get(data, 'heart.totalDepth'),
       get(data, 'heart.staticWaterLevel'),
       get(data, 'heart.dynamicWaterLevel'),
@@ -580,9 +585,15 @@ function doPost(e) {
         const oldPumpTypes = get(data, 'baseline.oldPumpTypes', []);
         return Array.isArray(oldPumpTypes) ? oldPumpTypes.join(', ') : String(oldPumpTypes || '');
       })(),
-      get(data, 'baseline.oldPumpAge', 0),
-      get(data, 'baseline.starterCoilRepairs', 0),
-      get(data, 'baseline.motorBurnouts', 0),
+      (() => {
+        const pumpDetails = get(data, 'baseline.pumpDetails', {});
+        if (!pumpDetails || Object.keys(pumpDetails).length === 0) return '';
+        return Object.entries(pumpDetails)
+          .map(([pumpType, details]) => {
+            return `${pumpType}: Age=${details.age}yr, Repairs=${details.repairs}x, Burnouts=${details.burnouts}x`;
+          })
+          .join('; ');
+      })(),
       (() => {
         const pipeStatus = get(data, 'baseline.pipeReuseStatus', 'new');
         return pipeStatus === 'reuse' ? 'Reuse Old Pipes' : 'New Pipes';

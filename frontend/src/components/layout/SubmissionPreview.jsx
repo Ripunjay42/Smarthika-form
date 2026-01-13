@@ -15,16 +15,14 @@ function toTitleCase(text) {
   const specialMappings = {
     'burnoutfrequency': 'Controller Replacement/Repair Frequency',
     'burnout frequency': 'Controller Replacement/Repair Frequency',
-    'oldpumptypes': 'What pumps do you currently use?',
-    'old pump types': 'What pumps do you currently use?',
-    'oldpumpage': 'Old Pump Age',
-    'old pump age': 'Old Pump Age',
-    'startercoilrepairs': 'Starter Coil/Capacitor Repairs (Last Year)',
-    'starter coil repairs': 'Starter Coil/Capacitor Repairs (Last Year)',
-    'motorburnouts': 'Motor Burnouts (Rewinding)',
-    'motor burnouts': 'Motor Burnouts (Rewinding)',
+    'oldpumptypes': 'Old Pump Types',
+    'old pump types': 'Old Pump Types',
+    'pumpdetails': 'Pump Details (Age, Repairs, Burnouts)',
+    'pump details': 'Pump Details (Age, Repairs, Burnouts)',
     'pipereusestatus': 'Piping Approach',
     'pipe reuse status': 'Piping Approach',
+    'harvestmonths': 'Harvest Months',
+    'harvest months': 'Harvest Months',
   };
   
   const normalized = text.toLowerCase().replace(/\s+/g, ' ').trim();
@@ -88,6 +86,16 @@ function formatValue(value, keyPath, formData = {}) {
     return String(value);
   }
 
+  // Format road access distance
+  if (keyPath === 'canvas.roadAccessDistance') {
+    return value ? `${value} km` : '';
+  }
+
+  // Format road access distance
+  if (keyPath === 'canvas.roadAccessDistance') {
+    return value ? `${value} km` : '';
+  }
+
   // Format unknownDetails for heart module
   if (keyPath === 'heart.unknownDetails') {
     return value ? 'Yes — Farmer requested service' : 'No — Details provided';
@@ -104,6 +112,10 @@ function formatValue(value, keyPath, formData = {}) {
 
   if (keyPath === 'pulse.solarSystemVoltageToggle') {
     return `${value}V`;
+  }
+
+  if (keyPath === 'pulse.solarSystemVoltage') {
+    return value ? `${value}V` : '';
   }
 
   if (keyPath === 'pulse.currentWiringCondition') {
@@ -145,9 +157,10 @@ function formatValue(value, keyPath, formData = {}) {
     return stabilityMap[value] || String(value);
   }
 
-  if (keyPath === 'shed.harvestMonths' && Array.isArray(value)) {
+  if (keyPath === 'vision.harvestMonths' && Array.isArray(value)) {
+    // harvestMonths is array of indices, e.g., [0, 3, 6] for Jan, Apr, Jul
     const selected = value
-      .map((active, idx) => (active ? MONTHS[idx] : null))
+      .map(idx => (idx >= 0 && idx < MONTHS.length ? MONTHS[idx] : null))
       .filter(Boolean);
     return selected.length ? selected.join(', ') : '';
   }
@@ -369,12 +382,14 @@ function formatValue(value, keyPath, formData = {}) {
       .join(', ') : '';
   }
 
-  if (keyPath === 'baseline.starterCoilRepairs') {
-    return value ? `${value} times/year` : '';
-  }
-
-  if (keyPath === 'baseline.motorBurnouts') {
-    return value ? `${value} times/year` : '';
+  if (keyPath === 'baseline.pumpDetails' && typeof value === 'object') {
+    if (!value || Object.keys(value).length === 0) return '';
+    return Object.entries(value)
+      .map(([pumpType, details]) => {
+        const pumpLabel = pumpType.charAt(0).toUpperCase() + pumpType.slice(1).replace(/-/g, ' ');
+        return `${pumpLabel} (Age: ${details.age}yr, Repairs: ${details.repairs}x, Burnouts: ${details.burnouts}x)`;
+      })
+      .join('; ');
   }
 
   if (keyPath === 'baseline.pipeReuseStatus') {
@@ -446,18 +461,23 @@ function shouldExcludeField(keyPath) {
     'totalPlantCount', // Removed field
     'croppingPattern', // Removed field
     'irrigationEfficiency', // Technical field
-    'pipeReuseStatus', // Removed field
     'footValveCondition', // Removed field
+    'soilPH', // Not in form
+    'soilEC', // Not in form
     'efficiencyGap', // Removed field
     'dryRunRisk', // Removed field - dry run assessment not required
     'municipalWaterAvailable', // Removed field - municipal water not required
     'municipalWaterVolume', // Removed field - municipal water not required
     'wiringHealth', // Removed field - replaced with currentWiringCondition
-    'solarSystemVoltage', // Removed field - replaced with solarSystemVoltageToggle
+    // 'solarSystemVoltage', // kept intentionally commented so preview shows current solar field
     'tractorOwnership', // Old field - replaced with equipment array
     'droneOwnership', // Old field - replaced with equipment array
     'sprayerOwnership', // Old field - replaced with equipment array
     'evStatus', // Old field - replaced with equipment array
+    'oldPumpAge', // Old field - now in pumpDetails
+    'starterCoilRepairs', // Old field - now in pumpDetails
+    'motorBurnouts', // Old field - now in pumpDetails
+    'shed.harvestMonths', // Moved to vision module
   ];
   
   return excludedFields.some(field => keyPath.includes(field));
@@ -468,9 +488,7 @@ function shouldExcludeForProjectType(keyPath, projectType) {
   if (projectType === 'greenfield') {
     const retrofitFields = [
       'baseline.oldPumpTypes',
-      'baseline.oldPumpAge',
-      'baseline.starterCoilRepairs',
-      'baseline.motorBurnouts',
+      'baseline.pumpDetails',
       'baseline.pipeReuseStatus',
     ];
     return retrofitFields.includes(keyPath);
@@ -502,19 +520,31 @@ export default function SubmissionPreview({ formData }) {
           const moduleData = formData?.[m.id] || {};
           const flat = flattenObject(moduleData, m.id);
           const entries = Object.entries(flat)
-            .map(([keyPath, value]) => ({
+            .map(([keyPath, rawValue]) => ({
               keyPath,
+              rawValue,
               label: toTitleCase(keyPath.split('.').slice(1).join('.')),
-              value: formatValue(value, keyPath, formData),
+              value: formatValue(rawValue, keyPath, formData),
             }))
-            .filter((e) => 
-              !shouldExcludeField(e.keyPath) &&
-              !shouldExcludeForProjectType(e.keyPath, formData?.baseline?.projectType) &&
-              e.value !== '' && 
-              e.value !== '[]' && 
-              e.value !== '{}' && 
-              !isEmptyDisplayValue(e.value)
-            );
+            .filter((e) => {
+              // Hide numberOfBorewells when borewell not selected or value is default 1
+              if (e.keyPath === 'heart.numberOfBorewells') {
+                const src = formData?.heart?.sourceType;
+                const hasBorewell = Array.isArray(src) ? src.includes('borewell') : src === 'borewell';
+                if (!hasBorewell) return false;
+                const num = Number(e.rawValue);
+                if (!e.rawValue || num === 1) return false;
+              }
+
+              return (
+                !shouldExcludeField(e.keyPath) &&
+                !shouldExcludeForProjectType(e.keyPath, formData?.baseline?.projectType) &&
+                e.value !== '' && 
+                e.value !== '[]' && 
+                e.value !== '{}' && 
+                !isEmptyDisplayValue(e.value)
+              );
+            });
 
           return (
             <div

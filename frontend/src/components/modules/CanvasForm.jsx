@@ -406,10 +406,10 @@ export default function CanvasForm() {
             step={0.5}
             unit=" km"
           />
-          <div className="p-3 rounded-lg flex items-center gap-2" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+          {/* <div className="p-3 rounded-lg flex items-center gap-2" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
             <Navigation2 size={18} color="#EF4444" />
             <span className="text-xs" style={{ color: '#DC2626' }}>Remote locations may affect equipment transportation and installation timeline.</span>
-          </div>
+          </div> */}
         </motion.div>
       )}
     </motion.div>

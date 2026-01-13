@@ -111,7 +111,7 @@ export default function HeartForm() {
             <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE HYDRAULIC HEART</h2>
             <p style={{ color: '#558B2F' }}>Water source assessment and pump sizing.</p>
           </div>
-          <div className="flex-shrink-0 pt-1">
+          <div className="shrink-0 pt-1">
             <div className="flex flex-col items-end gap-2">
               <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>Measurement Unit</label>
               <div className="relative inline-flex items-center bg-white rounded-full p-1" style={{ border: '2px solid rgba(104, 159, 56, 0.3)' }}>
@@ -171,7 +171,7 @@ export default function HeartForm() {
                     whileTap={{ scale: 0.99 }}
                   >
                     <div
-                      className="w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0"
+                      className="w-5 h-5 rounded border-2 flex items-center justify-center shrink-0"
                       style={{
                         borderColor: isSelected ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
                         backgroundColor: isSelected ? '#689F38' : 'transparent',
@@ -274,10 +274,10 @@ export default function HeartForm() {
             }}
           >
             <div className="flex items-start gap-3">
-              <CheckCircle size={20} color="#689F38" className="mt-0.5 flex-shrink-0" />
+              <CheckCircle size={20} color="#689F38" className="mt-0.5 shrink-0" />
               <div>
                 <p className="font-semibold text-sm" style={{ color: '#33691E' }}>We can test your borewell yield</p>
-                <p className="text-xs mt-1" style={{ color: '#558B2F' }}>Our team can visit and test your borewell to determine exact water levels and yield. Service fee: ₹500</p>
+                <p className="text-xs mt-1" style={{ color: '#558B2F' }}>Our team can visit and test your borewell to determine exact water levels and yield.</p>
               </div>
             </div>
           </motion.div>
@@ -293,6 +293,9 @@ export default function HeartForm() {
           icon={Droplet}
           min="0"
           disabled={data.unknownDetails}
+          inputStyle={{
+            backgroundColor: data.unknownDetails ? '#e5e5e5' : '#EDEDE7',
+          }}
         />
 
         {/* Check if total depth is entered to enable sliders */}
@@ -312,6 +315,9 @@ export default function HeartForm() {
                 helper="When pump is OFF"
                 min="0"
                 disabled={sliderDisabled}
+                inputStyle={{
+                  backgroundColor: data.unknownDetails ? '#e5e5e5' : '#EDEDE7',
+                }}
               />
               <FormInput
                 label={`Water Level (Pumping) (${unitLabel})`}
@@ -323,6 +329,9 @@ export default function HeartForm() {
                 helper="When pump is ON"
                 min="0"
                 disabled={sliderDisabled}
+                inputStyle={{
+                  backgroundColor: data.unknownDetails ? '#e5e5e5' : '#EDEDE7',
+                }}
               />
             </div>
           );
@@ -380,7 +389,7 @@ export default function HeartForm() {
               whileTap={{ scale: 0.98 }}
             >
               <div
-                className="w-6 h-6 rounded flex-shrink-0 border"
+                className="w-6 h-6 rounded shrink-0 border"
                 style={{
                   backgroundColor: quality.color,
                   borderColor: data.waterQuality === quality.value ? '#689F38' : '#ccc',

@@ -337,12 +337,37 @@ export default function ArteriesForm() {
       </div>
 
       {/* Flowmeter Requirement - Yes/No Toggle */}
-      <FormToggle
-        label="Is a Flow Meter Required?"
-        name="flowmeterRequirement"
-        checked={data.flowmeterRequirement}
-        onChange={handleChange}
-      />
+      <div className="p-4 rounded-xl border-2 flex items-center justify-between" style={{ backgroundColor: 'rgba(104, 159, 56, 0.08)', borderColor: 'rgba(104, 159, 56, 0.2)' }}>
+        <label className="text-sm font-semibold" style={{ color: '#33691E' }}>Do you need a flow meter?</label>
+        <div className="flex gap-3">
+          <motion.button
+            onClick={() => updateModuleData('arteries', { flowmeterRequirement: true })}
+            className="px-6 py-2 rounded-lg border-2 transition-all font-medium"
+            style={{
+              borderColor: data.flowmeterRequirement ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+              backgroundColor: data.flowmeterRequirement ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
+              color: '#33691E',
+            }}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+          >
+            Yes
+          </motion.button>
+          <motion.button
+            onClick={() => updateModuleData('arteries', { flowmeterRequirement: false })}
+            className="px-6 py-2 rounded-lg border-2 transition-all font-medium"
+            style={{
+              borderColor: !data.flowmeterRequirement ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+              backgroundColor: !data.flowmeterRequirement ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
+              color: '#33691E',
+            }}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+          >
+            No
+          </motion.button>
+        </div>
+      </div>
 
       {/* Total Pipe Length - Slider instead of text input */}
       <FormSlider

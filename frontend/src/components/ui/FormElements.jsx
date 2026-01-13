@@ -14,6 +14,7 @@ export function FormInput({
   helper,
   className = '',
   id,
+  inputStyle = {},
   ...props
 }) {
   return (
@@ -42,7 +43,8 @@ export function FormInput({
           style={{
             backgroundColor: '#EDEDE7',
             border: error ? '2px solid #ef4444' : '2px solid rgba(104, 159, 56, 0.25)',
-            color: '#33691E'
+            color: '#33691E',
+            ...inputStyle,
           }}
           onFocus={(e) => {
             e.target.style.borderColor = '#689F38';

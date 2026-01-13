@@ -40,14 +40,12 @@ const initialFormData = {
     roadAccessible: 'direct',
     soilTestStatus: 'no',
     soilTestReport: null, // File upload
-    soilPH: 7,
-    soilEC: 0,
   },
   // Module 3: Heart (Borewell Hydraulics)
   heart: {
     unitSystem: 'feet',
     sourceType: ['borewell'],
-    numberOfBorewells: 1,
+    // numberOfBorewells: 1,
     totalDepth: '',
     staticWaterLevel: '',
     dynamicWaterLevel: '',
@@ -138,20 +136,19 @@ const initialFormData = {
   baseline: {
     projectType: 'greenfield',
     oldPumpTypes: [], // Array for multi-select (e.g., ['monoblock', 'submersible'])
-    oldPumpAge: 0,
-    starterCoilRepairs: 0, // "Starter Coil/Capacitor Repairs (Last Year)"
-    motorBurnouts: 0, // "Motor Burnouts (Rewinding)"
+    pumpDetails: {}, // Object storing age, repairs, burnouts for each pump type
+    // Structure: { 'monoblock': { age: 5, repairs: 2, burnouts: 0 }, ... }
     pipeReuseStatus: 'new', // 'new' | 'reuse'
   },
   // Module 9: Shed (Inventory)
   shed: {
     equipment: [], // Array of selected equipment values
-    harvestMonths: [],
   },
   // Module 10: Vision (Economics)
   vision: {
     laborPainScore: 0,
     targetLER: 1,
+    harvestMonths: [],
     cash_flow_type: 'seasonal',
     polyhouseStatus: 'none',
     aquacultureStatus: 'none',

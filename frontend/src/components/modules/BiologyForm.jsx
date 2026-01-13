@@ -274,7 +274,7 @@ export default function BiologyForm() {
 
       {/* Filtration Need */}
       <FormToggle
-        label="Filter Needed?"
+        label="Water Filter Required?"
         name="filtrationRequired"
         checked={data.filtrationRequired}
         onChange={handleChange}
