@@ -17,6 +17,14 @@ export default function BiologyForm() {
     });
   };
 
+  const handleIrrigationMethodChange = (methodValue) => {
+    const method = IRRIGATION_METHODS.find(m => m.value === methodValue);
+    updateModuleData('biology', { 
+      irrigationMethod: methodValue,
+      irrigationEfficiency: method?.efficiency || 90
+    });
+  };
+
   const handleSliderChange = (e) => {
     const { name, value } = e.target;
     updateModuleData('biology', { [name]: parseFloat(value) });
@@ -38,9 +46,8 @@ export default function BiologyForm() {
     updateModuleData('biology', { crops: newCrops });
   };
 
-  // Calculate efficiency based on method
-  const currentMethod = IRRIGATION_METHODS.find(m => m.value === data.irrigationMethod);
-  const efficiency = currentMethod?.efficiency || 90;
+  // Use efficiency from form data (updated when method changes)
+  const efficiency = data.irrigationEfficiency || 90;
 
   return (
     <motion.div
@@ -207,7 +214,7 @@ export default function BiologyForm() {
               type="button"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => handleChange({ target: { name: 'irrigationMethod', value: method.value } })}
+              onClick={() => handleIrrigationMethodChange(method.value)}
               className={`
                 p-4 rounded-xl text-center transition-all duration-200
                 ${data.irrigationMethod === method.value

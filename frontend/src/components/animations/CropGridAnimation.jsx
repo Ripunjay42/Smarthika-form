@@ -2,13 +2,15 @@ import { motion } from 'framer-motion';
 import { Droplet, FlaskConical, Funnel, Gauge, GitBranch, Grid2x2, Ruler, Sprout, Tractor, TreeDeciduous } from 'lucide-react';
 
 const THEME = {
-  accent: '#689F38',
-  accentLight: 'rgba(104, 159, 56, 0.3)',
-  text: '#33691E',
-  textLight: '#558B2F',
-  background: '#EDEDE7',
-  cardBg: 'rgba(104, 159, 56, 0.1)',
-  cardBorder: 'rgba(104, 159, 56, 0.3)',
+  primary: '#9ca3af',
+  primaryLight: '#d1d5db',
+  secondary: '#d1d5db',
+  water: '#b3b3b3',
+  waterLight: '#e5e7eb',
+  background: '#f9fafb',
+  pipe: '#9ca3af',
+  text: '#374151',
+  textMuted: '#9ca3af',
 };
 
 const cropColors = {
@@ -345,10 +347,10 @@ export default function CropGridAnimation({
 
       {/* Irrigation Efficiency Card */}
       <motion.div
-        className="absolute top-8 right-8 p-4 backdrop-blur-sm rounded-xl"
+        className="absolute top-8 left-1/2 -translate-x-1/2 p-4 backdrop-blur-sm rounded-xl"
         style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
         <div className="flex flex-col gap-2">
@@ -372,36 +374,17 @@ export default function CropGridAnimation({
       {/* Peak Water Demand */}
       {peakWaterDemand > 0 && (
         <motion.div
-          className="absolute top-1/2 left-8 -translate-y-1/2 px-4 py-3 backdrop-blur-sm rounded-xl"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 px-4 py-3 backdrop-blur-sm rounded-xl"
           style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
         >
           <div className="flex items-center gap-2">
             <Droplet size={20} color="#60A5FA" />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>PEAK DEMAND</p>
               <p className="text-sm font-bold" style={{ color: THEME.text }}>{peakWaterDemand} LPD</p>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Discharge Requirement */}
-      {peakWaterDemand > 0 && (
-        <motion.div
-          className="absolute top-1/2 left-8 -translate-y-1/2 px-4 py-3 backdrop-blur-sm rounded-xl"
-          style={{ backgroundColor: THEME.cardBg, border: `2px solid ${THEME.cardBorder}` }}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <div className="flex items-center gap-2">
-            <Droplet size={20} color="#60A5FA" />
-            <div>
-              <p className="text-xs font-semibold" style={{ color: THEME.accent }}>IRRIGATION METHOD</p>
-              <p className="text-sm font-bold capitalize" style={{ color: THEME.text }}>{irrigationMethod}</p>
             </div>
           </div>
         </motion.div>

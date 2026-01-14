@@ -254,17 +254,17 @@ function doPost(e) {
         'Field Geometry',
         'Topography Type',
         'Soil Texture Top',
+        'Soil Texture Sub',
+        'Inferred Soil Depth',
         'Drainage Class',
-        'Unused Land (%)',
-        'Soil Test Status',
-        'Topography Map Link',
-        'Soil Test Report Link',
-        'Has Existing Power',
+        'Exclusion Zones',
+        'Cultivable Area',
         'Road Accessible',
         'Road Access Distance (km)',
+        'Soil Test Status',
+        'Soil Test Report Link',
         // Heart Section (Borewell/Water Source)
         'Water Sources',
-        'Number of Borehells',
         'Total Depth (ft)',
         'Static Water Level (ft)',
         'Dynamic Water Level (ft)',
@@ -275,7 +275,6 @@ function doPost(e) {
         'Water Quality',
         'Water Storage Type',
         'Suction Head (ft)',
-        'Foot Valve Condition',
         'Pump Size',
         // Distribution Section (Arteries)
         'Delivery Target',
@@ -290,11 +289,13 @@ function doPost(e) {
         'Total Pipe Length (ft)',
         'Flowmeter Requirement',
         'Auxiliary Outlet Need',
+        // Pulse Section (Energy/Power)
         'Primary Energy Source',
         'Grid Phase',
         'Average Grid Voltage (V)',
         'Voltage Stability',
         'Solar System Voltage (V)',
+        'Solar System Voltage Toggle (V)',
         'Low Voltage Cutoff',
         'High Voltage Surge',
         'Daily Availability (hrs)',
@@ -305,23 +306,25 @@ function doPost(e) {
         'Has Existing Power',
         'Frequent Phase Cuts',
         'Genset Capacity (KVA)',
-        'Solar System Voltage Toggle (V)',
         // Shelter Section
-        'Where will we mount the box?',
-        'Wall Space Check',
-        'Mobile Signal at Pump',
+        'Shelter Structure',
+        'Wall Space Available',
+        'Mobile Signal Strength',
+        'GSM IoT Compatibility',
         'Heat Buildup Risk',
         'Theft Risk Level',
-        'Lightning Rod on Roof?',
-        'Is there Earthing / Grounding?',
+        'Anti-Theft Hardware Need',
+        'Lightning Arrestor',
+        'Earthing Pit',
         'Distance to Main Switch (m)',
-        'Electrical Support',
-        'Mechanical Support',
         'Installation Preference',
         'Lifting Gear Availability',
+        'Electrical Support',
+        'Mechanical Support',
         'Pump House Picture Link',
         // Biology Section
-        'Distance Between Plants',
+        'Cropping Pattern',
+        'Plant Spacing',
         'Plant Spacing Unit',
         'Tractor Access Requirement',
         'Crop Age',
@@ -330,20 +333,20 @@ function doPost(e) {
         'Irrigation Method',
         'Irrigation Efficiency (%)',
         'Number of Zones',
-        'Filter Needed?',
-        'Do you add liquid fertilizer?',
+        'Filtration Required',
+        'Liquid Fertilizer Usage',
         // Baseline Section
         'Project Type',
-        'Current Pump Types',
+        'Old Pump Types',
         'Pump Details (Age, Repairs, Burnouts)',
-        'Piping Approach (New vs Reuse)',
+        'Pipe Reuse Status',
         // Shed Section
         'Equipment Inventory',
-        'Harvest Months',
         // Vision Section
-        'Income Cycle Type',
+        'Harvest Months',
+        'Labor Pain Score',
         'Target LER (Yield Multiplier)',
-        'Labor Availability Score',
+        'Cash Flow Type',
         'Polyhouse Status',
         'Aquaculture Status',
         'Organic Farming Interest',
@@ -370,6 +373,28 @@ function doPost(e) {
     const drawdown = data.heart?.dynamicWaterLevel && data.heart?.staticWaterLevel 
       ? parseFloat(data.heart.dynamicWaterLevel) - parseFloat(data.heart.staticWaterLevel) 
       : 0;
+    
+    // Format water sources with counts (e.g., "Borewell: 2, Open Well: 1")
+    const formatWaterSourcesWithCounts = () => {
+      const sourceTypes = data.heart?.sourceType || [];
+      if (!Array.isArray(sourceTypes) || sourceTypes.length === 0) return '';
+      
+      const sourceLabels = {
+        'borewell': 'Borewell',
+        'open-well': 'Open Well',
+        'pond': 'Pond',
+        'canal': 'Canal',
+        'municipal': 'Municipal Water'
+      };
+      
+      return sourceTypes
+        .map(sourceValue => {
+          const count = data.heart?.[`${sourceValue}Count`] || 1;
+          const label = sourceLabels[sourceValue] || sourceValue;
+          return `${label}: ${count}`;
+        })
+        .join(', ');
+    };
     
     // Format harvest months as comma-separated list
     const harvestMonths = data.vision?.harvestMonths 
@@ -414,40 +439,11 @@ function doPost(e) {
       get(data, 'canvas.fieldGeometry'),
       get(data, 'canvas.topographyType'),
       Array.isArray(data.canvas?.soilTextureTop) ? data.canvas.soilTextureTop.join(', ') : get(data, 'canvas.soilTextureTop'),
+      get(data, 'canvas.soilTextureSub'),
+      get(data, 'canvas.inferredSoilDepth'),
       get(data, 'canvas.drainageClass'),
       get(data, 'canvas.exclusionZones', 0),
-      (() => {
-        const status = get(data, 'canvas.soilTestStatus', 'no');
-        if (status === 'yes') return 'Yes';
-        if (status === 'no') return 'No';
-        return String(status);
-      })(),
-      // Handle file upload for Canvas/Topography map (Module 2)
-      (() => {
-        const uploadedFiles = data.uploadedFiles || [];
-        const canvasFile = uploadedFiles.find(f => f.module === 'canvas' && f.fieldType === 'topographyMap');
-        if (canvasFile) {
-          const fileLink = uploadFileToGoogleDrive(canvasFile.name, canvasFile.data, canvasFile.type);
-          return fileLink || 'Upload failed';
-        }
-        // Fallback to old format for backwards compatibility
-        if (data.uploadedFile) {
-          const fileLink = uploadFileToGoogleDrive(data.uploadedFile.name, data.uploadedFile.data, data.uploadedFile.type);
-          return fileLink || 'Upload failed';
-        }
-        return '';
-      })(),
-      // Handle file upload for Canvas/Soil Test Report (Module 2)
-      (() => {
-        const uploadedFiles = data.uploadedFiles || [];
-        const soilTestFile = uploadedFiles.find(f => f.module === 'canvas' && f.fieldType === 'soilTestReport');
-        if (soilTestFile) {
-          const fileLink = uploadFileToGoogleDrive(soilTestFile.name, soilTestFile.data, soilTestFile.type);
-          return fileLink || 'Upload failed';
-        }
-        return '';
-      })(),
-      get(data, 'pulse.hasExistingPower') ? 'Yes' : 'No',
+      get(data, 'canvas.cultivableArea'),
       (() => {
         const access = get(data, 'canvas.roadAccessible', 'direct');
         if (access === 'direct') return 'Direct Access';
@@ -458,15 +454,24 @@ function doPost(e) {
         const distance = get(data, 'canvas.roadAccessDistance', 0);
         return distance ? `${distance} km` : '';
       })(),
-      // Heart Section (Borewell/Water Source)
-      Array.isArray(data.heart?.sourceType) ? data.heart.sourceType.join(', ') : get(data, 'heart.sourceType'),
       (() => {
-        const sourceType = Array.isArray(data.heart?.sourceType) ? data.heart.sourceType : [get(data, 'heart.sourceType')];
-        if (!sourceType.includes('borewell')) return '';
-        const num = get(data, 'heart.numberOfBorewells', '');
-        if (num === '' || Number(num) === 1) return '';
-        return num;
+        const status = get(data, 'canvas.soilTestStatus', 'no');
+        if (status === 'yes') return 'Yes';
+        if (status === 'no') return 'No';
+        return String(status);
       })(),
+      // Handle file upload for Canvas/Soil Test Report
+      (() => {
+        const uploadedFiles = data.uploadedFiles || [];
+        const soilTestFile = uploadedFiles.find(f => f.module === 'canvas' && f.fieldType === 'soilTestReport');
+        if (soilTestFile) {
+          const fileLink = uploadFileToGoogleDrive(soilTestFile.name, soilTestFile.data, soilTestFile.type);
+          return fileLink || 'Upload failed';
+        }
+        return '';
+      })(),
+      // Heart Section (Borewell/Water Source)
+      formatWaterSourcesWithCounts(),
       get(data, 'heart.totalDepth'),
       get(data, 'heart.staticWaterLevel'),
       get(data, 'heart.dynamicWaterLevel'),
@@ -477,7 +482,6 @@ function doPost(e) {
       get(data, 'heart.waterQuality'),
       Array.isArray(data.heart?.waterStorageType) ? data.heart.waterStorageType.join(', ') : get(data, 'heart.waterStorageType'),
       get(data, 'heart.suctionHead'),
-      get(data, 'heart.footValveCondition'),
       get(data, 'heart.pumpSize'),
       // Distribution Section (Arteries)
       Array.isArray(data.arteries?.deliveryTarget) ? data.arteries.deliveryTarget.join(', ') : get(data, 'arteries.deliveryTarget'),
@@ -498,6 +502,7 @@ function doPost(e) {
       get(data, 'pulse.averageGridVoltage', 0),
       get(data, 'pulse.voltageStability'),
       get(data, 'pulse.solarSystemVoltage', 0),
+      get(data, 'pulse.solarSystemVoltageToggle', ''),
       get(data, 'pulse.lowVoltageCutoff') ? 'Yes' : 'No',
       get(data, 'pulse.highVoltageSurge') ? 'Yes' : 'No',
       get(data, 'pulse.dailyAvailability', 0),
@@ -508,8 +513,7 @@ function doPost(e) {
       get(data, 'pulse.hasExistingPower') ? 'Yes' : 'No',
       get(data, 'pulse.frequentPhaseCuts') ? 'Yes' : 'No',
       get(data, 'pulse.gensetCapacity', ''),
-      get(data, 'pulse.solarSystemVoltageToggle', ''),
-      // Shelter Section - Updated Labels
+      // Shelter Section
       (() => {
         const structure = get(data, 'shelter.shelterStructure', 'concrete');
         const structureMap = { 'concrete': 'Concrete Room', 'tin': 'Tin Shed', 'open': 'Open Air' };
@@ -517,36 +521,30 @@ function doPost(e) {
       })(),
       (() => {
         const space = get(data, 'shelter.wallSpaceAvailable', 'standard');
-        const spaceMap = { 'tight': 'Tight (Slimline)', 'standard': 'Standard', 'spacious': 'Spacious' };
+        const spaceMap = { 'tight': 'Tight (Slimline Cabinet)', 'standard': 'Standard', 'spacious': 'Spacious' };
         return spaceMap[space] || String(space);
       })(),
       (() => {
         const signal = get(data, 'shelter.mobileSignalStrength', '4g');
-        const signalMap = { '4g': '4G LTE', '3g': '3G', '2g': '2G', 'none': 'None' };
+        const signalMap = { '4g': '4G LTE', '3g': '3G', '2g': '2G', 'none': 'No Signal' };
         return signalMap[signal] || String(signal);
       })(),
+      get(data, 'shelter.gsmIotCompatibility') ? 'Yes' : 'No',
       get(data, 'shelter.heatBuildupRisk'),
       (() => {
         const risk = get(data, 'shelter.theftRiskLevel', 'safe');
         return risk === 'safe' ? 'Safe Area' : 'High Risk';
       })(),
+      get(data, 'shelter.antiTheftHardwareNeed') ? 'Yes' : 'No',
       (() => {
         const arrestor = get(data, 'shelter.lightningArrestor', 'present');
         return arrestor === 'present' ? 'Yes - Present' : 'No - Absent';
       })(),
       (() => {
         const earthing = get(data, 'shelter.earthingPit', 'present');
-        return earthing === 'present' ? 'Yes - Chemical Pit Present' : 'No - Need to Install';
+        return earthing === 'present' ? 'Yes - Present' : 'No - Absent';
       })(),
       get(data, 'shelter.distanceToMainSwitch', ''),
-      (() => {
-        const elec = get(data, 'shelter.electricalSupport', 'expert');
-        return elec === 'local-electrician' ? 'Local Electrician Available' : 'Need Expert Support';
-      })(),
-      (() => {
-        const mech = get(data, 'shelter.mechanicalSupport', 'expert');
-        return mech === 'local-team' ? 'Local Team Available' : 'Need Expert Support';
-      })(),
       (() => {
         const pref = get(data, 'shelter.installationPreference', 'expert');
         return pref === 'self' ? 'Self Installation' : 'Expert Team';
@@ -556,7 +554,15 @@ function doPost(e) {
         const gearMap = { 'chain-pulley': 'Chain Pulley Available', 'manual': 'Manual Lift Only' };
         return gearMap[gear] || String(gear);
       })(),
-      // Handle pump house picture upload (Module 6)
+      (() => {
+        const elec = get(data, 'shelter.electricalSupport', 'expert');
+        return elec === 'local-electrician' ? 'Local Electrician Available' : 'Need Expert Support';
+      })(),
+      (() => {
+        const mech = get(data, 'shelter.mechanicalSupport', 'expert');
+        return mech === 'local-team' ? 'Local Team Available' : 'Need Expert Support';
+      })(),
+      // Handle pump house picture upload
       (() => {
         const uploadedFiles = data.uploadedFiles || [];
         const shelterFile = uploadedFiles.find(f => f.module === 'shelter');
@@ -566,13 +572,15 @@ function doPost(e) {
         }
         return '';
       })(),
+      // Biology Section
+      get(data, 'biology.croppingPattern'),
       get(data, 'biology.plantSpacing', 0),
       get(data, 'biology.plantSpacingUnit', 'feet'),
       get(data, 'biology.tractorAccessRequirement') ? 'Yes' : 'No',
       get(data, 'biology.cropAge'),
       (() => {
         const crops = get(data, 'biology.crops', []);
-        return crops.map(c => `${c.cropType}: ${c.estimatedCount} plants`).join('; ') || '';
+        return crops.map(c => `${c.cropType}: ${c.estimatedCount} plants`).join(', ') || '';
       })(),
       get(data, 'biology.peakWaterDemand', 0),
       get(data, 'biology.irrigationMethod'),
@@ -580,6 +588,7 @@ function doPost(e) {
       get(data, 'biology.numberOfZones', 0),
       get(data, 'biology.filtrationRequired') ? 'Yes' : 'No',
       get(data, 'biology.liquidFertilizerUsage') ? 'Yes' : 'No',
+      // Baseline Section
       get(data, 'baseline.projectType'),
       (() => {
         const oldPumpTypes = get(data, 'baseline.oldPumpTypes', []);
@@ -598,11 +607,10 @@ function doPost(e) {
         const pipeStatus = get(data, 'baseline.pipeReuseStatus', 'new');
         return pipeStatus === 'reuse' ? 'Reuse Old Pipes' : 'New Pipes';
       })(),
-      // Shed Section - New Equipment Array Format
+      // Shed Section
       (() => {
         const equipment = get(data, 'shed.equipment', []);
         if (!equipment || equipment.length === 0) return '';
-        // Get friendly equipment names from the equipment array
         const equipmentNames = {
           'tractor-heavy': 'Tractor (Heavy)',
           'mini-tractor': 'Mini Tractor',
@@ -627,7 +635,10 @@ function doPost(e) {
         };
         return equipment.map(eq => equipmentNames[eq] || eq).join(', ');
       })(),
+      // Vision Section
       harvestMonths,
+      get(data, 'vision.laborPainScore', 0),
+      get(data, 'vision.targetLER', 1.0),
       (() => {
         const cashFlowType = get(data, 'vision.cash_flow_type', 'seasonal');
         const flowMap = {
@@ -636,8 +647,6 @@ function doPost(e) {
         };
         return flowMap[cashFlowType] || cashFlowType;
       })(),
-      get(data, 'vision.targetLER', 1.0),
-      get(data, 'vision.laborPainScore', 0),
       (() => {
         const status = get(data, 'vision.polyhouseStatus', 'none');
         const statusMap = {
@@ -657,7 +666,7 @@ function doPost(e) {
         return statusMap[status] || status;
       })(),
       get(data, 'vision.organicFarmingInterest') ? 'Yes' : 'No',
-      // File upload link
+      // Submission metadata
       JSON.stringify({submitTime: new Date().toISOString(), submittedBy: get(data, 'profile.customerName')})
     ];
     

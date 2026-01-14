@@ -5,14 +5,15 @@ import * as d3 from 'd3';
 import { feature as topojsonFeature } from 'topojson-client';
 
 const THEME = {
-  accent: '#689F38',
-  accentLight: 'rgba(104, 159, 56, 0.3)',
-  accentVeryLight: 'rgba(104, 159, 56, 0.1)',
-  text: '#33691E',
-  textLight: '#558B2F',
-  background: '#EDEDE7',
-  cardBg: 'rgba(229, 231, 235, 0.7)',
-  cardBorder: 'rgba(104, 159, 56, 0.3)',
+  primary: '#9ca3af',
+  primaryLight: '#d1d5db',
+  secondary: '#d1d5db',
+  water: '#b3b3b3',
+  waterLight: '#e5e7eb',
+  background: '#f9fafb',
+  pipe: '#9ca3af',
+  text: '#374151',
+  textMuted: '#9ca3af',
 };
 
 // Inject CSS for state-selected class for better performance

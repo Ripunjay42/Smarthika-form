@@ -2,13 +2,15 @@ import { motion } from 'framer-motion';
 import { ArrowDown, CircleCheck, Database, Droplet, Gauge, Shield, TriangleAlert, Zap, Droplets } from 'lucide-react';
 
 const THEME = {
-  accent: '#689F38',
-  accentLight: 'rgba(104, 159, 56, 0.3)',
-  text: '#33691E',
-  textLight: '#558B2F',
-  background: '#EDEDE7',
-  cardBg: 'rgba(104, 159, 56, 0.1)',
-  cardBorder: 'rgba(104, 159, 56, 0.3)',
+  primary: '#9ca3af',
+  primaryLight: '#d1d5db',
+  secondary: '#d1d5db',
+  water: '#b3b3b3',
+  waterLight: '#e5e7eb',
+  background: '#f9fafb',
+  pipe: '#9ca3af',
+  text: '#374151',
+  textMuted: '#9ca3af',
 };
 
 const waterColors = {
@@ -64,23 +66,24 @@ export default function BorewellAnimation({
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: THEME.background }}>
       {/* Borewell Cross-section */}
-      <div className="relative h-[400px] sm:h-[520px] lg:h-[600px] w-56 sm:w-80 lg:w-96 mt-5 sm:mt-8">
+      <div className="relative h-[400px] sm:h-[520px] lg:h-[600px] w-44 sm:w-60 lg:w-72 mt-5 sm:mt-8">
         {/* Casing Pipe */}
-        <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-2xl" style={{ backgroundColor: '#4B5563', border: '4px solid #374151' }}>
+        <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-2xl" style={{ backgroundColor: 'transparent', border: '2px solid #D1D5DB' }}>
           {/* Earth Layers */}
-          <div className="absolute inset-0">
-            <div className="h-[25%]" style={{ background: 'linear-gradient(to bottom, #B8860B, #8B6914)' }} />
-            <div className="h-[25%]" style={{ background: 'linear-gradient(to bottom, #78716C, #57534E)' }} />
-            <div className="h-[25%]" style={{ background: 'linear-gradient(to bottom, #6B7280, #4B5563)' }} />
-            <div className="h-[25%]" style={{ background: 'linear-gradient(to bottom, #64748B, #334155)' }} />
+          <div className="absolute inset-0" style={{ 
+            background: `
+              repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(255, 255, 255, 0.1) 19px, rgba(255, 255, 255, 0.1) 20px),
+              repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(255, 255, 255, 0.1) 19px, rgba(255, 255, 255, 0.1) 20px),
+              linear-gradient(to bottom, #E5E7EB, #9CA3AF)`
+          }}>
           </div>
 
           {/* Inner Pipe - LARGER */}
           <motion.div 
             className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0"
-            animate={{ width: casingDiameter * 12 + 'px' }}
+            animate={{ width: casingDiameter * 18 + 'px' }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
-            style={{ backgroundColor: '#1F2937', borderLeft: '4px solid #4B5563', borderRight: '4px solid #4B5563' }}
+            style={{ backgroundColor: 'transparent', borderLeft: '4px solid #D1D5DB', borderRight: '4px solid #D1D5DB' }}
           >
             {/* Static Water Level Marker */}
             {staticWaterLevel > 0 && (
@@ -90,12 +93,12 @@ export default function BorewellAnimation({
                 transition={{ duration: 0.6 }}
               >
                 <motion.div 
-                  className="absolute -left-16 sm:-left-24 flex items-center gap-1"
+                  className="absolute -left-16 sm:-left-28 flex items-center gap-1"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                 >
                   <ArrowDown size={14} color="#3B82F6" />
-                  <span className="text-xs font-bold whitespace-nowrap" style={{ color: '#3B82F6' }}>
+                  <span className="text-xs font-bold whitespace-nowrap mr-6" style={{ color: '#3B82F6' }}>
                     Morning: {adjustedStaticWaterLevel}{unitLabel}
                   </span>
                 </motion.div>

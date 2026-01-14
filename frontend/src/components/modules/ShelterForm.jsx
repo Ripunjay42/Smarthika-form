@@ -313,7 +313,7 @@ export default function ShelterForm() {
       </div>
 
       {/* Safety Alerts */}
-      {(data.lightningArrestor === 'absent' || data.earthingPit === 'absent') && (
+      {/* {(data.lightningArrestor === 'absent' || data.earthingPit === 'absent') && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -332,7 +332,7 @@ export default function ShelterForm() {
             )}
           </ul>
         </motion.div>
-      )}
+      )} */}
     </motion.div>
   );
 }

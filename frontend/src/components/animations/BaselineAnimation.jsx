@@ -2,13 +2,15 @@ import { motion } from 'framer-motion';
 import { ArrowRight, CircleCheck, Coins, Droplet, Route, Sparkles, TriangleAlert, Wrench, Zap } from 'lucide-react';
 
 const THEME = {
-  accent: '#689F38',
-  accentLight: 'rgba(104, 159, 56, 0.3)',
-  text: '#33691E',
-  textLight: '#558B2F',
-  background: '#EDEDE7',
-  cardBg: 'rgba(104, 159, 56, 0.1)',
-  cardBorder: 'rgba(104, 159, 56, 0.3)',
+  primary: '#9ca3af',
+  primaryLight: '#d1d5db',
+  secondary: '#d1d5db',
+  water: '#b3b3b3',
+  waterLight: '#e5e7eb',
+  background: '#f9fafb',
+  pipe: '#9ca3af',
+  text: '#374151',
+  textMuted: '#9ca3af',
 };
 
 export default function BaselineAnimation({ 
@@ -55,28 +57,29 @@ export default function BaselineAnimation({
               {/* Old Pump Body */}
               <motion.div
                 className="absolute inset-3 rounded-lg flex flex-col items-center justify-center"
-                style={{ backgroundColor: '#374151' }}
-                animate={{ opacity: [0.7, 0.5, 0.7] }}
+                style={{ backgroundColor: '#f3f4f6' }}
+                animate={{ opacity: [0.8, 0.6, 0.8] }}
                 transition={{ duration: 2.5, repeat: Infinity }}
               >
                 {/* OLD Label */}
-                <span className="text-xs font-bold text-red-400 mb-1">OLD PUMP</span>
-                <span className="text-xs text-gray-400 mb-2 capitalize">
+                <span className="text-xs font-bold mb-1" style={{ color: '#ef4444' }}>OLD PUMP</span>
+                <span className="text-xs font-medium mb-2 capitalize" style={{ color: THEME.text }}>
                   {Array.isArray(oldPumpTypes) && oldPumpTypes.length > 0 ? oldPumpTypes[0] : 'Multiple'}
                 </span>
                 
                 {/* Wrench Icon */}
-                <Wrench size={32} color="#9CA3AF" />
+                <Wrench size={32} color={THEME.primary} />
                 
                 {/* Age Indicator */}
                 <div className="absolute bottom-3 left-3 right-3">
                   <div className="flex justify-between text-xs mb-1">
-                    <span style={{ color: THEME.textLight }}>Age</span>
-                    <span className="text-red-400">{oldPumpAge} yrs</span>
+                    <span style={{ color: THEME.text }}>Age</span>
+                    <span style={{ color: '#ef4444' }}>{oldPumpAge} yrs</span>
                   </div>
-                  <div className="h-1.5 bg-gray-600 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-gray-300 rounded-full overflow-hidden">
                     <motion.div 
-                      className="h-full bg-red-500 rounded-full"
+                      className="h-full rounded-full"
+                      style={{ backgroundColor: '#ef4444' }}
                       initial={{ width: 0 }}
                       animate={{ width: `${agePercentage}%` }}
                       transition={{ duration: 0.8, delay: 0.3 }}
@@ -122,7 +125,7 @@ export default function BaselineAnimation({
           {/* New Pump Housing */}
           <div 
             className="w-36 h-52 rounded-xl shadow-xl relative overflow-hidden"
-            style={{ backgroundColor: THEME.accent }}
+            style={{ backgroundColor: THEME.primaryLight }}
           >
             {/* Shine Effect */}
             <motion.div
@@ -136,9 +139,9 @@ export default function BaselineAnimation({
             />
             
             {/* New Pump Body */}
-            <div className="absolute inset-3 rounded-lg flex flex-col items-center justify-center" style={{ backgroundColor: 'rgba(0, 0, 0, 0.15)' }}>
+            <div className="absolute inset-3 rounded-lg flex flex-col items-center justify-center bg-white bg-opacity-90">
               {/* NEW Label */}
-              <span className="text-xs font-bold mb-2" style={{ color: '#E5E7EB' }}>
+              <span className="text-xs font-bold mb-2" style={{ color: THEME.text }}>
                 {isRetrofit ? 'NEW PUMP' : 'GREENFIELD'}
               </span>
               
@@ -147,7 +150,7 @@ export default function BaselineAnimation({
                 animate={{ scale: [1, 1.15, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
-                <Zap size={40} color="#E5E7EB" />
+                <Zap size={40} color={THEME.primary} />
               </motion.div>
 
               {/* Sparkles */}
@@ -156,22 +159,22 @@ export default function BaselineAnimation({
                 animate={{ rotate: 360, opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <Sparkles size={16} color="#E5E7EB" />
+                <Sparkles size={16} color={THEME.primary} />
               </motion.div>
             </div>
             
             {/* Efficiency Bar */}
             <div className="absolute bottom-2 inset-x-2 text-center">
-              <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
+              <div className="h-1.5 rounded-full overflow-hidden bg-gray-300">
                 <motion.div 
                   className="h-full rounded-full"
-                  style={{ backgroundColor: '#E5E7EB' }}
+                  style={{ backgroundColor: THEME.primary }}
                   initial={{ width: 0 }}
                   animate={{ width: '100%' }}
                   transition={{ duration: 1, delay: 0.5 }}
                 />
               </div>
-              <span className="text-xs font-medium mt-1 block" style={{ color: '#E5E7EB' }}>100% Efficient</span>
+              <span className="text-xs font-medium mt-1 mb-2 block" style={{ color: THEME.text }}>100% Efficient</span>
             </div>
           </div>
           

@@ -4,13 +4,15 @@ import { CASH_FLOW_TYPES, MONTHS, EXPANSION_STATUS_OPTIONS } from '../../constan
 import { ICON_STROKE_WIDTH } from '../../constants/iconTheme';
 
 const THEME = {
-  accent: '#689F38',
-  accentLight: 'rgba(104, 159, 56, 0.3)',
-  text: '#33691E',
-  textLight: '#558B2F',
-  background: '#EDEDE7',
-  cardBg: 'rgba(104, 159, 56, 0.1)',
-  cardBorder: 'rgba(104, 159, 56, 0.3)',
+  primary: '#9ca3af',
+  primaryLight: '#d1d5db',
+  secondary: '#d1d5db',
+  water: '#b3b3b3',
+  waterLight: '#e5e7eb',
+  background: '#f9fafb',
+  pipe: '#9ca3af',
+  text: '#374151',
+  textMuted: '#9ca3af',
 };
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

@@ -460,7 +460,6 @@ function shouldExcludeField(keyPath) {
     'rowCount', // Removed field
     'totalPlantCount', // Removed field
     'croppingPattern', // Removed field
-    'irrigationEfficiency', // Technical field
     'footValveCondition', // Removed field
     'soilPH', // Not in form
     'soilEC', // Not in form
@@ -474,6 +473,8 @@ function shouldExcludeField(keyPath) {
     'droneOwnership', // Old field - replaced with equipment array
     'sprayerOwnership', // Old field - replaced with equipment array
     'evStatus', // Old field - replaced with equipment array
+    'siteAccessibility', // Not shown in UI; default value causes noisy preview
+    'ipRatingRequirement', // Default/internal field; not needed in preview
     'oldPumpAge', // Old field - now in pumpDetails
     'starterCoilRepairs', // Old field - now in pumpDetails
     'motorBurnouts', // Old field - now in pumpDetails
