@@ -39,7 +39,7 @@ const initialFormData = {
     roadAccessDistance: '',
     roadAccessible: 'direct',
     soilTestStatus: 'no',
-    soilTestReport: null, // File upload
+    soilTestReport: null,
   },
   // Module 3: Heart (Borewell Hydraulics)
   heart: {
