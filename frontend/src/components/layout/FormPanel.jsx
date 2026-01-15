@@ -248,37 +248,40 @@ export default function FormPanel() {
         </AnimatePresence>
       </div>
 
-      {/* Navigation Footer */}
+      {/* Navigation Footer - Fixed and Consistent for Mobile */}
       <div 
-        className="shrink-0 px-4 sm:px-6 md:px-8 py-3 sm:py-4 backdrop-blur-sm"
+        className="shrink-0 px-4 sm:px-6 md:px-8 py-3 backdrop-blur-sm border-t-2"
         style={{ 
-          backgroundColor: 'rgba(229, 231, 235, 0.9)',
-          borderTop: '2px solid rgba(104, 159, 56, 0.15)',
-          paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))'
+          backgroundColor: 'rgba(229, 231, 235, 0.95)',
+          borderTopColor: 'rgba(104, 159, 56, 0.15)',
+          paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))',
+          minHeight: '70px',
+          boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.05)'
         }}
       >
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 max-w-screen-xl mx-auto">
           {/* Back Button */}
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={isPreviewing ? handleClosePreview : prevModule}
             disabled={isPreviewing ? false : isFirstModule}
-            className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-medium transition-all duration-200 shrink-0"
+            className="flex items-center justify-center gap-2 px-5 sm:px-6 py-3 rounded-xl font-medium transition-all duration-200 shrink-0 min-w-[100px]"
             style={{
               opacity: isPreviewing ? 1 : isFirstModule ? 0 : 1,
               pointerEvents: isPreviewing ? 'auto' : isFirstModule ? 'none' : 'auto',
               backgroundColor: 'rgba(104, 159, 56, 0.1)',
               color: 'var(--color-text-dark)',
-              border: '2px solid rgba(104, 159, 56, 0.2)'
+              border: '2px solid rgba(104, 159, 56, 0.2)',
+              visibility: isPreviewing || !isFirstModule ? 'visible' : 'hidden'
             }}
           >
             <ArrowLeft size={18} />
-            {isPreviewing ? 'Edit' : 'Back'}
+            <span className="font-semibold">{isPreviewing ? 'Edit' : 'Back'}</span>
           </motion.button>
 
           {/* Progress Indicator */}
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2 flex-1 justify-center">
             {MODULES.map((_, index) => (
               <motion.div
                 key={index}
@@ -297,6 +300,13 @@ export default function FormPanel() {
             ))}
           </div>
 
+          {/* Mobile Progress Text - Shown on small screens */}
+          <div className="flex sm:hidden items-center justify-center flex-1">
+            <span className="text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>
+              {currentModule + 1} / {MODULES.length}
+            </span>
+          </div>
+
           {/* Continue/Submit Button */}
           <motion.button
             whileHover={{ scale: isSubmitting || submitSuccess ? 1 : 1.02 }}
@@ -309,7 +319,7 @@ export default function FormPanel() {
                 : handleContinue
             }
             disabled={isSubmitting || submitSuccess}
-            className="flex items-center justify-center gap-2 px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg whitespace-nowrap"
+            className="flex items-center justify-center gap-2 px-6 sm:px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg whitespace-nowrap min-w-[120px]"
             style={{
               backgroundColor: submitSuccess ? '#22C55E' : isSubmitting ? '#9CA3AF' : 'var(--color-accent)',
               color: '#E5E7EB',
@@ -322,7 +332,7 @@ export default function FormPanel() {
               submitSuccess ? (
                 <>
                   <CheckCircle size={20} />
-                  Submitted!
+                  <span>Submitted!</span>
                 </>
               ) : isSubmitting ? (
                 <>
@@ -332,16 +342,18 @@ export default function FormPanel() {
                   >
                     <Send size={20} />
                   </motion.div>
-                  Submitting...
+                  <span className="hidden sm:inline">Submitting...</span>
+                  <span className="sm:hidden">Wait...</span>
                 </>
               ) : submitError ? (
                 <>
                   <AlertTriangle size={20} />
-                  Retry Submit
+                  <span className="hidden sm:inline">Retry Submit</span>
+                  <span className="sm:hidden">Retry</span>
                 </>
               ) : (
                 <>
-                  Submit
+                  <span>Submit</span>
                   <Send size={20} />
                 </>
               )
@@ -349,7 +361,7 @@ export default function FormPanel() {
               submitSuccess ? (
                 <>
                   <CheckCircle size={20} />
-                  Submitted!
+                  <span>Submitted!</span>
                 </>
               ) : isSubmitting ? (
                 <>
@@ -359,22 +371,24 @@ export default function FormPanel() {
                   >
                     <Send size={20} />
                   </motion.div>
-                  Submitting...
+                  <span className="hidden sm:inline">Submitting...</span>
+                  <span className="sm:hidden">Wait...</span>
                 </>
               ) : submitError ? (
                 <>
                   <AlertTriangle size={20} />
-                  Retry Submit
+                  <span className="hidden sm:inline">Retry Submit</span>
+                  <span className="sm:hidden">Retry</span>
                 </>
               ) : (
                 <>
-                  Preview
+                  <span>Preview</span>
                   <ArrowRight size={20} />
                 </>
               )
             ) : (
               <>
-                Continue
+                <span>Continue</span>
                 <ArrowRight size={20} />
               </>
             )}
