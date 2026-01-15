@@ -20,7 +20,7 @@ export function FormInput({
   return (
     <div className={`space-y-1.5 ${className}`}>
       {label && (
-        <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>
+        <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dark)' }}>
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -42,23 +42,23 @@ export function FormInput({
           className={`w-full px-4 py-3 rounded-xl backdrop-blur-sm transition-all duration-200 outline-none focus:outline-none ${Icon ? 'pl-11' : ''}`}
           style={{
             backgroundColor: '#EDEDE7',
-            border: error ? '2px solid #ef4444' : '2px solid rgba(104, 159, 56, 0.25)',
-            color: '#33691E',
+            border: error ? '2px solid #ef4444' : '2px solid rgba(5, 150, 105, 0.25)',
+            color: 'var(--color-text-dark)',
             ...inputStyle,
           }}
           onFocus={(e) => {
-            e.target.style.borderColor = '#689F38';
-            e.target.style.boxShadow = '0 0 0 4px rgba(104, 159, 56, 0.15)';
+            e.target.style.borderColor = 'var(--color-accent)';
+            e.target.style.boxShadow = '0 0 0 4px rgba(5, 150, 105, 0.15)';
           }}
           onBlur={(e) => {
-            e.target.style.borderColor = error ? '#ef4444' : 'rgba(104, 159, 56, 0.25)';
+            e.target.style.borderColor = error ? '#ef4444' : 'rgba(5, 150, 105, 0.25)';
             e.target.style.boxShadow = 'none';
           }}
           {...props}
         />
       </div>
       {helper && !error && (
-        <p className="text-xs" style={{ color: '#558B2F' }}>{helper}</p>
+        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{helper}</p>
       )}
       {error && (
         <motion.p
@@ -89,7 +89,7 @@ export function FormSelect({
   return (
     <div className={`space-y-1.5 ${className}`}>
       {label && (
-        <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>
+        <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dark)' }}>
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -109,15 +109,15 @@ export function FormSelect({
           className={`w-full px-4 py-3 rounded-xl transition-all duration-200 outline-none focus:outline-none appearance-none cursor-pointer ${Icon ? 'pl-11' : ''}`}
           style={{
             backgroundColor: '#EDEDE7',
-            border: error ? '2px solid #ef4444' : '2px solid rgba(104, 159, 56, 0.25)',
-            color: '#33691E'
+            border: error ? '2px solid #ef4444' : '2px solid rgba(5, 150, 105, 0.25)',
+            color: 'var(--color-text-dark)'
           }}
           onFocus={(e) => {
-            e.target.style.borderColor = '#689F38';
-            e.target.style.boxShadow = '0 0 0 4px rgba(104, 159, 56, 0.15)';
+            e.target.style.borderColor = 'var(--color-accent)';
+            e.target.style.boxShadow = '0 0 0 4px rgba(5, 150, 105, 0.15)';
           }}
           onBlur={(e) => {
-            e.target.style.borderColor = error ? '#ef4444' : 'rgba(104, 159, 56, 0.25)';
+            e.target.style.borderColor = error ? '#ef4444' : 'rgba(5, 150, 105, 0.25)';
             e.target.style.boxShadow = 'none';
           }}
           {...props}
@@ -128,7 +128,7 @@ export function FormSelect({
             </option>
           ))}
         </motion.select>
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#689F38' }}>
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--color-accent)' }}>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
@@ -170,22 +170,22 @@ export function FormSlider({
     <div className={`space-y-2 ${className}`}>
       {label && (
         <div className="flex justify-between items-center">
-          <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>
+          <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dark)' }}>
             {label}
             {required && <span className="text-red-500 ml-1">*</span>}
           </label>
           {showValue && (
-            <span className="text-sm font-bold" style={{ color: error ? '#EF4444' : '#689F38' }}>
+            <span className="text-sm font-bold" style={{ color: error ? '#EF4444' : 'var(--color-accent)' }}>
               {safeValue}{unit}
             </span>
           )}
         </div>
       )}
       <div className="relative">
-        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: error ? 'rgba(239, 68, 68, 0.2)' : 'rgba(104, 159, 56, 0.2)' }}>
+        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: error ? 'rgba(239, 68, 68, 0.2)' : 'rgba(5, 150, 105, 0.2)' }}>
           <motion.div
             className="h-full rounded-full"
-            style={{ backgroundColor: error ? '#EF4444' : '#689F38' }}
+            style={{ backgroundColor: error ? '#EF4444' : 'var(--color-accent)' }}
             initial={false}
             animate={{ width: `${percentage}%` }}
             transition={{ duration: 0.2 }}
@@ -207,18 +207,18 @@ export function FormSlider({
           style={{ 
             left: `calc(${percentage}% - 10px)`,
             backgroundColor: '#EDEDE7',
-            border: `3px solid ${error ? '#EF4444' : '#689F38'}`
+            border: `3px solid ${error ? '#EF4444' : 'var(--color-accent)'}`
           }}
           animate={{ left: `calc(${percentage}% - 10px)` }}
           transition={{ duration: 0.2 }}
         />
       </div>
-      <div className="flex justify-between text-xs" style={{ color: '#558B2F' }}>
+      <div className="flex justify-between text-xs" style={{ color: 'var(--color-text-muted)' }}>
         <span>{min}{unit}</span>
         <span>{max}{unit}</span>
       </div>
       {helper && !error && (
-        <p className="text-xs" style={{ color: '#558B2F' }}>{helper}</p>
+        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{helper}</p>
       )}
       {error && (
         <motion.p
@@ -243,7 +243,7 @@ export function FormToggle({
 }) {
   return (
     <label className={`flex items-center justify-between cursor-pointer ${className}`}>
-      <span className="text-sm font-medium" style={{ color: '#33691E' }}>{label}</span>
+      <span className="text-sm font-medium" style={{ color: 'var(--color-text-dark)' }}>{label}</span>
       <div className="relative">
         <input
           type="checkbox"
@@ -254,7 +254,7 @@ export function FormToggle({
         />
         <motion.div
           className="w-12 h-6 rounded-full transition-colors duration-200"
-          style={{ backgroundColor: checked ? '#689F38' : 'rgba(104, 159, 56, 0.3)' }}
+          style={{ backgroundColor: checked ? 'var(--color-accent)' : 'rgba(5, 150, 105, 0.3)' }}
         >
           <motion.div
             className="absolute top-1 w-4 h-4 rounded-full shadow"
@@ -279,7 +279,7 @@ export function FormButtonGroup({
   return (
     <div className={`space-y-2 ${className}`}>
       {label && (
-        <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>
+        <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dark)' }}>
           {label}
         </label>
       )}
@@ -293,10 +293,10 @@ export function FormButtonGroup({
             onClick={() => onChange({ target: { name, value: option.value } })}
             className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
             style={{
-              backgroundColor: (value ?? '') === option.value ? '#689F38' : '#EDEDE7',
-              color: (value ?? '') === option.value ? '#E5E7EB' : '#33691E',
-              border: (value ?? '') === option.value ? '2px solid #689F38' : '2px solid rgba(104, 159, 56, 0.25)',
-              boxShadow: (value ?? '') === option.value ? '0 4px 14px rgba(104, 159, 56, 0.25)' : 'none'
+              backgroundColor: (value ?? '') === option.value ? 'var(--color-accent)' : '#EDEDE7',
+              color: (value ?? '') === option.value ? '#E5E7EB' : 'var(--color-text-dark)',
+              border: (value ?? '') === option.value ? '2px solid var(--color-accent)' : '2px solid rgba(5, 150, 105, 0.25)',
+              boxShadow: (value ?? '') === option.value ? '0 4px 14px rgba(5, 150, 105, 0.25)' : 'none'
             }}
           >
             {option.label}
@@ -318,7 +318,7 @@ export function FormColorPicker({
   return (
     <div className={`space-y-2 ${className}`}>
       {label && (
-        <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>
+        <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dark)' }}>
           {label}
         </label>
       )}
@@ -333,14 +333,14 @@ export function FormColorPicker({
             className="w-12 h-12 rounded-xl shadow-md transition-all duration-200"
             style={{ 
               backgroundColor: option.color,
-              ring: (value ?? '') === option.value ? '4px solid #689F38' : 'none',
+              ring: (value ?? '') === option.value ? '4px solid var(--color-accent)' : 'none',
               boxShadow: (value ?? '') === option.value ? '0 0 0 4px rgba(104, 159, 56, 0.4)' : '0 2px 8px rgba(0,0,0,0.1)'
             }}
             title={option.label}
           />
         ))}
       </div>
-      <p className="text-xs capitalize" style={{ color: '#558B2F' }}>{options.find(o => o.value === (value ?? ''))?.label}</p>
+      <p className="text-xs capitalize" style={{ color: 'var(--color-text-muted)' }}>{options.find(o => o.value === (value ?? ''))?.label}</p>
     </div>
   );
 }
@@ -370,7 +370,7 @@ export function FormCheckboxGroup({
   return (
     <div className={`space-y-2 ${className}`}>
       {label && (
-        <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>
+        <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dark)' }}>
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -384,7 +384,7 @@ export function FormCheckboxGroup({
             className="flex items-center p-3 rounded-lg border-2 transition-all duration-200 cursor-pointer"
             style={{
               backgroundColor: selectedValues.includes(option.value) ? 'rgba(104, 159, 56, 0.1)' : '#EDEDE7',
-              borderColor: selectedValues.includes(option.value) ? '#689F38' : 'rgba(104, 159, 56, 0.25)',
+              borderColor: selectedValues.includes(option.value) ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.25)',
             }}
             onClick={() => handleCheckboxChange(option.value)}
           >
@@ -396,10 +396,10 @@ export function FormCheckboxGroup({
               onChange={() => handleCheckboxChange(option.value)}
               className="w-5 h-5 rounded cursor-pointer"
               style={{
-                accentColor: '#689F38',
+                accentColor: 'var(--color-accent)',
               }}
             />
-            <label className="ml-3 flex-1 cursor-pointer text-sm font-medium" style={{ color: '#33691E' }}>
+            <label className="ml-3 flex-1 cursor-pointer text-sm font-medium" style={{ color: 'var(--color-text-dark)' }}>
               {option.label}
             </label>
           </motion.div>

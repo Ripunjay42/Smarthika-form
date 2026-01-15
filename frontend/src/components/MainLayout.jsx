@@ -21,7 +21,7 @@ export default function MainLayout() {
         className="hidden lg:block shrink-0 transition-all duration-300"
         style={{
           width: isSidebarExpanded ? '280px' : '72px',
-          borderRight: '1px solid #689F3833',
+          borderRight: '1px solid var(--color-accent)33',
         }}
       >
         <ModuleProgress

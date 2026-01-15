@@ -74,14 +74,14 @@ export default function BaselineForm() {
     >
       {/* Header */}
       <div className="mb-8">
-        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE BASELINE</h2>
+        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: 'var(--color-accent)' }} />
+        <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-dark)' }}>THE BASELINE</h2>
         <p className="text-gray-500">Retrofit check for efficiency benchmarking.</p>
       </div>
 
       {/* Project Type Toggle */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
+        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-accent)' }}>
           Project Type
         </label>
         <div className="grid grid-cols-2 gap-4">
@@ -98,7 +98,7 @@ export default function BaselineForm() {
               }
             `}
             style={!isRetrofit
-              ? { backgroundColor: '#689F38' }
+              ? { backgroundColor: 'var(--color-accent)' }
               : { borderColor: 'rgba(104, 159, 56, 0.2)' }
             }
           >
@@ -124,7 +124,7 @@ export default function BaselineForm() {
               }
             `}
             style={isRetrofit
-              ? { backgroundColor: '#689F38' }
+              ? { backgroundColor: 'var(--color-accent)' }
               : { borderColor: 'rgba(104, 159, 56, 0.2)' }
             }
           >
@@ -181,7 +181,7 @@ export default function BaselineForm() {
                       <div className="space-y-4">
                         {/* Pump Age */}
                         <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-accent)' }}>
                             Pump Age
                           </label>
                           <div className="flex items-center gap-3">
@@ -195,7 +195,7 @@ export default function BaselineForm() {
                               className="flex-1 h-2 rounded-lg"
                               style={{ backgroundColor: '#E8F5E9' }}
                             />
-                            <span className="font-medium text-lg w-20 text-center" style={{ color: '#33691E' }}>
+                            <span className="font-medium text-lg w-20 text-center" style={{ color: 'var(--color-text-dark)' }}>
                               {pumpDetail.age || 0} yrs
                             </span>
                           </div>
@@ -203,7 +203,7 @@ export default function BaselineForm() {
 
                         {/* Starter Coil/Capacitor Repairs */}
                         <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-accent)' }}>
                             Starter Coil/Capacitor Repairs (Last Year)
                           </label>
                           <div className="flex items-center gap-3">
@@ -217,7 +217,7 @@ export default function BaselineForm() {
                               className="flex-1 h-2 rounded-lg"
                               style={{ backgroundColor: '#E8F5E9' }}
                             />
-                            <span className="font-medium text-lg w-20 text-center" style={{ color: '#33691E' }}>
+                            <span className="font-medium text-lg w-20 text-center" style={{ color: 'var(--color-text-dark)' }}>
                               {pumpDetail.repairs || 0}x
                             </span>
                           </div>
@@ -225,7 +225,7 @@ export default function BaselineForm() {
 
                         {/* Motor Burnouts */}
                         <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-accent)' }}>
                             Motor Burnouts (Rewinding)
                           </label>
                           <div className="flex items-center gap-3">
@@ -239,7 +239,7 @@ export default function BaselineForm() {
                               className="flex-1 h-2 rounded-lg"
                               style={{ backgroundColor: '#E8F5E9' }}
                             />
-                            <span className="font-medium text-lg w-20 text-center" style={{ color: '#33691E' }}>
+                            <span className="font-medium text-lg w-20 text-center" style={{ color: 'var(--color-text-dark)' }}>
                               {pumpDetail.burnouts || 0}x
                             </span>
                           </div>
@@ -271,7 +271,7 @@ export default function BaselineForm() {
 
             {/* Pipe Reuse Toggle */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
+              <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-accent)' }}>
                 Piping Approach
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -290,7 +290,7 @@ export default function BaselineForm() {
                       }
                     `}
                     style={data.pipeReuseStatus === option.value
-                      ? { backgroundColor: '#689F38' }
+                      ? { backgroundColor: 'var(--color-accent)' }
                       : { borderColor: 'rgba(104, 159, 56, 0.2)' }
                     }
                   >
@@ -312,8 +312,8 @@ export default function BaselineForm() {
           style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
         >
           <Sparkles className="mx-auto mb-4" size={48} strokeWidth={ICON_STROKE_WIDTH} style={{ color: ICON_COLOR }} />
-          <h3 className="text-xl font-bold mb-2" style={{ color: '#33691E' }}>Fresh Start</h3>
-          <p className="text-sm" style={{ color: '#558B2F' }}>
+          <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-dark)' }}>Fresh Start</h3>
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
             New installation means optimal efficiency from day one. 
             No legacy constraints to work around.
           </p>

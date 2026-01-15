@@ -39,14 +39,14 @@ export default function ShelterForm() {
     >
       {/* Header 1: Shelter & Verification */}
       <div className="mb-8">
-        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE SHELTER</h2>
+        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: 'var(--color-accent)' }} />
+        <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-dark)' }}>THE SHELTER</h2>
         <p className="text-gray-500">Define the environment and prove it with a photo.</p>
       </div>
 
       {/* Shelter Type */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
+        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-accent)' }}>
           Where will we mount the box?
         </label>
         <div className="grid grid-cols-3 gap-3">
@@ -65,7 +65,7 @@ export default function ShelterForm() {
                 }
               `}
               style={data.shelterStructure === type.value 
-                ? { backgroundColor: '#689F38' }
+                ? { backgroundColor: 'var(--color-accent)' }
                 : { borderColor: 'rgba(104, 159, 56, 0.2)' }
               }
             >
@@ -107,7 +107,7 @@ export default function ShelterForm() {
 
       {/* Signal Strength */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
+        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-accent)' }}>
           Mobile Signal at Pump
         </label>
         <div className="grid grid-cols-4 gap-3">
@@ -133,14 +133,14 @@ export default function ShelterForm() {
                   }
                 `}
                 style={data.mobileSignalStrength === signal.value
-                  ? { backgroundColor: '#689F38' }
+                  ? { backgroundColor: 'var(--color-accent)' }
                   : { borderColor: 'rgba(104, 159, 56, 0.2)' }
                 }
               >
                 <IconComponent 
                   size={24} 
                   strokeWidth={ICON_STROKE_WIDTH} 
-                  color={data.mobileSignalStrength === signal.value ? 'white' : '#689F38'}
+                  color={data.mobileSignalStrength === signal.value ? 'white' : 'var(--color-accent)'}
                 />
                 <span className="text-xs font-medium">{signal.label}</span>
               </motion.button>
@@ -239,8 +239,8 @@ export default function ShelterForm() {
 
       {/* Distance to Main Switch */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Distance to Main Switch</label>
-        <p className="text-xs" style={{ color: '#558B2F' }}>Distance from main meter/switch to pump house (in meters)</p>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Distance to Main Switch</label>
+        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Distance from main meter/switch to pump house (in meters)</p>
         <input
           type="number"
           name="distanceToMainSwitch"
@@ -251,7 +251,7 @@ export default function ShelterForm() {
           style={{
             borderColor: 'rgba(104, 159, 56, 0.3)',
             backgroundColor: '#FFFFFF',
-            color: '#33691E',
+            color: 'var(--color-text-dark)',
           }}
           min="0"
         />
@@ -260,8 +260,8 @@ export default function ShelterForm() {
       {/* Header 3: Electrical Support */}
       <div className="mt-8 pt-6 border-t-2" style={{ borderColor: 'rgba(104, 159, 56, 0.2)' }}>
         <div className="mb-6">
-          <h3 className="text-lg font-bold mb-1" style={{ color: '#33691E' }}>Electrical & Mechanical Support</h3>
-          <p className="text-xs" style={{ color: '#558B2F' }}>Help with installation and commissioning</p>
+          <h3 className="text-lg font-bold mb-1" style={{ color: 'var(--color-text-dark)' }}>Electrical & Mechanical Support</h3>
+          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Help with installation and commissioning</p>
         </div>
 
         <FormButtonGroup
@@ -292,14 +292,14 @@ export default function ShelterForm() {
 
       {/* Pump House Picture Upload */}
       <div className="space-y-3 mt-8">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Take photo of the location</label>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Take photo of the location</label>
         <motion.div
           className="p-4 rounded-lg border-2 border-dashed" 
           style={{ borderColor: 'rgba(104, 159, 56, 0.5)', backgroundColor: 'rgba(104, 159, 56, 0.05)' }}
         >
           <label className="flex items-center justify-center gap-2 cursor-pointer">
-            <Upload size={18} color="#689F38" />
-            <span className="text-sm font-medium" style={{ color: '#33691E' }}>
+            <Upload size={18} color="var(--color-accent)" />
+            <span className="text-sm font-medium" style={{ color: 'var(--color-text-dark)' }}>
               {data.pumpHousePictureFile ? `✓ ${data.pumpHousePictureFile}` : 'Upload Photo (JPG/PNG)'}
             </span>
             <input 

@@ -223,10 +223,10 @@ export default function TopographyAnimation({
           transition={{ delay: 0.1 }}
         >
           <div className="flex items-center gap-3">
-            <Droplets size={24} color={drainageClass === 'good' ? '#689F38' : '#EF4444'} />
+            <Droplets size={24} color={drainageClass === 'good' ? 'var(--color-accent)' : '#EF4444'} />
             <div>
               <p className="text-xs font-semibold" style={{ color: THEME.accent }}>DRAINAGE</p>
-              <p className="text-sm font-bold capitalize" style={{ color: drainageClass === 'good' ? '#689F38' : '#DC2626' }}>
+              <p className="text-sm font-bold capitalize" style={{ color: drainageClass === 'good' ? 'var(--color-accent)' : '#DC2626' }}>
                 {drainageClass === 'good' ? 'Well Drained' : 'Waterlogging Risk'}
               </p>
             </div>
@@ -254,8 +254,8 @@ export default function TopographyAnimation({
               {exclusionZones > 0 && (
                 <div className="text-xs mt-1 space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#689F38' }} />
-                    <span style={{ color: '#689F38' }}>Used: {usedPercentage}% ({usableArea.toFixed(2)} acres)</span>
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--color-accent)' }} />
+                    <span style={{ color: 'var(--color-accent)' }}>Used: {usedPercentage}% ({usableArea.toFixed(2)} acres)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#EF4444' }} />

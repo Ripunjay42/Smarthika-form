@@ -21,7 +21,7 @@ const styleSheet = typeof document !== 'undefined' ? (() => {
   const style = document.createElement('style');
   style.textContent = `
     .state-path.state-selected {
-      fill: #689F38 !important;
+      fill: var(--color-accent) !important;
       filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.1)) !important;
     }
   `;

@@ -6,8 +6,8 @@ const THEME = {
   border: 'rgba(104, 159, 56, 0.15)',
   cardBg: 'rgba(104, 159, 56, 0.06)',
   cardBorder: 'rgba(104, 159, 56, 0.18)',
-  text: '#33691E',
-  muted: '#558B2F',
+  text: 'var(--color-text-dark)',
+  muted: 'var(--color-text-muted)',
 };
 
 function toTitleCase(text) {

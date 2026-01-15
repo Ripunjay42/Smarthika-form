@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { User, Phone, Mail, Users, MapPin, Calendar, Home, Smartphone } from 'lucide-react';
+import { User, Phone, Mail, Users, MapPin, Calendar, Home, Smartphone, Droplets } from 'lucide-react';
 import { FormInput, FormSlider, FormSelect, FormButtonGroup } from '../ui/FormElements';
 import { useFormContext } from '../../context/FormContext';
 import { ICON_COLOR, ICON_STROKE_WIDTH } from '../../constants/iconTheme';
@@ -83,23 +83,23 @@ export default function ProfileForm() {
       className="space-y-6"
     >
       {/* Smarthika Header */}
-      <div className="mb-8 p-4 rounded-xl" style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)', border: '2px solid rgba(104, 159, 56, 0.2)' }}>
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-lg flex items-center justify-center font-bold text-white" style={{ backgroundColor: '#689F38' }}>
-            S
+      <div className="mb-8 p-5 rounded-xl" style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)', border: '1px solid var(--color-accent)', boxShadow: '0 2px 8px rgba(5, 150, 105, 0.08)' }}>
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%)', boxShadow: '0 4px 12px rgba(5, 150, 105, 0.25)' }}>
+            <Droplets size={28} color="#FFFFFF" strokeWidth={2} />
           </div>
           <div>
-            <h1 className="text-xl font-bold" style={{ color: '#33691E' }}>SMARTHIKA</h1>
-            <p className="text-xs" style={{ color: '#558B2F' }}>Smart Irrigation Solutions</p>
+            <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-dark)' }}>SMARTHIKA</h1>
+            <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>Smart Irrigation Solutions</p>
           </div>
         </div>
       </div>
 
       {/* Header */}
       <div className="mb-8">
-        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>WHO ARE YOU?</h2>
-        <p style={{ color: '#558B2F' }}>Establish your digital identity on the network.</p>
+        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: 'var(--color-accent)' }} />
+        <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-dark)' }}>WHO ARE YOU?</h2>
+        <p style={{ color: 'var(--color-text-muted)' }}>Establish your digital identity on the network.</p>
       </div>
 
       {/* Form Fields */}
@@ -157,7 +157,7 @@ export default function ProfileForm() {
 
         {/* Location Section */}
         <div className="border-t pt-5 mt-5 space-y-5">
-          <h3 className="font-semibold mb-4" style={{ color: '#33691E' }}>Location Information</h3>
+          <h3 className="font-semibold mb-4" style={{ color: 'var(--color-text-dark)' }}>Location Information</h3>
           
           {/* Country - Fixed to India */}
           <FormSelect
@@ -184,7 +184,7 @@ export default function ProfileForm() {
           {data.state && (
             <>
               {loadingDistricts ? (
-                <div style={{ color: '#558B2F' }} className="text-sm py-2">Loading districts...</div>
+                <div style={{ color: 'var(--color-text-muted)' }} className="text-sm py-2">Loading districts...</div>
               ) : districts.length > 0 ? (
                 <FormSelect
                   label="District"
@@ -223,16 +223,16 @@ export default function ProfileForm() {
         </div>
 
         {/* Do you live on this farm? - Large toggle card */}
-        <div className="mt-6 p-4 rounded-xl" style={{ backgroundColor: 'rgba(229,231,235,0.9)', border: '1px solid rgba(104,159,56,0.12)' }}>
-          <div className="mb-3 text-sm font-semibold" style={{ color: '#33691E' }}>Do you live on this farm?</div>
+        <div className="mt-6 p-4 rounded-xl" style={{ backgroundColor: 'rgba(229,231,235,0.9)', border: '1px solid var(--color-accent)' }}>
+          <div className="mb-3 text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Do you live on this farm?</div>
           <FormButtonGroup
             label=""
             name="livesOnFarm"
             value={data.livesOnFarm}
             onChange={handleChange}
             options={[
-              { value: 'yes', label: (<div className="flex items-center gap-2"><Home size={16} color="#33691E" />Yes, I stay here</div>) },
-              { value: 'no', label: (<div className="flex items-center gap-2"><Smartphone size={16} color="#33691E" />No, I manage remotely</div>) },
+              { value: 'yes', label: (<div className="flex items-center gap-2"><Home size={16} style={{ color: 'var(--color-text-dark)' }} />Yes, I stay here</div>) },
+              { value: 'no', label: (<div className="flex items-center gap-2"><Smartphone size={16} style={{ color: 'var(--color-text-dark)' }} />No, I manage remotely</div>) },
             ]}
           />
         </div>
@@ -242,7 +242,8 @@ export default function ProfileForm() {
           <button
             type="button"
             onClick={() => setShowLaborDetails((s) => !s)}
-            className="text-sm font-medium text-green-700"
+            className="text-sm font-medium"
+            style={{ color: 'var(--color-text-muted)' }}
           >
             {showLaborDetails ? '− Remove Labor Info' : '+ Add Labor Info (Optional)'}
           </button>
@@ -276,8 +277,8 @@ export default function ProfileForm() {
               <Users size={20} color={ICON_COLOR} strokeWidth={ICON_STROKE_WIDTH} />
             </div>
             <div>
-              <h4 className="text-sm font-semibold" style={{ color: '#33691E' }}>Why we ask this</h4>
-              <p className="text-xs mt-1" style={{ color: '#558B2F' }}>
+              <h4 className="text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Why we ask this</h4>
+              <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
                 Your contact details help us communicate efficiently. Location and farm information 
                 helps us understand local conditions and provide targeted recommendations. Age and 
                 labor count help estimate ROI and automation opportunities.

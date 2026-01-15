@@ -30,7 +30,7 @@ export default function VisionForm() {
   };
 
   const getLaborDescription = (score) => {
-    if (score <= 2) return { level: 'Easy', color: '#689F38', desc: 'Easy to find labor' };
+    if (score <= 2) return { level: 'Easy', color: 'var(--color-accent)', desc: 'Easy to find labor' };
     if (score <= 4) return { level: 'Moderate', color: '#FBC02D', desc: 'Moderate availability' };
     if (score <= 7) return { level: 'Difficult', color: '#FF6F00', desc: 'Hard to find labor' };
     return { level: 'Critical', color: '#D32F2F', desc: 'Very expensive/hard to find' };
@@ -46,7 +46,7 @@ export default function VisionForm() {
 
   const getExpansionIcon = (status) => {
     switch(status) {
-      case 'own': return <CheckCircle2 size={20} color="#689F38" />;
+      case 'own': return <CheckCircle2 size={20} color="var(--color-accent)" />;
       case 'planned': return <Clock size={20} color="#FBC02D" />;
       default: return <X size={20} color="#999" />;
     }
@@ -65,8 +65,8 @@ export default function VisionForm() {
     >
       {/* Header */}
       <div className="mb-8">
-        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE VISION</h2>
+        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: 'var(--color-accent)' }} />
+        <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-dark)' }}>THE VISION</h2>
         <p className="text-gray-500">Economic goals, cash flow strategy, and 3-year expansion plan.</p>
       </div>
 
@@ -78,17 +78,17 @@ export default function VisionForm() {
       >
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)' }}>
-            <Calendar size={20} color="#689F38" strokeWidth={ICON_STROKE_WIDTH} />
+            <Calendar size={20} color="var(--color-accent)" strokeWidth={ICON_STROKE_WIDTH} />
           </div>
           <div>
-            <h3 className="text-lg font-bold" style={{ color: '#33691E' }}>Income Cycle (Harvest & Cash Flow)</h3>
+            <h3 className="text-lg font-bold" style={{ color: 'var(--color-text-dark)' }}>Income Cycle (Harvest & Cash Flow)</h3>
             <p className="text-xs text-gray-500">Match payment plan to your wallet</p>
           </div>
         </div>
 
         {/* Cash Flow Type Toggle */}
         <div className="space-y-3">
-          <label className="block text-sm font-semibold" style={{ color: '#689F38' }}>
+          <label className="block text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>
             How do you earn income?
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -100,7 +100,7 @@ export default function VisionForm() {
                 onClick={() => updateModuleData('vision', { cash_flow_type: type.value })}
                 className={`p-3 rounded-lg border-2 transition-all text-left ${
                   data.cash_flow_type === type.value
-                    ? 'border-[#689F38] bg-opacity-100'
+                    ? 'border-[var(--color-accent)] bg-opacity-100'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
                 style={{
@@ -109,7 +109,7 @@ export default function VisionForm() {
                     : 'transparent'
                 }}
               >
-                <p className="font-semibold text-sm" style={{ color: '#33691E' }}>{type.label}</p>
+                <p className="font-semibold text-sm" style={{ color: 'var(--color-text-dark)' }}>{type.label}</p>
                 <p className="text-xs text-gray-500 mt-1">{type.description}</p>
               </motion.button>
             ))}
@@ -118,8 +118,8 @@ export default function VisionForm() {
 
         {/* Harvest Months Display */}
         <div className="p-4 rounded-lg border-2" style={{ borderColor: 'rgba(104, 159, 56, 0.3)', backgroundColor: 'rgba(104, 159, 56, 0.05)' }}>
-          <p className="text-sm font-semibold mb-2" style={{ color: '#689F38' }}>Harvest Months:</p>
-          <p className="text-sm" style={{ color: '#33691E' }}>
+          <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-accent)' }}>Harvest Months:</p>
+          <p className="text-sm" style={{ color: 'var(--color-text-dark)' }}>
             {selectedMonthsLabel}
           </p>
           <p className="text-xs text-gray-500 mt-2">
@@ -136,20 +136,20 @@ export default function VisionForm() {
       >
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)' }}>
-            <BarChart3 size={20} color="#689F38" strokeWidth={ICON_STROKE_WIDTH} />
+            <BarChart3 size={20} color="var(--color-accent)" strokeWidth={ICON_STROKE_WIDTH} />
           </div>
           <div>
-            <h3 className="text-lg font-bold" style={{ color: '#33691E' }}>Yield Strategy (LER & Density)</h3>
+            <h3 className="text-lg font-bold" style={{ color: 'var(--color-text-dark)' }}>Yield Strategy (LER & Density)</h3>
             <p className="text-xs text-gray-500">Plan for high-density farming</p>
           </div>
         </div>
 
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <label className="text-sm font-semibold" style={{ color: '#689F38' }}>
+            <label className="text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>
               Target Yield Multiplier (LER)
             </label>
-            <span className="px-3 py-1 rounded-full text-sm font-bold" style={{ color: '#689F38', backgroundColor: 'rgba(104, 159, 56, 0.1)' }}>
+            <span className="px-3 py-1 rounded-full text-sm font-bold" style={{ color: 'var(--color-accent)', backgroundColor: 'rgba(104, 159, 56, 0.1)' }}>
               {data.targetLER.toFixed(1)}x
             </span>
           </div>
@@ -164,11 +164,11 @@ export default function VisionForm() {
             onChange={handleSliderChange}
             className="w-full h-2 rounded-lg appearance-none cursor-pointer"
             style={{
-              background: `linear-gradient(to right, #689F38 0%, #689F38 ${(data.targetLER - 1) * 100}%, #ddd ${(data.targetLER - 1) * 100}%, #ddd 100%)`
+              background: `linear-gradient(to right, var(--color-accent) 0%, var(--color-accent) ${(data.targetLER - 1) * 100}%, #ddd ${(data.targetLER - 1) * 100}%, #ddd 100%)`
             }}
           />
 
-          <div className="flex justify-between text-xs" style={{ color: '#689F38' }}>
+          <div className="flex justify-between text-xs" style={{ color: 'var(--color-accent)' }}>
             <span>Standard (1.0x)</span>
             <span>High Density (2.0x)</span>
           </div>
@@ -186,9 +186,9 @@ export default function VisionForm() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="p-3 rounded-lg border-l-4 text-sm"
-              style={{ borderColor: '#689F38', backgroundColor: 'rgba(104, 159, 56, 0.08)' }}
+              style={{ borderColor: 'var(--color-accent)', backgroundColor: 'rgba(104, 159, 56, 0.08)' }}
             >
-              <p style={{ color: '#33691E' }} className="font-semibold flex items-center gap-2">
+              <p style={{ color: 'var(--color-text-dark)' }} className="font-semibold flex items-center gap-2">
                 <Zap size={16} />
                 💡 Multi-Zone Automation will be recommended for different crop watering
               </p>
@@ -205,10 +205,10 @@ export default function VisionForm() {
       >
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)' }}>
-            <TrendingUp size={20} color="#689F38" strokeWidth={ICON_STROKE_WIDTH} />
+            <TrendingUp size={20} color="var(--color-accent)" strokeWidth={ICON_STROKE_WIDTH} />
           </div>
           <div>
-            <h3 className="text-lg font-bold" style={{ color: '#33691E' }}>Future Expansion (3-Year Plan)</h3>
+            <h3 className="text-lg font-bold" style={{ color: 'var(--color-text-dark)' }}>Future Expansion (3-Year Plan)</h3>
             <p className="text-xs text-gray-500">Plan for tomorrow's farm today</p>
           </div>
         </div>
@@ -228,9 +228,9 @@ export default function VisionForm() {
           >
             <div className="flex justify-between items-start mb-3">
               <div className="flex items-center gap-3">
-                <House size={20} color="#689F38" />
+                <House size={20} color="var(--color-accent)" />
                 <div>
-                  <h4 className="font-bold text-sm" style={{ color: '#33691E' }}>Polyhouse/Greenhouse</h4>
+                  <h4 className="font-bold text-sm" style={{ color: 'var(--color-text-dark)' }}>Polyhouse/Greenhouse</h4>
                   <p className="text-xs text-gray-500">Controlled environment farming</p>
                 </div>
               </div>
@@ -247,8 +247,8 @@ export default function VisionForm() {
                   onClick={() => handleExpansionStatusChange('polyhouse', option.value)}
                   className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all border-2 ${
                     getExpansionStatus('polyhouse') === option.value
-                      ? 'border-[#689F38] bg-[#689F38] text-white'
-                      : 'border-gray-300 text-gray-600 hover:border-[#689F38]'
+                      ? 'border-[var(--color-accent)] bg-[var(--color-accent)] text-white'
+                      : 'border-gray-300 text-gray-600 hover:border-[var(--color-accent)]'
                   }`}
                 >
                   {option.label}
@@ -266,9 +266,9 @@ export default function VisionForm() {
           >
             <div className="flex justify-between items-start mb-3">
               <div className="flex items-center gap-3">
-                <Fish size={20} color="#689F38" />
+                <Fish size={20} color="var(--color-accent)" />
                 <div>
-                  <h4 className="font-bold text-sm" style={{ color: '#33691E' }}>Fish Pond/Aquaculture</h4>
+                  <h4 className="font-bold text-sm" style={{ color: 'var(--color-text-dark)' }}>Fish Pond/Aquaculture</h4>
                   <p className="text-xs text-gray-500">Integrated aquaculture system</p>
                 </div>
               </div>
@@ -285,8 +285,8 @@ export default function VisionForm() {
                   onClick={() => handleExpansionStatusChange('fish_pond', option.value)}
                   className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all border-2 ${
                     getExpansionStatus('fish_pond') === option.value
-                      ? 'border-[#689F38] bg-[#689F38] text-white'
-                      : 'border-gray-300 text-gray-600 hover:border-[#689F38]'
+                      ? 'border-[var(--color-accent)] bg-[var(--color-accent)] text-white'
+                      : 'border-gray-300 text-gray-600 hover:border-[var(--color-accent)]'
                   }`}
                 >
                   {option.label}
@@ -302,9 +302,9 @@ export default function VisionForm() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="p-3 rounded-lg border-l-4 text-sm"
-            style={{ borderColor: '#689F38', backgroundColor: 'rgba(104, 159, 56, 0.08)' }}
+            style={{ borderColor: 'var(--color-accent)', backgroundColor: 'rgba(104, 159, 56, 0.08)' }}
           >
-            <p style={{ color: '#33691E' }} className="font-semibold flex items-center gap-2">
+            <p style={{ color: 'var(--color-text-dark)' }} className="font-semibold flex items-center gap-2">
               <AlertCircle size={16} />
               We'll add foggers & auxiliary outlets to handle your future plans
             </p>
@@ -320,17 +320,17 @@ export default function VisionForm() {
       >
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(104, 159, 56, 0.1)' }}>
-            <Gauge size={20} color="#689F38" strokeWidth={ICON_STROKE_WIDTH} />
+            <Gauge size={20} color="var(--color-accent)" strokeWidth={ICON_STROKE_WIDTH} />
           </div>
           <div>
-            <h3 className="text-lg font-bold" style={{ color: '#33691E' }}>Bottom Line (Labor & ROI)</h3>
+            <h3 className="text-lg font-bold" style={{ color: 'var(--color-text-dark)' }}>Bottom Line (Labor & ROI)</h3>
             <p className="text-xs text-gray-500">The final push for automation</p>
           </div>
         </div>
 
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <label className="text-sm font-semibold" style={{ color: '#689F38' }}>
+            <label className="text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>
               How big is your labor headache?
             </label>
             <span 
@@ -351,12 +351,12 @@ export default function VisionForm() {
             onChange={handleSliderChange}
             className="w-full h-2 rounded-lg appearance-none cursor-pointer"
             style={{
-              background: `linear-gradient(to right, #689F38 0%, #FBC02D 40%, #FF6F00 70%, #D32F2F 100%)`
+              background: `linear-gradient(to right, var(--color-accent) 0%, #FBC02D 40%, #FF6F00 70%, #D32F2F 100%)`
             }}
           />
 
           <div className="flex justify-between text-xs font-semibold">
-            <span style={{ color: '#689F38' }}>Easy</span>
+            <span style={{ color: 'var(--color-accent)' }}>Easy</span>
             <span style={{ color: '#D32F2F' }}>Expensive</span>
           </div>
 
@@ -397,9 +397,9 @@ export default function VisionForm() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="p-3 rounded-lg border-l-4 text-sm"
-              style={{ borderColor: '#689F38', backgroundColor: 'rgba(104, 159, 56, 0.08)' }}
+              style={{ borderColor: 'var(--color-accent)', backgroundColor: 'rgba(104, 159, 56, 0.08)' }}
             >
-              <p style={{ color: '#558B2F' }} className="font-semibold flex items-center gap-2">
+              <p style={{ color: 'var(--color-text-muted)' }} className="font-semibold flex items-center gap-2">
                 <CheckCircle2 size={16} />
                 ✓ Labor is manageable - basic automation can still increase efficiency
               </p>

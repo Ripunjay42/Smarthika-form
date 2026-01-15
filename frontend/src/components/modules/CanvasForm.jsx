@@ -71,18 +71,18 @@ export default function CanvasForm() {
       <div className="mb-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
-            <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>YOUR LAND</h2>
-            <p style={{ color: '#558B2F' }}>Map your physical reality for precision irrigation.</p>
+            <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: 'var(--color-accent)' }} />
+            <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-dark)' }}>YOUR LAND</h2>
+            <p style={{ color: 'var(--color-text-muted)' }}>Map your physical reality for precision irrigation.</p>
           </div>
           <div className="flex-shrink-0 pt-1">
             <div className="flex flex-col items-end gap-2">
-              <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>Measurement Unit</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dark)' }}>Measurement Unit</label>
               <div className="relative inline-flex items-center bg-white rounded-full p-1" style={{ border: '2px solid rgba(104, 159, 56, 0.3)' }}>
                 <motion.div
                   className="absolute h-8 rounded-full"
                   style={{
-                    backgroundColor: '#689F38',
+                    backgroundColor: 'var(--color-accent)',
                     width: '50%',
                     left: (data.unitSystem ?? 'feet') === 'feet' ? '0%' : '50%',
                   }}
@@ -92,14 +92,14 @@ export default function CanvasForm() {
                 <button
                   onClick={() => handleChange({ target: { name: 'unitSystem', value: 'feet' } })}
                   className="relative z-10 px-4 py-1.5 text-sm font-semibold transition-colors rounded-full"
-                  style={{ color: (data.unitSystem ?? 'feet') === 'feet' ? '#EDEDE7' : '#33691E' }}
+                  style={{ color: (data.unitSystem ?? 'feet') === 'feet' ? '#EDEDE7' : 'var(--color-text-dark)' }}
                 >
                   Feet
                 </button>
                 <button
                   onClick={() => handleChange({ target: { name: 'unitSystem', value: 'meters' } })}
                   className="relative z-10 px-4 py-1.5 text-sm font-semibold transition-colors rounded-full"
-                  style={{ color: (data.unitSystem ?? 'feet') === 'meters' ? '#EDEDE7' : '#33691E' }}
+                  style={{ color: (data.unitSystem ?? 'feet') === 'meters' ? '#EDEDE7' : 'var(--color-text-dark)' }}
                 >
                   Meters
                 </button>
@@ -148,7 +148,7 @@ export default function CanvasForm() {
 
       {/* Field Geometry - Visual Selection */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Field Geometry</label>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Field Geometry</label>
         <div className="grid grid-cols-3 gap-3">
           {FIELD_GEOMETRIES.map((geometry) => (
             <motion.button
@@ -156,7 +156,7 @@ export default function CanvasForm() {
               onClick={() => handleChange({ target: { name: 'fieldGeometry', value: geometry.value } })}
               className="p-4 rounded-lg border-2 transition-all"
               style={{
-                borderColor: data.fieldGeometry === geometry.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                borderColor: data.fieldGeometry === geometry.value ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
                 backgroundColor: data.fieldGeometry === geometry.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
               }}
               whileHover={{ scale: 1.05 }}
@@ -164,24 +164,24 @@ export default function CanvasForm() {
             >
               <div className="flex flex-col items-center gap-2">
                 {geometry.value === 'rectangular' && (
-                  <div className="w-8 h-5 rounded-sm border-2" style={{ borderColor: '#689F38' }} />
+                  <div className="w-8 h-5 rounded-sm border-2" style={{ borderColor: 'var(--color-accent)' }} />
                 )}
                 {geometry.value === 'square' && (
-                  <div className="w-6 h-6 rounded-sm border-2" style={{ borderColor: '#689F38' }} />
+                  <div className="w-6 h-6 rounded-sm border-2" style={{ borderColor: 'var(--color-accent)' }} />
                 )}
                 {geometry.value === 'circular' && (
-                  <div className="w-6 h-6 rounded-full border-2" style={{ borderColor: '#689F38' }} />
+                  <div className="w-6 h-6 rounded-full border-2" style={{ borderColor: 'var(--color-accent)' }} />
                 )}
                 {geometry.value === 'irregular' && (
                   <div 
                     className="w-6 h-6 border-2"
                     style={{ 
-                      borderColor: '#689F38',
+                      borderColor: 'var(--color-accent)',
                       borderRadius: '30% 70% 60% 40%'
                     }} 
                   />
                 )}
-                <span className="text-xs font-semibold" style={{ color: '#33691E' }}>{geometry.label}</span>
+                <span className="text-xs font-semibold" style={{ color: 'var(--color-text-dark)' }}>{geometry.label}</span>
               </div>
             </motion.button>
           ))}
@@ -190,7 +190,7 @@ export default function CanvasForm() {
 
       {/* Topography with Icons */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Terrain Type</label>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Terrain Type</label>
         <div className="grid grid-cols-3 gap-3">
           {[
             { value: 'flat', label: 'Flat', icon: Layers },
@@ -204,14 +204,14 @@ export default function CanvasForm() {
                 onClick={() => handleChange({ target: { name: 'topographyType', value: terrain.value } })}
                 className="p-4 rounded-lg border-2 transition-all flex flex-col items-center gap-2"
                 style={{
-                  borderColor: data.topographyType === terrain.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                  borderColor: data.topographyType === terrain.value ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
                   backgroundColor: data.topographyType === terrain.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
                 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <TerrainIcon size={28} color={data.topographyType === terrain.value ? '#689F38' : '#558B2F'} strokeWidth={1.5} />
-                <span className="text-xs font-semibold" style={{ color: '#33691E' }}>{terrain.label}</span>
+                <TerrainIcon size={28} color={data.topographyType === terrain.value ? 'var(--color-accent)' : 'var(--color-text-muted)'} strokeWidth={1.5} />
+                <span className="text-xs font-semibold" style={{ color: 'var(--color-text-dark)' }}>{terrain.label}</span>
               </motion.button>
             );
           })}
@@ -220,8 +220,8 @@ export default function CanvasForm() {
 
       {/* Soil Type with Visual - Multiple Selection */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Soil Texture (Top Layer)</label>
-        <p className="text-xs" style={{ color: '#558B2F' }}>Select one or more soil types present</p>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Soil Texture (Top Layer)</label>
+        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Select one or more soil types present</p>
         <div className="grid grid-cols-2 gap-3">
           {SOIL_TYPES.map((soil) => {
             const isSelected = Array.isArray(data.soilTextureTop) 
@@ -239,7 +239,7 @@ export default function CanvasForm() {
                 disabled={isLastSoil}
                 className="p-3 rounded-lg border-2 transition-all flex items-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{
-                  borderColor: isSelected ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                  borderColor: isSelected ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
                   backgroundColor: isSelected ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
                 }}
                 whileHover={!isLastSoil ? { scale: 1.02 } : {}}
@@ -249,14 +249,14 @@ export default function CanvasForm() {
                   className="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center" 
                   style={{ 
                     backgroundColor: soil.color,
-                    border: isSelected ? '2px solid #689F38' : 'none'
+                    border: isSelected ? '2px solid var(--color-accent)' : 'none'
                   }} 
                 >
                   {isSelected && (
                     <CheckCircle2 size={16} color="#E5E7EB" strokeWidth={2} />
                   )}
                 </div>
-                <span className="text-sm font-medium text-left" style={{ color: '#33691E' }}>{soil.label}</span>
+                <span className="text-sm font-medium text-left" style={{ color: 'var(--color-text-dark)' }}>{soil.label}</span>
               </motion.button>
             );
           })}
@@ -265,7 +265,7 @@ export default function CanvasForm() {
 
       {/* Drainage Condition with Icons - Compact */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Drainage Condition</label>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Drainage Condition</label>
         <div className="grid grid-cols-2 gap-4">
           {[
             { value: 'good', label: 'Well Drained', icon: TrendingDown },
@@ -278,14 +278,14 @@ export default function CanvasForm() {
                 onClick={() => handleChange({ target: { name: 'drainageClass', value: drainage.value } })}
                 className="py-4 px-2 rounded-lg border-2 transition-all flex items-center justify-center gap-2"
                 style={{
-                  borderColor: data.drainageClass === drainage.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                  borderColor: data.drainageClass === drainage.value ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
                   backgroundColor: data.drainageClass === drainage.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
                 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <DrainageIcon size={20} color={data.drainageClass === drainage.value ? '#689F38' : '#558B2F'} />
-                <span className="text-sm font-medium" style={{ color: '#33691E' }}>{drainage.label}</span>
+                <DrainageIcon size={20} color={data.drainageClass === drainage.value ? 'var(--color-accent)' : 'var(--color-text-muted)'} />
+                <span className="text-sm font-medium" style={{ color: 'var(--color-text-dark)' }}>{drainage.label}</span>
               </motion.button>
             );
           })}
@@ -307,7 +307,7 @@ export default function CanvasForm() {
       {/* Soil Test Report - Yes/No Toggle */}
       <div className="border-t pt-5">
         <div className="space-y-3">
-          <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Do you have a Soil Test Report?</label>
+          <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Do you have a Soil Test Report?</label>
           <div className="grid grid-cols-2 gap-4">
             {[
               { value: 'no', label: 'No', icon: AlertCircle },
@@ -320,14 +320,14 @@ export default function CanvasForm() {
                   onClick={() => handleChange({ target: { name: 'soilTestStatus', value: test.value } })}
                   className="py-4 px-2 rounded-lg border-2 transition-all flex items-center justify-center gap-2"
                   style={{
-                    borderColor: data.soilTestStatus === test.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                    borderColor: data.soilTestStatus === test.value ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
                     backgroundColor: data.soilTestStatus === test.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
                   }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <TestIcon size={20} color={data.soilTestStatus === test.value ? '#689F38' : '#558B2F'} />
-                  <span className="text-sm font-medium text-center" style={{ color: '#33691E' }}>{test.label}</span>
+                  <TestIcon size={20} color={data.soilTestStatus === test.value ? 'var(--color-accent)' : 'var(--color-text-muted)'} />
+                  <span className="text-sm font-medium text-center" style={{ color: 'var(--color-text-dark)' }}>{test.label}</span>
                 </motion.button>
               );
             })}
@@ -344,8 +344,8 @@ export default function CanvasForm() {
           style={{ borderColor: 'rgba(104, 159, 56, 0.5)', backgroundColor: 'rgba(104, 159, 56, 0.05)' }}
         >
           <label className="flex items-center justify-center gap-2 cursor-pointer">
-            <Upload size={18} color="#689F38" />
-            <span className="text-sm font-medium" style={{ color: '#33691E' }}>
+            <Upload size={18} color="var(--color-accent)" />
+            <span className="text-sm font-medium" style={{ color: 'var(--color-text-dark)' }}>
               {data.soilTestReportFile ? `✓ ${data.soilTestReportFile}` : 'Upload Soil Test Report (PDF/Image)'}
             </span>
             <input 
@@ -361,7 +361,7 @@ export default function CanvasForm() {
       {/* Distance to Nearest Road */}
       <div className="border-t pt-5">
         <div className="space-y-3">
-          <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Distance to nearest road?</label>
+          <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Distance to nearest road?</label>
           <div className="grid grid-cols-2 gap-4">
             {[
               { value: 'direct', label: 'Direct Access', icon: Truck },
@@ -374,14 +374,14 @@ export default function CanvasForm() {
                   onClick={() => handleChange({ target: { name: 'roadAccessible', value: access.value } })}
                   className="py-4 px-2 rounded-lg border-2 transition-all flex items-center justify-center gap-2"
                   style={{
-                    borderColor: data.roadAccessible === access.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                    borderColor: data.roadAccessible === access.value ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
                     backgroundColor: data.roadAccessible === access.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
                   }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <AccessIcon size={20} color={data.roadAccessible === access.value ? '#689F38' : '#558B2F'} />
-                  <span className="text-sm font-medium text-center" style={{ color: '#33691E' }}>{access.label}</span>
+                  <AccessIcon size={20} color={data.roadAccessible === access.value ? 'var(--color-accent)' : 'var(--color-text-muted)'} />
+                  <span className="text-sm font-medium text-center" style={{ color: 'var(--color-text-dark)' }}>{access.label}</span>
                 </motion.button>
               );
             })}

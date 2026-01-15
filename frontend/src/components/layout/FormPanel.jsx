@@ -199,13 +199,13 @@ export default function FormPanel() {
                     className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
                     style={{ backgroundColor: 'rgba(104, 159, 56, 0.15)' }}
                   >
-                    <CheckCircle size={22} style={{ color: '#689F38' }} />
+                    <CheckCircle size={22} style={{ color: 'var(--color-accent)' }} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold" style={{ color: '#33691E' }}>
+                    <h3 className="text-lg font-bold" style={{ color: 'var(--color-text-dark)' }}>
                       Submitted successfully
                     </h3>
-                    <p className="text-sm mt-1" style={{ color: '#558B2F' }}>
+                    <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
                       Your form has been successfully submitted. Thank you!
                     </p>
                   </div>
@@ -218,7 +218,7 @@ export default function FormPanel() {
                     type="button"
                     className="px-5 py-2.5 rounded-xl font-semibold"
                     style={{
-                      backgroundColor: '#689F38',
+                      backgroundColor: 'var(--color-accent)',
                       color: '#E5E7EB',
                       boxShadow: '0 4px 14px rgba(104, 159, 56, 0.3)',
                     }}
@@ -269,7 +269,7 @@ export default function FormPanel() {
               opacity: isPreviewing ? 1 : isFirstModule ? 0 : 1,
               pointerEvents: isPreviewing ? 'auto' : isFirstModule ? 'none' : 'auto',
               backgroundColor: 'rgba(104, 159, 56, 0.1)',
-              color: '#33691E',
+              color: 'var(--color-text-dark)',
               border: '2px solid rgba(104, 159, 56, 0.2)'
             }}
           >
@@ -287,7 +287,7 @@ export default function FormPanel() {
                   width: index === currentModule ? '32px' : '8px',
                   height: '8px',
                   backgroundColor: index === currentModule 
-                    ? '#689F38' 
+                    ? 'var(--color-accent)' 
                     : completedModules.includes(index)
                     ? 'rgba(104, 159, 56, 0.6)'
                     : 'rgba(104, 159, 56, 0.2)'
@@ -311,7 +311,7 @@ export default function FormPanel() {
             disabled={isSubmitting || submitSuccess}
             className="flex items-center justify-center gap-2 px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg whitespace-nowrap"
             style={{
-              backgroundColor: submitSuccess ? '#22C55E' : isSubmitting ? '#9CA3AF' : '#689F38',
+              backgroundColor: submitSuccess ? '#22C55E' : isSubmitting ? '#9CA3AF' : 'var(--color-accent)',
               color: '#E5E7EB',
               boxShadow: '0 4px 14px rgba(104, 159, 56, 0.3)',
               opacity: isSubmitting ? 0.8 : 1,

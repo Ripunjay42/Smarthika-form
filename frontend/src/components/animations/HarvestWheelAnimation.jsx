@@ -26,7 +26,7 @@ export default function HarvestWheelAnimation({
 }) {
   // Labor pain description
   const getLaborDescription = (score) => {
-    if (score <= 2) return { level: 'Easy', color: '#689F38', desc: 'Easy to find labor' };
+    if (score <= 2) return { level: 'Easy', color: 'var(--color-accent)', desc: 'Easy to find labor' };
     if (score <= 4) return { level: 'Moderate', color: '#FBC02D', desc: 'Moderate availability' };
     if (score <= 7) return { level: 'Difficult', color: '#FF6F00', desc: 'Hard to find labor' };
     return { level: 'Critical', color: '#D32F2F', desc: 'Very expensive/hard to find' };
@@ -36,7 +36,7 @@ export default function HarvestWheelAnimation({
 
   const getExpansionIcon = (status) => {
     switch(status) {
-      case 'own': return <CheckCircle2 size={16} color="#689F38" />;
+      case 'own': return <CheckCircle2 size={16} color="var(--color-accent)" />;
       case 'planned': return <Clock size={16} color="#FBC02D" />;
       default: return <X size={16} color="#999" />;
     }
@@ -208,7 +208,7 @@ export default function HarvestWheelAnimation({
 
           {/* Labor Pain Scale Visual */}
           <div className="mb-3">
-            <div className="h-6 rounded-full overflow-hidden" style={{ background: `linear-gradient(to right, #689F38 0%, #FBC02D 40%, #FF6F00 70%, #D32F2F 100%)` }}>
+            <div className="h-6 rounded-full overflow-hidden" style={{ background: `linear-gradient(to right, var(--color-accent) 0%, #FBC02D 40%, #FF6F00 70%, #D32F2F 100%)` }}>
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${(laborPainScore / 10) * 100}%` }}

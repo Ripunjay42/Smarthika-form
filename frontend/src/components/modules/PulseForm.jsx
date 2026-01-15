@@ -45,7 +45,7 @@ export default function PulseForm() {
     if (voltage < 360) return { status: 'LOW', color: 'text-red-500', bg: 'bg-red-100' };
     if (voltage > 460) return { status: 'HIGH', color: 'text-red-500', bg: 'bg-red-100' };
     if (voltage < 380 || voltage > 440) return { status: 'WARNING', color: 'text-yellow-600', bg: 'bg-yellow-100' };
-    return { status: 'OPTIMAL', color: 'text-[#689F38]', bg: 'bg-[#689F38]/10' };
+    return { status: 'OPTIMAL', color: 'text-[var(--color-accent)]', bg: 'bg-[var(--color-accent)]/10' };
   };
 
   const voltageStatus = getVoltageStatus(data.averageGridVoltage);
@@ -58,22 +58,22 @@ export default function PulseForm() {
     >
       {/* Header */}
       <div className="mb-8">
-        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE PULSE</h2>
+        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: 'var(--color-accent)' }} />
+        <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-dark)' }}>THE PULSE</h2>
         <p className="text-gray-500">Power connection for controller selection.</p>
       </div>
 
       {/* STATUS ZERO: Existing Power Connection Toggle */}
       <div className="space-y-3 p-4 rounded-xl border-2" style={{ backgroundColor: 'rgba(104, 159, 56, 0.08)', borderColor: 'rgba(104, 159, 56, 0.2)' }}>
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Do You Have an Existing Power Connection?</label>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Do You Have an Existing Power Connection?</label>
         <div className="flex gap-3">
           <motion.button
             onClick={() => updateModuleData('pulse', { hasExistingPower: true })}
             className="flex-1 p-3 rounded-lg border-2 transition-all font-medium"
             style={{
-              borderColor: data.hasExistingPower ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+              borderColor: data.hasExistingPower ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
               backgroundColor: data.hasExistingPower ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-              color: '#33691E',
+              color: 'var(--color-text-dark)',
             }}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
@@ -84,9 +84,9 @@ export default function PulseForm() {
             onClick={() => updateModuleData('pulse', { hasExistingPower: false })}
             className="flex-1 p-3 rounded-lg border-2 transition-all font-medium"
             style={{
-              borderColor: !data.hasExistingPower ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+              borderColor: !data.hasExistingPower ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
               backgroundColor: !data.hasExistingPower ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-              color: '#33691E',
+              color: 'var(--color-text-dark)',
             }}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
@@ -100,7 +100,7 @@ export default function PulseForm() {
       {data.hasExistingPower && (
         <>
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Primary Energy Source (Select All That Apply)</label>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Primary Energy Source (Select All That Apply)</label>
         <div className="space-y-2">
           {POWER_SOURCES.map((source) => (
             <motion.button
@@ -108,7 +108,7 @@ export default function PulseForm() {
               onClick={() => handlePrimaryEnergySelect(source.value)}
               className="w-full p-3 rounded-lg border-2 transition-all text-left"
               style={{
-                borderColor: primaryEnergySources.includes(source.value) ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                borderColor: primaryEnergySources.includes(source.value) ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
                 backgroundColor: primaryEnergySources.includes(source.value) ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
               }}
               whileHover={{ scale: 1.01 }}
@@ -118,15 +118,15 @@ export default function PulseForm() {
                 <div
                   className="w-5 h-5 rounded border-2 flex items-center justify-center"
                   style={{
-                    borderColor: primaryEnergySources.includes(source.value) ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-                    backgroundColor: primaryEnergySources.includes(source.value) ? '#689F38' : 'transparent',
+                    borderColor: primaryEnergySources.includes(source.value) ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
+                    backgroundColor: primaryEnergySources.includes(source.value) ? 'var(--color-accent)' : 'transparent',
                   }}
                 >
                   {primaryEnergySources.includes(source.value) && (
                     <CheckCircle size={16} color="#E5E7EB" />
                   )}
                 </div>
-                <span className="font-medium" style={{ color: '#33691E' }}>{source.label}</span>
+                <span className="font-medium" style={{ color: 'var(--color-text-dark)' }}>{source.label}</span>
               </div>
             </motion.button>
           ))}
@@ -295,8 +295,8 @@ export default function PulseForm() {
           animate={{ opacity: 1, height: 'auto' }}
           className="space-y-3 p-4 rounded-xl border-2" style={{ backgroundColor: 'rgba(104, 159, 56, 0.08)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
         >
-          <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Genset Capacity</label>
-          <p className="text-xs" style={{ color: '#558B2F' }}>Required to size the changeover switch</p>
+          <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Genset Capacity</label>
+          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Required to size the changeover switch</p>
           <select
             name="gensetCapacity"
             value={data.gensetCapacity}
@@ -305,7 +305,7 @@ export default function PulseForm() {
             style={{
               borderColor: 'rgba(104, 159, 56, 0.3)',
               backgroundColor: '#FFFFFF',
-              color: '#33691E',
+              color: 'var(--color-text-dark)',
             }}
           >
             <option value="">Select Genset Capacity...</option>

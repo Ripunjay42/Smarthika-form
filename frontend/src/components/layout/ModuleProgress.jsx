@@ -55,8 +55,8 @@ export default function ModuleProgress({ isExpanded, onToggle }) {
               exit={{ opacity: 0, width: 0 }}
               className="overflow-hidden"
             >
-              <h1 className="text-lg font-bold whitespace-nowrap" style={{ color: '#33691E' }}>SMARTHIKA</h1>
-              <p className="text-xs font-medium whitespace-nowrap" style={{ color: '#558B2F' }}>Farm Intelligence</p>
+              <h1 className="text-lg font-bold whitespace-nowrap" style={{ color: 'var(--color-text-dark)' }}>SMARTHIKA</h1>
+              <p className="text-xs font-medium whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>Farm Intelligence</p>
             </motion.div>
           )}
         </motion.div>
@@ -71,10 +71,10 @@ export default function ModuleProgress({ isExpanded, onToggle }) {
           className="mb-4 p-3 rounded-xl"
           style={{ backgroundColor: 'rgba(104, 159, 56, 0.08)' }}
         >
-          <p className="text-xs uppercase tracking-wider mb-1 font-medium" style={{ color: '#558B2F' }}>
+          <p className="text-xs uppercase tracking-wider mb-1 font-medium" style={{ color: 'var(--color-text-muted)' }}>
             Module {currentModule + 1} of {MODULES.length}
           </p>
-          <h2 className="text-base font-bold" style={{ color: '#33691E' }}>
+          <h2 className="text-base font-bold" style={{ color: 'var(--color-text-dark)' }}>
             {MODULES[currentModule]?.name}
           </h2>
         </motion.div>
@@ -125,7 +125,7 @@ export default function ModuleProgress({ isExpanded, onToggle }) {
                   <div className="text-left flex-1 min-w-0">
                     <p 
                       className="text-sm font-medium truncate"
-                      style={{ color: isCurrent ? '#33691E' : '#558B2F' }}
+                      style={{ color: isCurrent ? 'var(--color-text-dark)' : 'var(--color-text-muted)' }}
                     >
                       {module.name}
                     </p>
@@ -141,14 +141,14 @@ export default function ModuleProgress({ isExpanded, onToggle }) {
       <div className="mt-4 pt-3">
         {isExpanded && (
           <div className="mb-3">
-            <div className="flex justify-between text-xs font-medium mb-2" style={{ color: '#558B2F' }}>
+            <div className="flex justify-between text-xs font-medium mb-2" style={{ color: 'var(--color-text-muted)' }}>
               <span>Progress</span>
-              <span style={{ color: '#33691E' }}>{completedModules.length}/{MODULES.length}</span>
+              <span style={{ color: 'var(--color-text-dark)' }}>{completedModules.length}/{MODULES.length}</span>
             </div>
             <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(104, 159, 56, 0.15)' }}>
               <motion.div
                 className="h-full rounded-full"
-                style={{ backgroundColor: '#689F38' }}
+                style={{ backgroundColor: 'var(--color-accent)' }}
                 initial={{ width: 0 }}
                 animate={{ width: `${(completedModules.length / MODULES.length) * 100}%` }}
                 transition={{ duration: 0.5 }}
@@ -168,7 +168,7 @@ export default function ModuleProgress({ isExpanded, onToggle }) {
           {isExpanded ? (
             <>
               <ChevronLeft size={18} color={ICON_COLOR} strokeWidth={ICON_STROKE_WIDTH} />
-              <span className="text-sm font-medium" style={{ color: '#558B2F' }}></span>
+              <span className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}></span>
             </>
           ) : (
             <ChevronRight size={18} color={ICON_COLOR} strokeWidth={ICON_STROKE_WIDTH} />

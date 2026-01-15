@@ -107,18 +107,18 @@ export default function HeartForm() {
       <div className="mb-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
-            <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE HYDRAULIC HEART</h2>
-            <p style={{ color: '#558B2F' }}>Water source assessment and pump sizing.</p>
+            <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: 'var(--color-accent)' }} />
+            <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-dark)' }}>THE HYDRAULIC HEART</h2>
+            <p style={{ color: 'var(--color-text-muted)' }}>Water source assessment and pump sizing.</p>
           </div>
           <div className="shrink-0 pt-1">
             <div className="flex flex-col items-end gap-2">
-              <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>Measurement Unit</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dark)' }}>Measurement Unit</label>
               <div className="relative inline-flex items-center bg-white rounded-full p-1" style={{ border: '2px solid rgba(104, 159, 56, 0.3)' }}>
                 <motion.div
                   className="absolute h-8 rounded-full"
                   style={{
-                    backgroundColor: '#689F38',
+                    backgroundColor: 'var(--color-accent)',
                     width: '50%',
                     left: data.unitSystem === 'feet' ? '0%' : '50%',
                   }}
@@ -128,14 +128,14 @@ export default function HeartForm() {
                 <button
                   onClick={() => handleChange({ target: { name: 'unitSystem', value: 'feet' } })}
                   className="relative z-10 px-4 py-1.5 text-sm font-semibold transition-colors rounded-full"
-                  style={{ color: data.unitSystem === 'feet' ? '#EDEDE7' : '#33691E' }}
+                  style={{ color: data.unitSystem === 'feet' ? '#EDEDE7' : 'var(--color-text-dark)' }}
                 >
                   Feet
                 </button>
                 <button
                   onClick={() => handleChange({ target: { name: 'unitSystem', value: 'meters' } })}
                   className="relative z-10 px-4 py-1.5 text-sm font-semibold transition-colors rounded-full"
-                  style={{ color: data.unitSystem === 'meters' ? '#EDEDE7' : '#33691E' }}
+                  style={{ color: data.unitSystem === 'meters' ? '#EDEDE7' : 'var(--color-text-dark)' }}
                 >
                   Meters
                 </button>
@@ -147,7 +147,7 @@ export default function HeartForm() {
 
       {/* Multi-Select Water Sources */}
       <div className="space-y-3" id="field-heart-sourceType">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Available Water Sources</label>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Available Water Sources</label>
         <div className="space-y-2">
           {WATER_SOURCES.map((source) => {
             const isSelected = (data.sourceType || []).includes(source.value);
@@ -159,7 +159,7 @@ export default function HeartForm() {
                 key={source.value}
                 className="p-3 rounded-lg border-2 transition-all"
                 style={{
-                  borderColor: isSelected ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                  borderColor: isSelected ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
                   backgroundColor: isSelected ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
                 }}
               >
@@ -173,15 +173,15 @@ export default function HeartForm() {
                     <div
                       className="w-5 h-5 rounded border-2 flex items-center justify-center shrink-0"
                       style={{
-                        borderColor: isSelected ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-                        backgroundColor: isSelected ? '#689F38' : 'transparent',
+                        borderColor: isSelected ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
+                        backgroundColor: isSelected ? 'var(--color-accent)' : 'transparent',
                       }}
                     >
                       {isSelected && (
                         <CheckCircle size={16} color="#E5E7EB" />
                       )}
                     </div>
-                    <span className="font-medium" style={{ color: '#33691E' }}>{source.label}</span>
+                    <span className="font-medium" style={{ color: 'var(--color-text-dark)' }}>{source.label}</span>
                   </motion.button>
                   
                   {/* Counter - Shows only when selected */}
@@ -193,9 +193,9 @@ export default function HeartForm() {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Minus size={18} color="#689F38" strokeWidth={2} />
+                        <Minus size={18} color="var(--color-accent)" strokeWidth={2} />
                       </motion.button>
-                      <span className="w-8 text-center font-bold" style={{ color: '#33691E' }}>
+                      <span className="w-8 text-center font-bold" style={{ color: 'var(--color-text-dark)' }}>
                         {count}
                       </span>
                       <motion.button
@@ -204,7 +204,7 @@ export default function HeartForm() {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Plus size={18} color="#689F38" strokeWidth={2} />
+                        <Plus size={18} color="var(--color-accent)" strokeWidth={2} />
                       </motion.button>
                     </div>
                   )}
@@ -228,8 +228,8 @@ export default function HeartForm() {
 
       {/* Depth Section - Optional */}
       <div className="border-t pt-5">
-        <h3 className="font-semibold mb-4" style={{ color: '#33691E' }}>Water Level Details (Optional)</h3>
-        <p className="text-xs mb-4" style={{ color: '#558B2F' }}>Provide these if available for precise pump sizing</p>
+        <h3 className="font-semibold mb-4" style={{ color: 'var(--color-text-dark)' }}>Water Level Details (Optional)</h3>
+        <p className="text-xs mb-4" style={{ color: 'var(--color-text-muted)' }}>Provide these if available for precise pump sizing</p>
 
         {/* I don't know button */}
         <motion.button
@@ -250,14 +250,14 @@ export default function HeartForm() {
           }}
           className="w-full mb-4 py-3 px-4 rounded-lg border-2 transition-all flex items-center justify-center gap-2"
           style={{
-            borderColor: data.unknownDetails ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+            borderColor: data.unknownDetails ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
             backgroundColor: data.unknownDetails ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
           }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          <HelpCircle size={18} color={data.unknownDetails ? '#689F38' : '#558B2F'} />
-          <span className="font-medium" style={{ color: data.unknownDetails ? '#689F38' : '#33691E' }}>
+          <HelpCircle size={18} color={data.unknownDetails ? 'var(--color-accent)' : 'var(--color-text-muted)'} />
+          <span className="font-medium" style={{ color: data.unknownDetails ? 'var(--color-accent)' : 'var(--color-text-dark)' }}>
             I don't know my details
           </span>
         </motion.button>
@@ -274,10 +274,10 @@ export default function HeartForm() {
             }}
           >
             <div className="flex items-start gap-3">
-              <CheckCircle size={20} color="#689F38" className="mt-0.5 shrink-0" />
+              <CheckCircle size={20} color="var(--color-accent)" className="mt-0.5 shrink-0" />
               <div>
-                <p className="font-semibold text-sm" style={{ color: '#33691E' }}>We can test your borewell yield</p>
-                <p className="text-xs mt-1" style={{ color: '#558B2F' }}>Our team can visit and test your borewell to determine exact water levels and yield.</p>
+                <p className="font-semibold text-sm" style={{ color: 'var(--color-text-dark)' }}>We can test your borewell yield</p>
+                <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Our team can visit and test your borewell to determine exact water levels and yield.</p>
               </div>
             </div>
           </motion.div>
@@ -373,8 +373,8 @@ export default function HeartForm() {
 
       {/* Water Quality with Color Labels - Accessible for Color-blind Users */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Water Color/Quality</label>
-        <p className="text-xs mb-3" style={{ color: '#558B2F' }}>Visual indication of water quality</p>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Water Color/Quality</label>
+        <p className="text-xs mb-3" style={{ color: 'var(--color-text-muted)' }}>Visual indication of water quality</p>
         <div className="grid grid-cols-2 gap-3">
           {WATER_QUALITIES.map((quality) => (
             <motion.button
@@ -382,7 +382,7 @@ export default function HeartForm() {
               onClick={() => handleChange({ target: { name: 'waterQuality', value: quality.value } })}
               className="p-3 rounded-lg border-2 transition-all flex items-center gap-2"
               style={{
-                borderColor: data.waterQuality === quality.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                borderColor: data.waterQuality === quality.value ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
                 backgroundColor: data.waterQuality === quality.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
               }}
               whileHover={{ scale: 1.02 }}
@@ -392,10 +392,10 @@ export default function HeartForm() {
                 className="w-6 h-6 rounded shrink-0 border"
                 style={{
                   backgroundColor: quality.color,
-                  borderColor: data.waterQuality === quality.value ? '#689F38' : '#ccc',
+                  borderColor: data.waterQuality === quality.value ? 'var(--color-accent)' : '#ccc',
                 }}
               />
-              <span className="text-xs font-medium" style={{ color: '#33691E' }}>{quality.label}</span>
+              <span className="text-xs font-medium" style={{ color: 'var(--color-text-dark)' }}>{quality.label}</span>
             </motion.button>
           ))}
         </div>

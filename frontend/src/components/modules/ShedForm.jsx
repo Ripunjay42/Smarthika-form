@@ -54,8 +54,8 @@ export default function ShedForm() {
     >
       {/* Header */}
       <div className="mb-8">
-        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE SHED</h2>
+        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: 'var(--color-accent)' }} />
+        <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-dark)' }}>THE SHED</h2>
         <p className="text-gray-500">Farm equipment inventory - Select all machinery you own or have access to.</p>
       </div>
 
@@ -70,10 +70,10 @@ export default function ShedForm() {
           >
             {/* Category Header */}
             <div className="mb-4">
-              <h3 className="text-lg font-bold mb-1" style={{ color: '#33691E' }}>
+              <h3 className="text-lg font-bold mb-1" style={{ color: 'var(--color-text-dark)' }}>
                 {category}
               </h3>
-              <div className="w-8 h-1 rounded-full" style={{ backgroundColor: '#689F38' }} />
+              <div className="w-8 h-1 rounded-full" style={{ backgroundColor: 'var(--color-accent)' }} />
             </div>
 
             {/* Equipment Grid */}
@@ -96,7 +96,7 @@ export default function ShedForm() {
                     style={isSelected
                       ? { 
                           backgroundColor: 'rgba(104, 159, 56, 0.1)', 
-                          borderColor: '#689F38',
+                          borderColor: 'var(--color-accent)',
                           boxShadow: '0 4px 12px rgba(104, 159, 56, 0.15)'
                         }
                       : { 
@@ -119,7 +119,7 @@ export default function ShedForm() {
                         <IconComponent 
                           size={24} 
                           strokeWidth={ICON_STROKE_WIDTH}
-                          color={isSelected ? '#689F38' : '#9CA3AF'} 
+                          color={isSelected ? 'var(--color-accent)' : '#9CA3AF'} 
                         />
                       </motion.div>
 
@@ -127,7 +127,7 @@ export default function ShedForm() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <p className="font-bold text-gray-800" style={{ color: isSelected ? '#33691E' : '#1F2937' }}>
+                            <p className="font-bold text-gray-800" style={{ color: isSelected ? 'var(--color-text-dark)' : '#1F2937' }}>
                               {item.label}
                             </p>
                             <p className="text-xs text-gray-500 mt-0.5">
@@ -141,7 +141,7 @@ export default function ShedForm() {
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
                               className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
-                              style={{ backgroundColor: '#689F38' }}
+                              style={{ backgroundColor: 'var(--color-accent)' }}
                             >
                               <Check size={14} strokeWidth={3} color="white" />
                             </motion.div>
@@ -165,11 +165,11 @@ export default function ShedForm() {
           className="p-4 rounded-xl border-2"
           style={{ 
             backgroundColor: 'rgba(104, 159, 56, 0.05)',
-            borderColor: '#689F38'
+            borderColor: 'var(--color-accent)'
           }}
         >
           <div className="flex items-center gap-3">
-            <Warehouse size={20} color="#689F38" strokeWidth={ICON_STROKE_WIDTH} />
+            <Warehouse size={20} color="var(--color-accent)" strokeWidth={ICON_STROKE_WIDTH} />
             <div>
               <p className="font-semibold text-gray-800">
                 {selectedCount} equipment item{selectedCount !== 1 ? 's' : ''} selected

@@ -57,22 +57,22 @@ export default function BiologyForm() {
     >
       {/* Header */}
       <div className="mb-8">
-        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE BIOLOGY</h2>
+        <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: 'var(--color-accent)' }} />
+        <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-dark)' }}>THE BIOLOGY</h2>
         <p className="text-gray-500">Crop requirements for water demand calculation.</p>
       </div>
 
       {/* Crops with Estimated Numbers */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Crops & Estimated Count</label>
+          <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Crops & Estimated Count</label>
           <motion.button
             type="button"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleAddCrop}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold"
-            style={{ backgroundColor: '#689F38', color: 'white' }}
+            style={{ backgroundColor: 'var(--color-accent)', color: 'white' }}
           >
             <Plus size={14} />
             Add
@@ -102,7 +102,7 @@ export default function BiologyForm() {
                   onChange={(e) => handleCropChange(index, 'cropType', e.target.value)}
                   placeholder="Crop name"
                   className="bg-transparent text-sm outline-none border-b border-gray-300 pb-1"
-                  style={{ color: '#33691E' }}
+                  style={{ color: 'var(--color-text-dark)' }}
                 />
                 <input
                   type="number"
@@ -111,7 +111,7 @@ export default function BiologyForm() {
                   placeholder="0"
                   min="0"
                   className="px-2 py-1.5 text-sm text-center outline-none rounded border"
-                  style={{ color: '#33691E', borderColor: 'rgba(104, 159, 56, 0.3)', backgroundColor: 'rgba(104, 159, 56, 0.05)' }}
+                  style={{ color: 'var(--color-text-dark)', borderColor: 'rgba(104, 159, 56, 0.3)', backgroundColor: 'rgba(104, 159, 56, 0.05)' }}
                 />
                 <motion.button
                   type="button"
@@ -132,7 +132,7 @@ export default function BiologyForm() {
         )}
       </div>
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Plant Spacing</label>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Plant Spacing</label>
         <div className="flex gap-2 items-end">
           <div className="flex-1">
             <input
@@ -143,7 +143,7 @@ export default function BiologyForm() {
               placeholder="0"
               min="0"
               className="w-full px-3 py-2 rounded-lg border text-sm"
-              style={{ borderColor: 'rgba(104, 159, 56, 0.3)', backgroundColor: '#FAFAF9', color: '#33691E' }}
+              style={{ borderColor: 'rgba(104, 159, 56, 0.3)', backgroundColor: '#FAFAF9', color: 'var(--color-text-dark)' }}
             />
           </div>
           <div className="flex gap-1 bg-white rounded-lg p-1 border" style={{ borderColor: 'rgba(104, 159, 56, 0.3)' }}>
@@ -156,7 +156,7 @@ export default function BiologyForm() {
                   data.plantSpacingUnit === unit ? 'text-white' : 'text-gray-600'
                 }`}
                 style={{
-                  backgroundColor: data.plantSpacingUnit === unit ? '#689F38' : 'transparent',
+                  backgroundColor: data.plantSpacingUnit === unit ? 'var(--color-accent)' : 'transparent',
                 }}
               >
                 {unit === 'feet' ? 'ft' : 'm'}
@@ -204,7 +204,7 @@ export default function BiologyForm() {
 
       {/* Irrigation Method */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#689F38' }}>
+        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-accent)' }}>
           Irrigation Method
         </label>
         <div className="grid grid-cols-3 gap-3">
@@ -223,7 +223,7 @@ export default function BiologyForm() {
                 }
               `}
               style={data.irrigationMethod === method.value
-                ? { backgroundColor: '#689F38' }
+                ? { backgroundColor: 'var(--color-accent)' }
                 : { borderColor: 'rgba(104, 159, 56, 0.2)' }
               }
             >
@@ -254,12 +254,12 @@ export default function BiologyForm() {
       >
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-gray-600">Irrigation Efficiency</span>
-          <span className="text-lg font-bold" style={{ color: '#689F38' }}>{efficiency}%</span>
+          <span className="text-lg font-bold" style={{ color: 'var(--color-accent)' }}>{efficiency}%</span>
         </div>
         <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
           <motion.div
             className="h-full"
-            style={{ background: 'linear-gradient(to right, #B8D888, #689F38)' }}
+            style={{ background: 'linear-gradient(to right, #B8D888, var(--color-accent))' }}
             initial={{ width: 0 }}
             animate={{ width: `${efficiency}%` }}
             transition={{ duration: 0.5 }}

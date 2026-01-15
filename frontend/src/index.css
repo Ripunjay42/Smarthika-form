@@ -4,10 +4,22 @@
 :root {
   --color-primary: #E5E7EB;
   --color-background: #EDEDE7;
-  --color-accent: #689F38;
-  --color-accent-light: #8BC34A;
-  --color-text-dark: #33691E;
-  --color-text-muted: #558B2F;
+  --color-accent: #059669;
+  --color-accent-light: #10b981;
+  --color-text-dark: #065f46;
+  --color-text-muted: #047857;
+}
+
+/* Global Font Family */
+body {
+  font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  font-family: inherit;
 }
 
 /* Custom scrollbar for the form panel */

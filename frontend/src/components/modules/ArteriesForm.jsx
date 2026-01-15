@@ -68,18 +68,18 @@ export default function ArteriesForm() {
       <div className="mb-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: '#689F38' }} />
-            <h2 className="text-2xl font-bold mb-2" style={{ color: '#33691E' }}>THE ARTERIES</h2>
-            <p style={{ color: '#558B2F' }}>Piping infrastructure for water delivery.</p>
+            <div className="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: 'var(--color-accent)' }} />
+            <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-dark)' }}>THE ARTERIES</h2>
+            <p style={{ color: 'var(--color-text-muted)' }}>Piping infrastructure for water delivery.</p>
           </div>
           <div className="flex-shrink-0 pt-1">
             <div className="flex flex-col items-end gap-2">
-              <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#33691E' }}>Measurement Unit</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dark)' }}>Measurement Unit</label>
               <div className="relative inline-flex items-center bg-white rounded-full p-1" style={{ border: '2px solid rgba(104, 159, 56, 0.3)' }}>
                 <motion.div
                   className="absolute h-8 rounded-full"
                   style={{
-                    backgroundColor: '#689F38',
+                    backgroundColor: 'var(--color-accent)',
                     width: '50%',
                     left: data.unitSystem === 'feet' ? '0%' : '50%',
                   }}
@@ -89,14 +89,14 @@ export default function ArteriesForm() {
                 <button
                   onClick={() => handleChange({ target: { name: 'unitSystem', value: 'feet' } })}
                   className="relative z-10 px-4 py-1.5 text-sm font-semibold transition-colors rounded-full"
-                  style={{ color: data.unitSystem === 'feet' ? '#EDEDE7' : '#33691E' }}
+                  style={{ color: data.unitSystem === 'feet' ? '#EDEDE7' : 'var(--color-text-dark)' }}
                 >
                   Feet
                 </button>
                 <button
                   onClick={() => handleChange({ target: { name: 'unitSystem', value: 'meters' } })}
                   className="relative z-10 px-4 py-1.5 text-sm font-semibold transition-colors rounded-full"
-                  style={{ color: data.unitSystem === 'meters' ? '#EDEDE7' : '#33691E' }}
+                  style={{ color: data.unitSystem === 'meters' ? '#EDEDE7' : 'var(--color-text-dark)' }}
                 >
                   Meters
                 </button>
@@ -108,8 +108,8 @@ export default function ArteriesForm() {
 
       {/* Delivery Target - Multi-Select */}
       <div className="space-y-3" id="field-arteries-deliveryTarget">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Where Does Water Go? (Select All That Apply)</label>
-        <p className="text-xs" style={{ color: '#558B2F' }}>Each borewell/source can deliver to different destinations</p>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Where Does Water Go? (Select All That Apply)</label>
+        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Each borewell/source can deliver to different destinations</p>
         <div className="space-y-2">
           {DELIVERY_TARGETS.map((target) => {
             // Map target values to icons
@@ -133,7 +133,7 @@ export default function ArteriesForm() {
                 onClick={() => handleMultiSelectTarget(target.value)}
                 className="w-full p-3 rounded-lg border-2 transition-all text-left"
                 style={{
-                  borderColor: deliveryTargets.includes(target.value) ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                  borderColor: deliveryTargets.includes(target.value) ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
                   backgroundColor: deliveryTargets.includes(target.value) ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
                 }}
                 whileHover={{ scale: 1.01 }}
@@ -142,22 +142,22 @@ export default function ArteriesForm() {
                 <div className="flex items-center gap-3">
                   <TargetIcon 
                     size={20} 
-                    color={deliveryTargets.includes(target.value) ? '#689F38' : '#558B2F'} 
+                    color={deliveryTargets.includes(target.value) ? 'var(--color-accent)' : 'var(--color-text-muted)'} 
                     strokeWidth={1.5}
                   />
                   <div className="flex-1 flex items-center gap-2">
                     <div
                       className="w-5 h-5 rounded border-2 flex items-center justify-center"
                       style={{
-                        borderColor: deliveryTargets.includes(target.value) ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
-                        backgroundColor: deliveryTargets.includes(target.value) ? '#689F38' : 'transparent',
+                        borderColor: deliveryTargets.includes(target.value) ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
+                        backgroundColor: deliveryTargets.includes(target.value) ? 'var(--color-accent)' : 'transparent',
                       }}
                     >
                       {deliveryTargets.includes(target.value) && (
                         <CheckCircle size={16} color="#E5E7EB" />
                       )}
                     </div>
-                    <span className="font-medium" style={{ color: '#33691E' }}>{target.label}</span>
+                    <span className="font-medium" style={{ color: 'var(--color-text-dark)' }}>{target.label}</span>
                   </div>
                 </div>
               </motion.button>
@@ -185,7 +185,7 @@ export default function ArteriesForm() {
           className="space-y-4 p-4 rounded-xl border-2"
           style={{ backgroundColor: 'rgba(104, 159, 56, 0.08)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
         >
-          <h3 className="font-semibold" style={{ color: '#33691E' }}>Overhead Tank Settings</h3>
+          <h3 className="font-semibold" style={{ color: 'var(--color-text-dark)' }}>Overhead Tank Settings</h3>
           <FormSlider
             label={`Tank Height (from ground) (${unitLabel})`}
             name="overheadTankHeight"
@@ -217,7 +217,7 @@ export default function ArteriesForm() {
           className="space-y-4 p-4 rounded-xl border-2"
           style={{ backgroundColor: 'rgba(104, 159, 56, 0.08)', borderColor: 'rgba(104, 159, 56, 0.2)' }}
         >
-          <h3 className="font-semibold" style={{ color: '#33691E' }}>Ground Sump Settings</h3>
+          <h3 className="font-semibold" style={{ color: 'var(--color-text-dark)' }}>Ground Sump Settings</h3>
           <FormSlider
             label={`Sump Depth Below Ground (${unitLabel})`}
             name="groundSumpDepth"
@@ -243,7 +243,7 @@ export default function ArteriesForm() {
 
       {/* Pipe Type with capitalized labels */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Pipe Type</label>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Pipe Type</label>
         <div className="grid grid-cols-3 gap-2">
           {PIPE_MATERIALS.map((material) => (
             <motion.button
@@ -251,16 +251,16 @@ export default function ArteriesForm() {
               onClick={() => handleChange({ target: { name: 'mainlinePipeMaterial', value: material.value } })}
               className="p-3 rounded-lg border-2 transition-all text-center"
               style={{
-                borderColor: data.mainlinePipeMaterial === material.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                borderColor: data.mainlinePipeMaterial === material.value ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
                 backgroundColor: data.mainlinePipeMaterial === material.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
               }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="text-sm font-bold" style={{ color: '#33691E' }}>
+              <div className="text-sm font-bold" style={{ color: 'var(--color-text-dark)' }}>
                 {material.label.toUpperCase()}
               </div>
-              <div className="text-xs mt-1" style={{ color: '#558B2F' }}>
+              <div className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
                 C={material.roughness}
               </div>
             </motion.button>
@@ -270,7 +270,7 @@ export default function ArteriesForm() {
 
       {/* Mainline Pipe Size Selection */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>Mainline Pipe Size Selection</label>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Mainline Pipe Size Selection</label>
         <div className="grid grid-cols-4 gap-2">
           {PIPE_DIAMETERS.map((diameter) => (
             <motion.button
@@ -278,13 +278,13 @@ export default function ArteriesForm() {
               onClick={() => handleChange({ target: { name: 'mainlineDiameter', value: diameter.value } })}
               className="p-2 rounded-lg border-2 transition-all text-center"
               style={{
-                borderColor: data.mainlineDiameter === diameter.value ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+                borderColor: data.mainlineDiameter === diameter.value ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
                 backgroundColor: data.mainlineDiameter === diameter.value ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
               }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="text-xs font-bold whitespace-pre-line" style={{ color: '#33691E' }}>
+              <div className="text-xs font-bold whitespace-pre-line" style={{ color: 'var(--color-text-dark)' }}>
                 {diameter.label}
               </div>
             </motion.button>
@@ -294,13 +294,13 @@ export default function ArteriesForm() {
 
       {/* Pipe Condition - How old are your pipes */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold" style={{ color: '#33691E' }}>How Old Are Your Pipes?</label>
+        <label className="block text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>How Old Are Your Pipes?</label>
         <div className="space-y-2">
           <motion.button
             onClick={() => handleChange({ target: { name: 'pipeCondition', value: 'new' } })}
             className="w-full p-3 rounded-lg border-2 transition-all text-left"
             style={{
-              borderColor: data.pipeCondition === 'new' ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+              borderColor: data.pipeCondition === 'new' ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
               backgroundColor: data.pipeCondition === 'new' ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
             }}
             whileHover={{ scale: 1.01 }}
@@ -309,8 +309,8 @@ export default function ArteriesForm() {
             <div className="flex items-center gap-3">
               <CheckCircle size={18} color="#22C55E" />
               <div>
-                <span className="font-medium" style={{ color: '#33691E' }}>New Installation</span>
-                <p className="text-xs" style={{ color: '#558B2F' }}>Fresh pipes, no friction penalty</p>
+                <span className="font-medium" style={{ color: 'var(--color-text-dark)' }}>New Installation</span>
+                <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Fresh pipes, no friction penalty</p>
               </div>
             </div>
           </motion.button>
@@ -319,7 +319,7 @@ export default function ArteriesForm() {
             onClick={() => handleChange({ target: { name: 'pipeCondition', value: 'old' } })}
             className="w-full p-3 rounded-lg border-2 transition-all text-left"
             style={{
-              borderColor: data.pipeCondition === 'old' ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+              borderColor: data.pipeCondition === 'old' ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
               backgroundColor: data.pipeCondition === 'old' ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
             }}
             whileHover={{ scale: 1.01 }}
@@ -328,8 +328,8 @@ export default function ArteriesForm() {
             <div className="flex items-center gap-3">
               <AlertCircle size={18} color="#F59E0B" />
               <div>
-                <span className="font-medium" style={{ color: '#33691E' }}>Reusing Old Pipes</span>
-                <p className="text-xs" style={{ color: '#558B2F' }}>Existing pipes may have resistance</p>
+                <span className="font-medium" style={{ color: 'var(--color-text-dark)' }}>Reusing Old Pipes</span>
+                <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Existing pipes may have resistance</p>
               </div>
             </div>
           </motion.button>
@@ -338,15 +338,15 @@ export default function ArteriesForm() {
 
       {/* Flowmeter Requirement - Yes/No Toggle */}
       <div className="p-4 rounded-xl border-2 flex items-center justify-between" style={{ backgroundColor: 'rgba(104, 159, 56, 0.08)', borderColor: 'rgba(104, 159, 56, 0.2)' }}>
-        <label className="text-sm font-semibold" style={{ color: '#33691E' }}>Do you need a flow meter?</label>
+        <label className="text-sm font-semibold" style={{ color: 'var(--color-text-dark)' }}>Do you need a flow meter?</label>
         <div className="flex gap-3">
           <motion.button
             onClick={() => updateModuleData('arteries', { flowmeterRequirement: true })}
             className="px-6 py-2 rounded-lg border-2 transition-all font-medium"
             style={{
-              borderColor: data.flowmeterRequirement ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+              borderColor: data.flowmeterRequirement ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
               backgroundColor: data.flowmeterRequirement ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-              color: '#33691E',
+              color: 'var(--color-text-dark)',
             }}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
@@ -357,9 +357,9 @@ export default function ArteriesForm() {
             onClick={() => updateModuleData('arteries', { flowmeterRequirement: false })}
             className="px-6 py-2 rounded-lg border-2 transition-all font-medium"
             style={{
-              borderColor: !data.flowmeterRequirement ? '#689F38' : 'rgba(104, 159, 56, 0.3)',
+              borderColor: !data.flowmeterRequirement ? 'var(--color-accent)' : 'rgba(104, 159, 56, 0.3)',
               backgroundColor: !data.flowmeterRequirement ? 'rgba(104, 159, 56, 0.15)' : 'transparent',
-              color: '#33691E',
+              color: 'var(--color-text-dark)',
             }}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
