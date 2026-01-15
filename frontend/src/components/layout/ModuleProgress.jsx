@@ -5,6 +5,7 @@ import {
   Sprout,
   Map,
   Droplet,
+  Droplets,
   Route,
   Zap,
   Warehouse,
@@ -43,10 +44,13 @@ export default function ModuleProgress({ isExpanded, onToggle }) {
           className="flex items-center gap-3"
         >
           <div 
-            className="w-10 h-10 rounded-xl flex items-center justify-center  shrink-0 ml-2"
-            style={{ backgroundColor: 'rgba(104, 159, 56, 0.15)' }}
+            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ml-2"
+            style={{ 
+              background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%)',
+              boxShadow: '0 4px 12px rgba(5, 150, 105, 0.25)'
+            }}
           >
-            <Sprout size={24} color={ICON_COLOR} strokeWidth={ICON_STROKE_WIDTH} />
+            <Droplets size={24} color="#FFFFFF" strokeWidth={2} />
           </div>
           {isExpanded && (
             <motion.div 
@@ -56,7 +60,7 @@ export default function ModuleProgress({ isExpanded, onToggle }) {
               className="overflow-hidden"
             >
               <h1 className="text-lg font-bold whitespace-nowrap" style={{ color: 'var(--color-text-dark)' }}>SMARTHIKA</h1>
-              <p className="text-xs font-medium whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>Farm Intelligence</p>
+              <p className="text-xs font-medium whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>Smart Irrigation Solutions</p>
             </motion.div>
           )}
         </motion.div>
