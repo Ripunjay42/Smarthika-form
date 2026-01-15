@@ -380,7 +380,7 @@ export default function ArteriesForm() {
         max={1000}
         step={10}
         unit={data.unitSystem === 'meters' ? ' m' : ' ft'}
-        required
+        // required
         error={errors.totalPipeLength}
       />
 

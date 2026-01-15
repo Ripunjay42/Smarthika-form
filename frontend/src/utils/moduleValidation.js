@@ -66,11 +66,11 @@ export const MODULE_VALIDATION_RULES = {
       message: 'At least one delivery target is required',
       validate: (data) => !isBlank(data?.deliveryTarget),
     },
-    {
-      field: 'totalPipeLength',
-      message: 'Total pipe length is required',
-      validate: (data) => isPositiveNumber(data?.totalPipeLength),
-    },
+    // {
+    //   field: 'totalPipeLength',
+    //   message: 'Total pipe length is required',
+    //   validate: (data) => isPositiveNumber(data?.totalPipeLength),
+    // },
   ],
   pulse: [
     // {
